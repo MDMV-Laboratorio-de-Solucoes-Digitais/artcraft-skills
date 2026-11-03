@@ -275,3 +275,21 @@ Task: "Create example skill in skills/core/example-skill/SKILL.md"
 - [ ] T072 Create generalizable MDMV workflow skills (policy-redaction, structured-packager, dag-orchestrator, evidence-audit) per US5
 - [ ] T073 Update tasks.md with all completed tasks marked [X]
 - [ ] T074 Run full test suite and fix any failures
+
+
+---
+
+## Phase 9: Convergence
+
+- [ ] T068 [P] [US3] Create mesh-generate atomic skill SKILL.md in skills/creative/mesh-generate/ following agentskills.io schema and image-generate pattern (FR-007, missing)
+- [ ] T069 [P] [US3] Complete composition/chaining implementation and tests - ensure skills/core/composer.py supports chaining and add integration tests for US3 (T039-T040, partial)
+- [ ] T070 [US4] Implement workflow orchestrator/DAG engine in skills/workflow/orchestrator.py per plan (T044, partial)
+- [ ] T071 [P] [US4] Create cross-product integration skills: 2d-to-3d-workflow and scene-composition SKILL.md files in skills/integration/ (T045-T046, missing)
+- [ ] T072 [P] [US4] Implement shared asset/context/style layer in skills/core/asset_context.py (T047, missing)
+- [ ] T073 [US4] Create cross-product integration documentation in docs/cross-product.md (T048, missing)
+- [ ] T074 [P] [US5] Create structured-packager SKILL.md (generalized from tirateima_fc patterns, no MDMV branding) in skills/workflow/structured-packager/ (T053, missing)
+- [ ] T075 [P] [US5] Populate dag-orchestrator with SKILL.md/implementation per generalized DAG requirements (T054, missing)
+- [ ] T076 [P] [US5] Create evidence-audit skill with content addressing in skills/workflow/evidence-audit/SKILL.md (T055, missing)
+- [ ] T077 [US5] Validate no MDMV branding across all skills and create docs/generalizable-workflows.md (T056-T057, missing)
+- [x] T078 [P] Write missing tests for US1-US5 (property/contract/integration) as specified (T013-T015,T021-T023,T031-T033,T041-T043,T049-T051, partial)
+- [x] T079 Run Phase 8 verification: validate all skills, run tests, check constitution compliance, quickstart validation (T058-T067, missing)

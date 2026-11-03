@@ -31,10 +31,10 @@
 
 **Purpose**: Project initialization and basic structure per implementation plan
 
-- [ ] T001 Create directory structure (skills/{core,creative,workflow,integration}, scripts/, tests/{unit,property,integration}, docs/)
-- [ ] T002 [P] Initialize package configuration and tooling (linting, formatting)
-- [ ] T003 [P] Create skill template following agentskills.io structure in skills/README.md
-- [ ] T004 [P] Create .gitignore entries for skills artifacts
+- [x] T001 Create directory structure (skills/{core,creative,workflow,integration}, scripts/, tests/{unit,property,integration}, docs/)
+- [x] T002 [P] Initialize package configuration and tooling (linting, formatting)
+- [x] T003 [P] Create skill template following agentskills.io structure in skills/README.md
+- [x] T004 [P] Create .gitignore entries for skills artifacts
 
 ---
 
@@ -45,16 +45,16 @@
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
 ### Tests for Foundation (TDD - Write FIRST, must FAIL) 
-- [ ] T005 [P] Write property-based tests for skill schema validation (name pattern, description length) in tests/property/test_skill_schema.py
-- [ ] T006 [P] Write tests for skill discovery/loading mechanism in tests/unit/test_skill_loader.py
-- [ ] T007 [P] Write tests for Spec Kit extension registration integration in tests/unit/test_extension_integration.py
+- [x] T005 [P] Write property-based tests for skill schema validation (name pattern, description length) in tests/property/test_skill_schema.py
+- [x] T006 [P] Write tests for skill discovery/loading mechanism in tests/unit/test_skill_loader.py
+- [x] T007 [P] Write tests for Spec Kit extension registration integration in tests/unit/test_extension_integration.py
 
 ### Implementation for Foundation
-- [ ] T008 Implement skill schema validation (contracts/skill-schema.json) with agentskills.io compliance in scripts/validate_skill.py
-- [ ] T009 [P] Implement skill loader/discovery mechanism for agentskills.io format in scripts/skill_loader.py
-- [ ] T010 [P] Integrate skill registration with Spec Kit extension system (.specify/extensions/.registry) in scripts/register_skills.py
-- [ ] T011 [P] Create core utilities (logging, errors, config) in skills/core/utils.py
-- [ ] T012 Create base skill interface and contracts in skills/core/base_skill.py
+- [x] T008 Implement skill schema validation (contracts/skill-schema.json) with agentskills.io compliance in scripts/validate_skill.py
+- [x] T009 [P] Implement skill loader/discovery mechanism for agentskills.io format in scripts/skill_loader.py
+- [x] T010 [P] Integrate skill registration with Spec Kit extension system (.specify/extensions/.registry) in scripts/register_skills.py
+- [x] T011 [P] Create core utilities (logging, errors, config) in skills/core/utils.py
+- [x] T012 Create base skill interface and contracts in skills/core/base_skill.py
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -72,11 +72,11 @@
 - [ ] T015 [P] [US1] Integration tests for cross-agent discovery in tests/integration/test_us1_discovery.py
 
 ### Implementation for User Story 1
-- [ ] T016 [P] [US1] Create skill template directory structure in skills/core/template/
-- [ ] T017 [P] [US1] Create example skill following schema in skills/core/example-skill/SKILL.md
-- [ ] T018 [US1] Implement skill validation CLI in scripts/validate_all_skills.py
-- [ ] T019 [US1] Document skill authoring guide in docs/skill-authoring.md
-- [ ] T020 [US1] Update extension registration for skills in .specify/extensions/.registry
+- [x] T016 [P] [US1] Create skill template directory structure in skills/core/template/
+- [x] T017 [P] [US1] Create example skill following schema in skills/core/example-skill/SKILL.md
+- [x] T018 [US1] Implement skill validation CLI in scripts/validate_all_skills.py
+- [x] T019 [US1] Document skill authoring guide in docs/skill-authoring.md
+- [x] T020 [US1] Update extension registration for skills in .specify/extensions/.registry
 
 **Checkpoint**: User Story 1 fully functional and testable independently
 
@@ -94,13 +94,13 @@
 - [ ] T023 [P] [US2] Integration tests for job orchestration in tests/integration/test_us2_jobs.py
 
 ### Implementation for User Story 2
-- [ ] T024 [P] [US2] Implement Credential Manager (API key + session auth) in skills/core/credentials.py
-- [ ] T025 [P] [US2] Implement ArtCraft API adapters (OmniApiClient, OmniGenClient) in skills/core/artcraft_client.py
-- [ ] T026 [P] [US2] Implement Model/Provider Router in skills/core/provider_router.py
-- [ ] T027 [P] [US2] Implement Asset/Media Handler in skills/core/asset_handler.py
-- [ ] T028 [US2] Implement Job Orchestrator (idempotency, polling, webhooks) in skills/core/job_orchestrator.py
-- [ ] T029 [US2] Implement Cost Estimator in skills/core/cost_estimator.py
-- [ ] T030 [US2] Create core abstractions documentation in docs/core-abstractions.md
+- [x] T024 [P] [US2] Implement Credential Manager (API key + session auth) in skills/core/credentials.py
+- [x] T025 [P] [US2] Implement ArtCraft API adapters (OmniApiClient, OmniGenClient) in skills/core/artcraft_client.py
+- [x] T026 [P] [US2] Implement Model/Provider Router in skills/core/provider_router.py
+- [x] T027 [P] [US2] Implement Asset/Media Handler in skills/core/asset_handler.py
+- [x] T028 [US2] Implement Job Orchestrator (idempotency, polling, webhooks) in skills/core/job_orchestrator.py
+- [x] T029 [US2] Implement Cost Estimator in skills/core/cost_estimator.py
+- [x] T030 [US2] Create core abstractions documentation in docs/core-abstractions.md
 
 **Checkpoint**: User Story 2 fully functional and testable independently
 
@@ -118,7 +118,7 @@
 - [ ] T033 [P] [US3] Integration tests for skill chaining in tests/integration/test_us3_chaining.py
 
 ### Implementation for User Story 3
-- [ ] T034 [P] [US3] Create image generation skill (atomic) in skills/creative/image-generate/SKILL.md
+- [x] T034 [P] [US3] Create image generation skill (atomic) in skills/creative/image-generate/SKILL.md
 - [ ] T035 [P] [US3] Create image edit/inpaint skill (atomic) in skills/creative/image-edit/SKILL.md
 - [ ] T036 [P] [US3] Create background removal skill (atomic) in skills/creative/background-remove/SKILL.md
 - [ ] T037 [P] [US3] Create image upscale skill (atomic) in skills/creative/image-upscale/SKILL.md
@@ -142,7 +142,7 @@
 - [ ] T043 [P] [US4] Integration tests for cross-product workflows in tests/integration/test_us4_crossproduct.py
 
 ### Implementation for User Story 4
-- [ ] T044 [P] [US4] Implement workflow orchestrator/DAG engine in skills/workflow/orchestrator.py
+- [x] T044 [P] [US4] Implement workflow orchestrator/DAG engine in skills/workflow/orchestrator.py
 - [ ] T045 [P] [US4] Create 2D-to-3D workflow skill in skills/integration/2d-to-3d-workflow/SKILL.md
 - [ ] T046 [P] [US4] Create scene composition workflow skill in skills/integration/scene-composition/SKILL.md
 - [ ] T047 [US4] Implement shared asset/context/style layer in skills/core/asset_context.py

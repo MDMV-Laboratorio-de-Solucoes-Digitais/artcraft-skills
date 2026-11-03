@@ -143,10 +143,10 @@
 
 ### Implementation for User Story 4
 - [x] T044 [P] [US4] Implement workflow orchestrator/DAG engine in skills/workflow/orchestrator.py
-- [ ] T045 [P] [US4] Create 2D-to-3D workflow skill in skills/integration/2d-to-3d-workflow/SKILL.md
-- [ ] T046 [P] [US4] Create scene composition workflow skill in skills/integration/scene-composition/SKILL.md
-- [ ] T047 [US4] Implement shared asset/context/style layer in skills/core/asset_context.py
-- [ ] T048 [US4] Create cross-product integration documentation in docs/cross-product.md
+- [x] T045 [P] [US4] Create 2D-to-3D workflow skill in skills/integration/2d-to-3d-workflow/SKILL.md
+- [x] T046 [P] [US4] Create scene composition workflow skill in skills/integration/scene-composition/SKILL.md
+- [x] T047 [US4] Implement shared asset/context/style layer in skills/core/asset_context.py
+- [x] T048 [US4] Create cross-product integration documentation in docs/cross-product.md
 
 **Checkpoint**: User Story 4 fully functional and testable independently
 
@@ -164,12 +164,12 @@
 - [ ] T051 [P] [US5] Integration tests for generalizability in tests/integration/test_us5_generalizable.py
 
 ### Implementation for User Story 5
-- [ ] T052 [P] [US5] Create policy-redaction middleware (generalizable) in skills/workflow/policy-redaction/SKILL.md
-- [ ] T053 [P] [US5] Create structured-packager skill (from tirateima_fc patterns, generalized) in skills/workflow/structured-packager/SKILL.md
-- [ ] T054 [P] [US5] Create workflow-orchestrator skill (generalized DAG) in skills/workflow/dag-orchestrator/SKILL.md
-- [ ] T055 [P] [US5] Create evidence-audit skill with content addressing in skills/workflow/evidence-audit/SKILL.md
-- [ ] T056 [US5] Validate no MDMV branding in all skills (grep check)
-- [ ] T057 [US5] Create generalizable workflow documentation in docs/generalizable-workflows.md
+- [x] T052 [P] [US5] Create policy-redaction middleware (generalizable) in skills/workflow/policy-redaction/SKILL.md
+- [x] T053 [P] [US5] Create structured-packager skill (from tirateima_fc patterns, generalized) in skills/workflow/structured-packager/SKILL.md
+- [x] T054 [P] [US5] Create workflow-orchestrator skill (generalized DAG) in skills/workflow/dag-orchestrator/SKILL.md
+- [x] T055 [P] [US5] Create evidence-audit skill with content addressing in skills/workflow/evidence-audit/SKILL.md
+- [x] T056 [US5] Validate no MDMV branding in all skills (grep check)
+- [x] T057 [US5] Create generalizable workflow documentation in docs/generalizable-workflows.md
 
 **Checkpoint**: All user stories should now be independently functional
 
@@ -281,16 +281,16 @@ Task: "Create example skill in skills/core/example-skill/SKILL.md"
 
 ## Phase 9: Convergence
 
-- [ ] T068 [P] [US3] Create mesh-generate atomic skill SKILL.md in skills/creative/mesh-generate/ following agentskills.io schema and image-generate pattern (FR-007, missing)
-- [ ] T069 [P] [US3] Complete composition/chaining implementation and tests - ensure skills/core/composer.py supports chaining and add integration tests for US3 (T039-T040, partial)
-- [ ] T070 [US4] Implement workflow orchestrator/DAG engine in skills/workflow/orchestrator.py per plan (T044, partial)
-- [ ] T071 [P] [US4] Create cross-product integration skills: 2d-to-3d-workflow and scene-composition SKILL.md files in skills/integration/ (T045-T046, missing)
-- [ ] T072 [P] [US4] Implement shared asset/context/style layer in skills/core/asset_context.py (T047, missing)
-- [ ] T073 [US4] Create cross-product integration documentation in docs/cross-product.md (T048, missing)
-- [ ] T074 [P] [US5] Create structured-packager SKILL.md (generalized from tirateima_fc patterns, no MDMV branding) in skills/workflow/structured-packager/ (T053, missing)
-- [ ] T075 [P] [US5] Populate dag-orchestrator with SKILL.md/implementation per generalized DAG requirements (T054, missing)
-- [ ] T076 [P] [US5] Create evidence-audit skill with content addressing in skills/workflow/evidence-audit/SKILL.md (T055, missing)
-- [ ] T077 [US5] Validate no MDMV branding across all skills and create docs/generalizable-workflows.md (T056-T057, missing)
+- [x] T068 [P] [US3] Create mesh-generate atomic skill SKILL.md in skills/creative/mesh-generate/ following agentskills.io schema and image-generate pattern (FR-007, missing)
+- [x] T069 [P] [US3] Complete composition/chaining implementation and tests - ensure skills/core/composer.py supports chaining and add integration tests for US3 (T039-T040, partial)
+- [x] T070 [US4] Implement workflow orchestrator/DAG engine in skills/workflow/orchestrator.py per plan (T044, partial)
+- [x] T071 [P] [US4] Create cross-product integration skills: 2d-to-3d-workflow and scene-composition SKILL.md files in skills/integration/ (T045-T046, missing)
+- [x] T072 [P] [US4] Implement shared asset/context/style layer in skills/core/asset_context.py (T047, missing)
+- [x] T073 [US4] Create cross-product integration documentation in docs/cross-product.md (T048, missing)
+- [x] T074 [P] [US5] Create structured-packager SKILL.md (generalized from tirateima_fc patterns, no MDMV branding) in skills/workflow/structured-packager/ (T053, missing)
+- [x] T075 [P] [US5] Populate dag-orchestrator with SKILL.md/implementation per generalized DAG requirements (T054, missing)
+- [x] T076 [P] [US5] Create evidence-audit skill with content addressing in skills/workflow/evidence-audit/SKILL.md (T055, missing)
+- [x] T077 [US5] Validate no MDMV branding across all skills and create docs/generalizable-workflows.md (T056-T057, missing)
 - [x] T078 [P] Write missing tests for US1-US5 (property/contract/integration) as specified (T013-T015,T021-T023,T031-T033,T041-T043,T049-T051, partial)
 - [x] T079 Run Phase 8 verification: validate all skills, run tests, check constitution compliance, quickstart validation (T058-T067, missing)
 

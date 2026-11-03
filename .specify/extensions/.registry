@@ -26,6 +26,66 @@
           "name": "skill-template",
           "path": "skills/core/template/SKILL.md",
           "description": "Template for creating new ArtCraft Skills following agentskills.io standard"
+        },
+        {
+          "name": "background-remove",
+          "path": "skills/creative/background-remove/SKILL.md",
+          "description": "Remove backgrounds and isolate subjects with precise matting"
+        },
+        {
+          "name": "image-edit",
+          "path": "skills/creative/image-edit/SKILL.md",
+          "description": "Edit images with inpainting, outpainting, and compositing capabilities"
+        },
+        {
+          "name": "image-generate",
+          "path": "skills/creative/image-generate/SKILL.md",
+          "description": "Generate images from text prompts using various AI models with composition controls"
+        },
+        {
+          "name": "image-upscale",
+          "path": "skills/creative/image-upscale/SKILL.md",
+          "description": "Enhance and upscale images with AI-powered upscaling"
+        },
+        {
+          "name": "mesh-generate",
+          "path": "skills/creative/mesh-generate/SKILL.md",
+          "description": "Generate 3D meshes from images or text prompts"
+        },
+        {
+          "name": "2d-to-3d-workflow",
+          "path": "skills/integration/2d-to-3d-workflow/SKILL.md",
+          "description": "Cross-product workflow converting 2D assets to 3D meshes"
+        },
+        {
+          "name": "scene-composition",
+          "path": "skills/integration/scene-composition/SKILL.md",
+          "description": "Cross-product workflow for composing scenes from multiple asset types"
+        },
+        {
+          "name": "dag-orchestrator",
+          "path": "skills/workflow/dag-orchestrator/SKILL.md",
+          "description": "Execute workflows as DAGs with dependency resolution and parallel execution"
+        },
+        {
+          "name": "evidence-audit",
+          "path": "skills/workflow/evidence-audit/SKILL.md",
+          "description": "Audit and track evidence with content addressing and provenance"
+        },
+        {
+          "name": "workflow-orchestrator",
+          "path": "skills/workflow/orchestrator/SKILL.md",
+          "description": "Orchestrate complex multi-skill workflows with DAG execution"
+        },
+        {
+          "name": "policy-redaction",
+          "path": "skills/workflow/policy-redaction/SKILL.md",
+          "description": "Generalizable policy-based redaction middleware for content safety"
+        },
+        {
+          "name": "structured-packager",
+          "path": "skills/workflow/structured-packager/SKILL.md",
+          "description": "Package structured data and assets into organized, reproducible bundles"
         }
       ],
       "installed_at": "2026-11-03T03:51:15.583353+00:00"
@@ -53,6 +113,66 @@
           "name": "skill-template",
           "path": "skills/core/template/SKILL.md",
           "description": "Template for creating new ArtCraft Skills following agentskills.io standard"
+        },
+        {
+          "name": "background-remove",
+          "path": "skills/creative/background-remove/SKILL.md",
+          "description": "Remove backgrounds and isolate subjects with precise matting"
+        },
+        {
+          "name": "image-edit",
+          "path": "skills/creative/image-edit/SKILL.md",
+          "description": "Edit images with inpainting, outpainting, and compositing capabilities"
+        },
+        {
+          "name": "image-generate",
+          "path": "skills/creative/image-generate/SKILL.md",
+          "description": "Generate images from text prompts using various AI models with composition controls"
+        },
+        {
+          "name": "image-upscale",
+          "path": "skills/creative/image-upscale/SKILL.md",
+          "description": "Enhance and upscale images with AI-powered upscaling"
+        },
+        {
+          "name": "mesh-generate",
+          "path": "skills/creative/mesh-generate/SKILL.md",
+          "description": "Generate 3D meshes from images or text prompts"
+        },
+        {
+          "name": "2d-to-3d-workflow",
+          "path": "skills/integration/2d-to-3d-workflow/SKILL.md",
+          "description": "Cross-product workflow converting 2D assets to 3D meshes"
+        },
+        {
+          "name": "scene-composition",
+          "path": "skills/integration/scene-composition/SKILL.md",
+          "description": "Cross-product workflow for composing scenes from multiple asset types"
+        },
+        {
+          "name": "dag-orchestrator",
+          "path": "skills/workflow/dag-orchestrator/SKILL.md",
+          "description": "Execute workflows as DAGs with dependency resolution and parallel execution"
+        },
+        {
+          "name": "evidence-audit",
+          "path": "skills/workflow/evidence-audit/SKILL.md",
+          "description": "Audit and track evidence with content addressing and provenance"
+        },
+        {
+          "name": "workflow-orchestrator",
+          "path": "skills/workflow/orchestrator/SKILL.md",
+          "description": "Orchestrate complex multi-skill workflows with DAG execution"
+        },
+        {
+          "name": "policy-redaction",
+          "path": "skills/workflow/policy-redaction/SKILL.md",
+          "description": "Generalizable policy-based redaction middleware for content safety"
+        },
+        {
+          "name": "structured-packager",
+          "path": "skills/workflow/structured-packager/SKILL.md",
+          "description": "Package structured data and assets into organized, reproducible bundles"
         }
       ],
       "installed_at": "2026-11-03T03:51:20.483262+00:00"
@@ -78,6 +198,66 @@
           "name": "skill-template",
           "path": "skills/core/template/SKILL.md",
           "description": "Template for creating new ArtCraft Skills following agentskills.io standard"
+        },
+        {
+          "name": "background-remove",
+          "path": "skills/creative/background-remove/SKILL.md",
+          "description": "Remove backgrounds and isolate subjects with precise matting"
+        },
+        {
+          "name": "image-edit",
+          "path": "skills/creative/image-edit/SKILL.md",
+          "description": "Edit images with inpainting, outpainting, and compositing capabilities"
+        },
+        {
+          "name": "image-generate",
+          "path": "skills/creative/image-generate/SKILL.md",
+          "description": "Generate images from text prompts using various AI models with composition controls"
+        },
+        {
+          "name": "image-upscale",
+          "path": "skills/creative/image-upscale/SKILL.md",
+          "description": "Enhance and upscale images with AI-powered upscaling"
+        },
+        {
+          "name": "mesh-generate",
+          "path": "skills/creative/mesh-generate/SKILL.md",
+          "description": "Generate 3D meshes from images or text prompts"
+        },
+        {
+          "name": "2d-to-3d-workflow",
+          "path": "skills/integration/2d-to-3d-workflow/SKILL.md",
+          "description": "Cross-product workflow converting 2D assets to 3D meshes"
+        },
+        {
+          "name": "scene-composition",
+          "path": "skills/integration/scene-composition/SKILL.md",
+          "description": "Cross-product workflow for composing scenes from multiple asset types"
+        },
+        {
+          "name": "dag-orchestrator",
+          "path": "skills/workflow/dag-orchestrator/SKILL.md",
+          "description": "Execute workflows as DAGs with dependency resolution and parallel execution"
+        },
+        {
+          "name": "evidence-audit",
+          "path": "skills/workflow/evidence-audit/SKILL.md",
+          "description": "Audit and track evidence with content addressing and provenance"
+        },
+        {
+          "name": "workflow-orchestrator",
+          "path": "skills/workflow/orchestrator/SKILL.md",
+          "description": "Orchestrate complex multi-skill workflows with DAG execution"
+        },
+        {
+          "name": "policy-redaction",
+          "path": "skills/workflow/policy-redaction/SKILL.md",
+          "description": "Generalizable policy-based redaction middleware for content safety"
+        },
+        {
+          "name": "structured-packager",
+          "path": "skills/workflow/structured-packager/SKILL.md",
+          "description": "Package structured data and assets into organized, reproducible bundles"
         }
       ],
       "installed_at": "2026-11-03T03:51:25.973208+00:00"

@@ -263,3 +263,15 @@ Task: "Create example skill in skills/core/example-skill/SKILL.md"
 - Property-based tests required where applicable (use hypothesis/fast-check patterns)
 - Verification tasks only at the end attest to success
 - Commit after each file edit with detailed conventional commit message
+
+## Phase 9: Convergence
+
+**Purpose**: Close gaps between spec/plan/tasks and current implementation
+
+- [ ] T068 [P] Complete remaining core abstractions (Asset/Media Handler) per FR-003/FR-010
+- [ ] T069 [P] Implement skill composer utilities fully per FR-008
+- [ ] T070 Create atomic creative skills (image-generate, image-edit, background-remove, image-upscale, mesh-generate) per US3
+- [ ] T071 Create workflow orchestrator and integration skills per US4
+- [ ] T072 Create generalizable MDMV workflow skills (policy-redaction, structured-packager, dag-orchestrator, evidence-audit) per US5
+- [ ] T073 Update tasks.md with all completed tasks marked [X]
+- [ ] T074 Run full test suite and fix any failures

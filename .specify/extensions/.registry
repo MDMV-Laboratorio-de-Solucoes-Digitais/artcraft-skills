@@ -16,7 +16,18 @@
           "speckit.assess.decide"
         ]
       },
-      "registered_skills": [],
+      "registered_skills": [
+        {
+          "name": "example-skill",
+          "path": "skills/core/example-skill/SKILL.md",
+          "description": "Example skill demonstrating agentskills.io format for ArtCraft Skills"
+        },
+        {
+          "name": "skill-template",
+          "path": "skills/core/template/SKILL.md",
+          "description": "Template for creating new ArtCraft Skills following agentskills.io standard"
+        }
+      ],
       "installed_at": "2026-11-03T03:51:15.583353+00:00"
     },
     "bug": {
@@ -32,7 +43,18 @@
           "speckit.bug.test"
         ]
       },
-      "registered_skills": [],
+      "registered_skills": [
+        {
+          "name": "example-skill",
+          "path": "skills/core/example-skill/SKILL.md",
+          "description": "Example skill demonstrating agentskills.io format for ArtCraft Skills"
+        },
+        {
+          "name": "skill-template",
+          "path": "skills/core/template/SKILL.md",
+          "description": "Template for creating new ArtCraft Skills following agentskills.io standard"
+        }
+      ],
       "installed_at": "2026-11-03T03:51:20.483262+00:00"
     },
     "github": {
@@ -46,7 +68,18 @@
           "speckit.github.taskstoissues"
         ]
       },
-      "registered_skills": [],
+      "registered_skills": [
+        {
+          "name": "example-skill",
+          "path": "skills/core/example-skill/SKILL.md",
+          "description": "Example skill demonstrating agentskills.io format for ArtCraft Skills"
+        },
+        {
+          "name": "skill-template",
+          "path": "skills/core/template/SKILL.md",
+          "description": "Template for creating new ArtCraft Skills following agentskills.io standard"
+        }
+      ],
       "installed_at": "2026-11-03T03:51:25.973208+00:00"
     }
   }

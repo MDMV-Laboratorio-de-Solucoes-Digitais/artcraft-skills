@@ -1,3 +1,6 @@
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).parent))
 #!/usr/bin/env python3
 """Register skills with Spec Kit extension system."""
 

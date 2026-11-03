@@ -12,6 +12,12 @@ class MockSkill(BaseSkill):
         super().__init__(name, f"Mock {name}")
         self.fn = fn
     
+    def get_input_schema(self):
+        return {}
+    
+    def get_output_schema(self):
+        return {}
+    
     def execute(self, inputs):
         try:
             result = self.fn(inputs)

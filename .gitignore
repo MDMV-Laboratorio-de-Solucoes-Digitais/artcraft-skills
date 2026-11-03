@@ -15,3 +15,8 @@ Thumbs.db
 # Plans/artifacts
 .omp/plans/
 
+
+*.py[cod]
+*.class
+.pytest_cache/
+.hypothesis/

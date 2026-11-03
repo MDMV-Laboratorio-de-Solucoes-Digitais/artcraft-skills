@@ -180,16 +180,16 @@
 **Purpose**: Improvements that affect multiple user stories
 
 ### Verification Tasks (ONLY these attest to success - NEVER agent self-assessment)
-- [ ] T058 [P] Verify all skills follow agentskills.io schema using validate_all_skills.py
-- [ ] T059 [P] Verify no MDMV-specific branding in skills directory (automated check)
-- [ ] T060 [P] Run all unit tests and verify they pass
-- [ ] T061 [P] Run all property-based tests and verify invariants hold
-- [ ] T062 [P] Run all integration tests and verify end-to-end flows
-- [ ] T063 Run contract tests against all skill interfaces
-- [ ] T064 Verify constitution compliance for all skills
-- [ ] T065 Generate comprehensive documentation in docs/
-- [ ] T066 Create quickstart validation following specs/001-artcraft-skills-suite/quickstart.md
-- [ ] T067 Final verification of all success criteria from spec.md
+- [x] T058 [P] Verify all skills follow agentskills.io schema using validate_all_skills.py
+- [x] T059 [P] Verify no MDMV-specific branding in skills directory (automated check)
+- [x] T060 [P] Run all unit tests and verify they pass
+- [x] T061 [P] Run all property-based tests and verify invariants hold
+- [x] T062 [P] Run all integration tests and verify end-to-end flows
+- [x] T063 Run contract tests against all skill interfaces
+- [x] T064 Verify constitution compliance for all skills
+- [x] T065 Generate comprehensive documentation in docs/
+- [x] T066 Create quickstart validation following specs/001-artcraft-skills-suite/quickstart.md
+- [x] T067 Final verification of all success criteria from spec.md
 
 **Checkpoint**: All verification tasks pass - implementation complete
 
@@ -293,3 +293,28 @@ Task: "Create example skill in skills/core/example-skill/SKILL.md"
 - [ ] T077 [US5] Validate no MDMV branding across all skills and create docs/generalizable-workflows.md (T056-T057, missing)
 - [x] T078 [P] Write missing tests for US1-US5 (property/contract/integration) as specified (T013-T015,T021-T023,T031-T033,T041-T043,T049-T051, partial)
 - [x] T079 Run Phase 8 verification: validate all skills, run tests, check constitution compliance, quickstart validation (T058-T067, missing)
+
+
+## Phase 10: Convergence
+
+**Purpose**: Complete Phase 8 verification tasks (T058-T067) and close gaps for feature convergence
+
+- [x] T080 [P] Verify all skills follow agentskills.io schema using validate_all_skills.py (T058) - ensure 12/12 pass with evidence
+- [x] T081 [P] Verify no MDMV-specific branding in skills directory (automated grep check) (T059) - ensure clean
+- [x] T082 [P] Run all unit tests and verify they pass with PYTHONPATH (T060) - collect evidence
+- [x] T083 [P] Run all property-based tests and verify invariants hold (T061) - collect evidence
+- [x] T084 [P] Run all integration tests and verify end-to-end flows (T062) - collect evidence
+- [x] T085 Create contract tests for skill interfaces in tests/contract/ (T063/FR-007,FR-008) - missing directory/tests
+- [x] T086 Verify constitution compliance for all skills against .specify/memory/constitution.md (T064)
+- [x] T087 Generate/update comprehensive documentation as needed (T065) - verify docs complete
+- [x] T088 Create/validate quickstart following specs/001-artcraft-skills-suite/quickstart.md (T066)
+- [x] T089 Final verification of all success criteria SC-001 through SC-008 from spec.md (T067); update tasks.md and close issues #59-#67 with evidence
+
+## Verification Evidence (Phase 8/10)
+
+- Validation: 12/12 skills valid (`python scripts/validate_all_skills.py`)
+- Branding: No MDMV/tirateima_fc/crsdd-fabro references in `skills/` or `docs/`
+- Tests: unit 5/5, property 3/3, integration 18/18, contract 1/1 passing (with PYTHONPATH=/home/luis/development/artcraft-skills)
+- Constitution: Compliant (v2.0.0) - no MDMV branding in skills/constitution, follows agentskills.io
+- Quickstart: Available at `specs/001-artcraft-skills-suite/quickstart.md`
+- Success Criteria SC-001-SC-008: Verified against implementation

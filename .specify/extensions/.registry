@@ -73,7 +73,7 @@
           "description": "Audit and track evidence with content addressing and provenance"
         },
         {
-          "name": "workflow-orchestrator",
+          "name": "orchestrator",
           "path": "skills/workflow/orchestrator/SKILL.md",
           "description": "Orchestrate complex multi-skill workflows with DAG execution"
         },
@@ -160,7 +160,7 @@
           "description": "Audit and track evidence with content addressing and provenance"
         },
         {
-          "name": "workflow-orchestrator",
+          "name": "orchestrator",
           "path": "skills/workflow/orchestrator/SKILL.md",
           "description": "Orchestrate complex multi-skill workflows with DAG execution"
         },
@@ -245,7 +245,7 @@
           "description": "Audit and track evidence with content addressing and provenance"
         },
         {
-          "name": "workflow-orchestrator",
+          "name": "orchestrator",
           "path": "skills/workflow/orchestrator/SKILL.md",
           "description": "Orchestrate complex multi-skill workflows with DAG execution"
         },

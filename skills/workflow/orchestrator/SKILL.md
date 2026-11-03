@@ -1,5 +1,5 @@
 ---
-name: workflow-orchestrator
+name: orchestrator
 description: Orchestrate complex multi-skill workflows with DAG execution
 license: Apache-2.0
 metadata:

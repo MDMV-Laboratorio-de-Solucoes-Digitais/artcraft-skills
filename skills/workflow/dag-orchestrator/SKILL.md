@@ -25,7 +25,7 @@ When building multi-step workflows with dependencies between steps.
 - `status` (string): Execution status
 
 ## Usage
-Compose skills into DAGs for complex workflows.
+Generalizable DAG execution for any workflow.
 
 ## Limitations
 Requires acyclic graphs with valid dependencies.

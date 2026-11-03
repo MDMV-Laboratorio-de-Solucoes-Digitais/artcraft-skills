@@ -6,40 +6,42 @@ Build a comprehensive, open-source ecosystem of AI agent skills for creative ass
 
 ## Current State (Verified - 2026-11-03)
 
-- **Feature**: `001-artcraft-skills-suite` (Spec Kit SDD) — Assessment complete (**GO**), full lifecycle executed (intake→research→define→shape→decide→specify→clarify→plan→checklist→tasks→implement→converge). 28/86 tasks complete, 58 pending (primarily verification/polish).
+- **Branch**: `dev` (commit `e6a8135` "docs: update repository guidelines"). Local/remote branches cleaned to only `dev` and `main`. All open PRs merged.
+- **Feature**: `001-artcraft-skills-suite` (Spec Kit SDD) — Assessment complete (**GO**), full lifecycle executed (intake→research→define→shape→decide→specify→clarify→plan→checklist→tasks→implement→converge in progress). **48/96 tasks complete (50%)**, 48 pending (primarily verification/polish).
 - **Constitution**: Established (`.specify/memory/constitution.md` v2.0.0) — Crafting Over Generating, Artist-Centric Design, Open Source/Vendor-Neutral/Interoperable, Composability, Performance, Quality Through Intentional Craft, Transparency/Reproducibility/Cost Awareness, Extensibility Without Unnecessary Complexity. MDMV needs guide ROADMAP/OBJETIVOS only (never appear in constitution/skills).
 - **Foundation**: Skill schema/validation/loader/registration implemented and integrated with Spec Kit. Schema follows agentskills.io (SKILL.md with YAML frontmatter: `name` kebab-case matching dir, `description` required; optional `license`, `compatibility` ≤500, `metadata`, `allowed-tools`). Discovery via recursive `rglob`, registration in `.specify/extensions/.registry`.
 - **Core abstractions**: Credentials (API key + session auth), ArtCraft API adapters (`OmniApiClient` for `/v1/omni_api/*`, `OmniGenClient` for `/v1/omni_gen/*`), provider router (60+ models across ArtCraft/Grok/Midjourney/Sora/World Labs), asset/media handler, job orchestrator (async jobs, idempotency, polling/webhooks, timeouts/retries), cost estimator, composer (`SkillComposer` sequential/parallel), DAG orchestrator (`DAGOrchestrator`), asset/context layer (`AssetContext`), base skill contracts (`BaseSkill`, `SkillResult`), utilities in `skills/core/`.
-- **Skills created** (12 total): `skills/core/{template,example-skill}`, `skills/creative/{image-generate,image-edit,background-remove,image-upscale,mesh-generate}`, `skills/workflow/{orchestrator,policy-redaction,structured-packager,dag-orchestrator,evidence-audit}`, `skills/integration/{2d-to-3d-workflow,scene-composition}`.
+- **Skills created** (12 total): `skills/core/{template,example-skill}`, `skills/creative/{image-generate,image-edit,background-remove,image-upscale,mesh-generate}`, `skills/workflow/{orchestrator,policy-redaction,structured-packager,dag-orchestrator,evidence-audit}`, `skills/integration/{2d-to-3d-workflow,scene-composition}`. All validated.
 - **Docs**: `docs/skill-authoring.md`, `docs/core-abstractions.md`, `docs/cross-product.md`, `docs/generalizable-workflows.md`, `AGENTS.md` (synthesized per repository guidelines).
-- **Tests**: Unit/property/integration tests present (`tests/unit/`, `tests/integration/`, `tests/property/`) covering loader/schema, composition/chaining, DAG orchestration, cross-product smoke tests (2D→3D via DAG), and generalizable MDMV workflows. Uses pytest + Hypothesis.
-- **Tooling**: CodeGraph synced; Archify artifacts present in `.archify/`.
+- **Tests**: **27/27 passing** (unit/property/integration/contract) using pytest 9.0.3 + Hypothesis. Coverage: loader/schema, composition/chaining, DAG orchestration, cross-product smoke tests (2D→3D via DAG), generalizable workflows, extension registration.
+- **Tooling**: CodeGraph synced; Archify artifacts present in `.archify/` (architecture + workflow diagrams generated).
 
 ### Validation Status (Current)
-- `python scripts/validate_all_skills.py`: **11/12 skills valid** — `✗ workflow/orchestrator: Skill name 'workflow-orchestrator' must match directory name 'orchestrator'` (frontmatter `name` vs directory `orchestrator` mismatch). Only known blocking issue for full green validation.
+- `python scripts/validate_all_skills.py`: **12/12 skills valid, all_valid=True** (previous naming mismatch in `workflow/orchestrator` resolved).
 - Issues open: #59-#67 tracking final verification (contract tests, constitution compliance, docs, quickstart validation, success criteria verification).
 
 ## Progress Summary
 
-**Overall**: **~72% complete** (Foundation + core abstractions + all skills for the converged feature + composition/orchestration + generalizable workflows implemented; full end-to-end API execution depends on external provider configuration/credentials).
+**Overall**: **~75% complete** (Foundation + core abstractions + all skills for the converged feature + composition/orchestration + generalizable workflows implemented and validated; full end-to-end API execution depends on external provider configuration/credentials).
 
 **Completed (✓)**:
 - **Phase 0 Foundation**: 100% complete (schema, validation, loader, registry, core abstractions, docs framework, test infrastructure)
 - **Spec Kit flow for `001-artcraft-skills-suite`**: intake→research→define→shape→decide (GO) → specify→clarify→plan→checklist→tasks→implement→converge all executed; all checklists complete
 - **US1-US5 implemented**: Foundation/schema, core abstractions/integration, atomic skills + composition, cross-product scaffolds, generalizable MDMV workflows (abstracted, no MDMV branding)
-- **Skills integration**: Discovery/validation/registration integrated with Spec Kit extension system
+- **Skills integration**: Discovery/validation/registration integrated with Spec Kit extension system (12/12 valid)
 - **Governance**: Constitution v2.0.0 established with clear principles
+- **Tests**: All 27 tests passing across unit/integration/contract/property
 
 **In Progress**:
-- Fixing `workflow/orchestrator` naming mismatch to achieve 12/12 validation
-- Strengthening verification coverage (contract/integration tests per T058-T067)
-- Deepening ArtCraft app-specific integrations beyond ready abstractions
+- **Convergence/verification**: Completing remaining verification tasks (T058-T067) per issues #59-#67 (constitution compliance, quickstart validation, success criteria verification)
+- **Strengthening verification coverage**: Ensuring full contract/integration coverage
 
 **Not Started / Future**:
 - Phases 3-5 full implementations (video/motion, audio/documents/presentations, CAD/precision design)
 - Batch processing and project templates (Phase 6 remaining items)
 - Production hardening for real provider execution (end-to-end polling/webhook/retry/idempotency validation with configured credentials)
 - Broader community enablement and agent compatibility testing
+- Deep ArtCraft app-specific integrations beyond ready abstractions
 
 ## Roadmap Phases
 
@@ -49,15 +51,15 @@ Build a comprehensive, open-source ecosystem of AI agent skills for creative ass
 - [x] **Skill Schema & Structure** - agentskills.io-compliant schema (`contracts/skill-schema.json`), validation (`scripts/validate_skill.py`), template/example skills
 - [x] **Core Utilities** - Shared abstractions in `skills/core/` (credentials, artcraft_client, provider_router, asset_handler, job_orchestrator, cost_estimator, composer, orchestrator/DAG, asset_context, base_skill, utils)
 - [x] **Documentation Framework** - `docs/skill-authoring.md`, `docs/core-abstractions.md`, skill README/templates, cross-product/generalizable docs
-- [x] **Testing Infrastructure** - Test structure (`tests/unit/`, `tests/integration/`, `tests/property/`); unit/property/integration tests present
+- [x] **Testing Infrastructure** - Test structure (`tests/unit/`, `tests/integration/`, `tests/property/`); 27 tests passing
 
 ### Phase 1: Image & 2D Creative Skills (Q1 2027) — **100% Complete (for planned scope)**
 **Goal**: Cover fundamental 2D creative workflows
 
-- [x] **Image Generation** - `skills/creative/image-generate/SKILL.md`
-- [x] **Image Editing & Compositing** - `skills/creative/image-edit/SKILL.md` (inpainting/outpainting/compositing)
-- [x] **Background Removal & Matting** - `skills/creative/background-remove/SKILL.md`
-- [x] **Upscaling & Enhancement** - `skills/creative/image-upscale/SKILL.md`
+- [x] **Image Generation** - `skills/creative/image-generate/SKILL.md` (scaffold/contract)
+- [x] **Image Editing & Compositing** - `skills/creative/image-edit/SKILL.md` (scaffold/contract)
+- [x] **Background Removal & Matting** - `skills/creative/background-remove/SKILL.md` (scaffold/contract)
+- [x] **Upscaling & Enhancement** - `skills/creative/image-upscale/SKILL.md` (scaffold/contract)
 - [ ] **Vector & Illustration** - Planned for future expansion
 - [ ] **Style Transfer & Consistency** - Planned for future expansion
 
@@ -98,12 +100,12 @@ Build a comprehensive, open-source ecosystem of AI agent skills for creative ass
 - [ ] **BOM & Specification** - Pending
 - [ ] **Manufacturing Prep** - Pending
 
-### Phase 6: Workflow Orchestration & Integration (Q3-Q4 2027) — **~85% Complete**
+### Phase 6: Workflow Orchestration & Integration (Q3-Q4 2027) — **~90% Complete**
 **Goal**: Tie everything together
 
-- [x] **Multi-Asset Pipelines** - Orchestrator framework (`skills/core/orchestrator.py`, `skills/workflow/orchestrator/`, `DAGOrchestrator`), composer utilities implemented
-- [x] **Skill Composition Tools** - Composition utilities and DAG engine implemented; integration tests passing
-- [x] **Generalizable Workflows (MDMV-derived)** - `skills/workflow/policy-redaction/`, `structured-packager/`, `dag-orchestrator/`, `evidence-audit/` implemented as generalizable skills (MDMV needs guided prioritization per constitution/speckit artifacts; no MDMV branding in skills)
+- [x] **Multi-Asset Pipelines** - Orchestrator framework (`skills/core/orchestrator.py`, `skills/workflow/orchestrator/`, `DAGOrchestrator`), composer utilities implemented and tested
+- [x] **Skill Composition Tools** - Composition utilities and DAG engine implemented; 8+ composition/orchestration tests passing
+- [x] **Generalizable Workflows (MDMV-derived)** - `skills/workflow/policy-redaction/`, `structured-packager/`, `dag-orchestrator/`, `evidence-audit/` implemented as generalizable skills (no MDMV branding in skills/constitution)
 - [x] **ArtCraft App Integration (Foundation)** - Core abstractions ready (credentials, API adapters, router, job orchestration, cost estimation)
 - [ ] **Batch Processing** - Pending
 - [ ] **Project Templates** - Pending
@@ -136,18 +138,19 @@ Build a comprehensive, open-source ecosystem of AI agent skills for creative ass
 ### Accomplished
 1. **Spec-driven completion**: Full Spec Kit lifecycle executed for `001-artcraft-skills-suite` with assessment GO, comprehensive spec/plan/tasks, and convergence in progress.
 2. **Architecture foundation**: agentskills.io-compliant schema, loader/validator/registrar integrated with Spec Kit; shared abstraction layer covers credentials, adapters, routing, assets, jobs, costs, composition, DAG, context.
-3. **Skills library**: 12 skills across core/creative/workflow/integration implemented (11/12 validate; 1 naming fix pending).
-4. **Composition model proven**: `SkillComposer` + `DAGOrchestrator` + `AssetContext` working with integration tests (including cross-product 2D→3D smoke test).
+3. **Skills library**: 12 skills across core/creative/workflow/integration implemented and **all validated (12/12)**.
+4. **Composition model proven**: `SkillComposer` + `DAGOrchestrator` + `AssetContext` working with integration tests (including cross-product 2D→3D smoke test). All 27 tests passing.
 5. **Generalizable workflows**: MDMV-derived patterns abstracted into reusable skills (`policy-redaction`, `structured-packager`, `dag-orchestrator`, `evidence-audit`) with no MDMV branding.
 6. **Documentation & governance**: Constitution v2.0.0, skill authoring docs, core abstractions/cross-product/generalizable-workflows docs, AGENTS.md synthesized.
 7. **Tooling integration**: CodeGraph synced, Archify artifacts present, pytest/Hypothesis test infrastructure established.
+8. **Repository hygiene**: Branches cleaned to only `dev`/`main`, all PRs merged, changes committed/pushed.
 
 ### Remaining Work
 
 **Immediate (High Priority):**
-- [ ] **Fix validation (T058 blocker)**: Align `skills/workflow/orchestrator/SKILL.md` frontmatter `name` with directory `orchestrator` (or rename consistently) to restore 12/12 validation.
-- [ ] **Complete verification (T058-T067)**: Run full validation suite, contract tests, constitution compliance check, quickstart validation, verify all success criteria. Address issues #59-#67.
-- [ ] **Strengthen tests**: Expand contract/integration coverage for US4/US5 workflows; ensure all property-based tests pass.
+- [ ] **Complete convergence verification (T058-T067)**: Run full validation suite, contract tests, constitution compliance check, quickstart validation, verify all success criteria. Address issues #59-#67.
+- [ ] **Strengthen tests**: Expand contract/integration coverage for US4/US5 workflows as needed.
+- [ ] **Review convergence checklist**: Ensure all convergence criteria met before closing feature.
 
 **Near-term (Medium Priority):**
 - [ ] **Batch processing & project templates** (Phase 6 gaps) - Add batch execution patterns and reusable project templates.
@@ -164,12 +167,13 @@ Build a comprehensive, open-source ecosystem of AI agent skills for creative ass
 
 ## Success Metrics
 
-- **Coverage**: Foundation + 2D atomic skills + 3D scaffolds + workflow/orchestration + generalizable workflows implemented (~72% overall)
-- **Validation**: Target 12/12 skills passing validation (currently 11/12; 1 fix pending)
+- **Coverage**: Foundation + 2D atomic skills + 3D scaffolds + workflow/orchestration + generalizable workflows implemented (~75% overall)
+- **Validation**: **12/12 skills passing validation** (all_valid=True)
+- **Tests**: **27/27 tests passing** (pytest + Hypothesis)
 - **Adoption readiness**: Ready for use by agent frameworks following agentskills.io (schema/loader/validation/registration aligned). Compatible with Claude Code, Cursor, Codex, Gemini, OpenCode.
 - **Interoperability**: Core abstractions support ArtCraft APIs (both auth modes) with multi-provider routing; vendor-neutral design by default
-- **Quality**: Unit/property/integration tests present; follows constitution principles (composability, transparency/cost awareness, artist-centric design)
-- **Governance**: Spec Kit lifecycle complete for feature `001-artcraft-skills-suite`; MDMV needs inform roadmap/objectives without polluting constitution/skills
+- **Quality**: Unit/property/integration/contract tests present; follows constitution principles (composability, transparency/cost awareness, artist-centric design)
+- **Governance**: Spec Kit lifecycle in progress to convergence for feature `001-artcraft-skills-suite`; MDMV needs inform roadmap/objectives without polluting constitution/skills
 - **Extensibility**: Clear skill authoring guide and template/example skills enable community contributions
 
 ## Principles in Execution

@@ -12,12 +12,6 @@ class MockSkill(BaseSkill):
         super().__init__(name, f"Mock {name}")
         self.fn = fn
     
-    def get_input_schema(self):
-        return {"type": "object"}
-    
-    def get_output_schema(self):
-        return {"type": "object"}
-    
     def execute(self, inputs):
         try:
             result = self.fn(inputs)
@@ -26,7 +20,7 @@ class MockSkill(BaseSkill):
             return SkillResult(success=False, error=str(e))
     
     def validate_inputs(self, inputs):
-        return isinstance(inputs, dict)
+        return True
 
 
 class TestSkillComposition:

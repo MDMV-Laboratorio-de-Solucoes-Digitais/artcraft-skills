@@ -1,0 +1,71 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ArtCraft Skill Schema",
+  "type": "object",
+  "required": ["name", "description", "inputs", "outputs"],
+  "properties": {
+    "name": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+      "minLength": 1,
+      "maxLength": 64,
+      "description": "Kebab-case skill name matching directory name"
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024,
+      "description": "What the skill does and when to use it"
+    },
+    "license": {
+      "type": "string",
+      "description": "License identifier or file reference"
+    },
+    "compatibility": {
+      "type": "string",
+      "maxLength": 500,
+      "description": "Environment requirements"
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "allowed_tools": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "inputs": {
+      "$ref": "#/definitions/Schema"
+    },
+    "outputs": {
+      "$ref": "#/definitions/Schema"
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "type": {
+      "type": "string",
+      "enum": ["atomic", "orchestrator"],
+      "default": "atomic"
+    }
+  },
+  "definitions": {
+    "Schema": {
+      "type": "object",
+      "description": "JSON Schema for inputs/outputs"
+    }
+  }
+}

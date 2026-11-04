@@ -66,7 +66,7 @@ As a skill developer, I need the adapter to be flexible enough for image-edit, b
 - **FR-012**: `python scripts/validate_all_skills.py` MUST still show all skills valid
 - **FR-013**: Adapter discovery/normalization helpers MUST return `None`/`[]` (never raise) when CLI/MCP is unavailable; invalid arguments MAY raise `ValueError`; `run_cli`/`run_cli_generation`/`discover_cli_commands` MUST propagate OS/timeout errors per contract. Skills MUST map unavailable results to reason codes `cli_not_found`, `mcp_unavailable`, `neither_available`, `is_error`.
 - **FR-014**: Adapter MUST be a function-based, stateless module in `skills/core/artcraft_app_client.py` with no `ArtcraftAppClient` class required.
-- **FR-015**: Adapter MUST expose `__all__` (public façade) and `__version__` (starting `0.1.0`).
+- **FR-015**: Adapter MUST expose `__all__` (public façade) and `__version__` (currently `0.2.0`; initial release `0.1.0`).
 - **FR-016**: Equivalence MUST be verified by characterization (golden master) + differential (pre-refactor reference) + property-based tests comparing canonicalized `SkillResult` (success, data, error, metadata) for a curated scenario matrix.
 - **FR-017**: Regression scope MUST include direct adapter unit tests, adapter property tests, all 23 image-generate tests, both validation scripts, and composer integration tests.
 
@@ -96,6 +96,6 @@ As a skill developer, I need the adapter to be flexible enough for image-edit, b
 - Q: Should the adapter implement real MCP discovery/invocation now? → A: No — amend FR-005; MCP discovery/invocation and app-specific tool mapping remain skill-level; adapter provides config/output normalization plus injectable helpers only.
 - Q: Should select_mode and a transport-neutral error normalizer be added to the adapter? → A: Yes — add pure select_mode(requested_mode, cli_available, mcp_available) -> str and reason-code constants/standardize_error helper; orchestration and SkillResult construction stay in skill.
 - Q: Should normalize_output generalize to accept optional expected keys? → A: Yes — generalize with optional keys param defaulting to current image keys; preserve exact image-generate output.
-- Q: Should adapter start at 0.1.0 or 1.0.0? → A: 0.1.0 (unstable); promote to 1.0.0 when a second creative skill ships.
+- Q: Should adapter start at 0.1.0 or 1.0.0? → A: Start at 0.1.0 (unstable); bumped to 0.2.0 with convergence (reason-code constants); promote to 1.0.0 when a second creative skill ships.
 - Q: Should future creative skills be required to use the shared adapter? → A: Yes — required (no duplicated discovery/invocation).
 - Autonomous: core pattern stays function-based, stateless (CHK005/CHK009); signatures modernized to str | None / dict[str, Any] / list[str] with concrete returns; normalize_mcp_config must not mutate input; equivalence = equality of SkillResult.success/data/error/metadata with timing pinned to None/300; missing CLI/MCP returns None/[] mapped to cli_not_found/mcp_unavailable/neither_available/is_error; regression gate = adapter unit + property + 23 image-generate tests + both validators + composer integration; reusability metric per SC-005; validate_all_skills.py is structural-only gate.

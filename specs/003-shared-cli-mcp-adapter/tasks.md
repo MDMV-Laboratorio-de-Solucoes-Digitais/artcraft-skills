@@ -62,9 +62,9 @@
 
 ### Implementation for User Story 1
 
-- [ ] T014 [US1] Update `skills/core/artcraft_app_client.py`: modernize signatures to `str | None`, `dict[str, Any]`, `list[str]`, `Mapping`/`Sequence` inputs with concrete returns; add Args/Returns/Raises/mutation docstrings; make `normalize_output(out=None, keys=None)` non-mutating and accept optional expected keys defaulting to image keys; make `normalize_mcp_config(cfg=None)` copy-first (no mutation); add `select_mode(requested_mode, cli_available, mcp_available) -> str` (pure, raises ValueError on invalid mode) and `standardize_error(reason, message, metadata=None) -> dict[str, Any]` (reason codes: cli_not_found, mcp_unavailable, neither_available, is_error); add `__version__ = "0.1.0"` and extend `__all__` to include all 9 functions. Preserve existing behavior of discover/run functions.
-- [ ] T015 [US1] Update `contracts/artcraft_app_client.md` and `data-model.md` to reflect finalized signatures (verify; edit only if drift). 
-- [ ] T016 [US1] Run US1 tests and confirm GREEN (all pass); fix any failures rooted in the adapter implementation (not tests).
+- [x] T014 [US1] Update `skills/core/artcraft_app_client.py`: modernize signatures to `str | None`, `dict[str, Any]`, `list[str]`, `Mapping`/`Sequence` inputs with concrete returns; add Args/Returns/Raises/mutation docstrings; make `normalize_output(out=None, keys=None)` non-mutating and accept optional expected keys defaulting to image keys; make `normalize_mcp_config(cfg=None)` copy-first (no mutation); add `select_mode(requested_mode, cli_available, mcp_available) -> str` (pure, raises ValueError on invalid mode) and `standardize_error(reason, message, metadata=None) -> dict[str, Any]` (reason codes: cli_not_found, mcp_unavailable, neither_available, is_error); add `__version__ = "0.1.0"` and extend `__all__` to include all 9 functions. Preserve existing behavior of discover/run functions.
+- [x] T015 [US1] Update `contracts/artcraft_app_client.md` and `data-model.md` to reflect finalized signatures (verify; edit only if drift). 
+- [x] T016 [US1] Run US1 tests and confirm GREEN (all pass); fix any failures rooted in the adapter implementation (not tests).
 
 **Checkpoint**: US1 adapter complete and independently testable.
 
@@ -78,16 +78,16 @@
 
 ### Tests for User Story 2 (RED PHASE — write first, ensure FAIL) ⚠️
 
-- [ ] T020 [P] [US2] Characterization golden-master test in `tests/characterization/test_image_generate_behavior.py`: capture canonicalized `SkillResult` (success, data, error, metadata with mode/interface/command/exit_code/timeout_s/reason/is_error; timing pinned to None/300) for a curated scenario matrix (CLI success/failure/timeout, MCP unavailable, neither available, unsupported command, validation errors).
-- [ ] T021 [P] [US2] Differential test in `tests/characterization/test_image_generate_differential.py`: import and run the pre-refactor reference from `tests/reference/image_generate_original.py` alongside the refactored skill; assert equality of canonicalized `SkillResult` across the same scenario matrix.
-- [ ] T022 [P] [US2] Extend `tests/property/test_image_generate_props.py` with property tests covering adapter-backed paths (non-mutation of inputs, deterministic mode selection, equivalence under refactoring) while keeping existing 4 tests passing.
-- [ ] T023 [US2] Run US2 test suites and confirm RED (characterization/differential/extended property fail) before refactoring; record failure summary.
+- [x] T020 [P] [US2] Characterization golden-master test in `tests/characterization/test_image_generate_behavior.py`: capture canonicalized `SkillResult` (success, data, error, metadata with mode/interface/command/exit_code/timeout_s/reason/is_error; timing pinned to None/300) for a curated scenario matrix (CLI success/failure/timeout, MCP unavailable, neither available, unsupported command, validation errors).
+- [x] T021 [P] [US2] Differential test in `tests/characterization/test_image_generate_differential.py`: import and run the pre-refactor reference from `tests/reference/image_generate_original.py` alongside the refactored skill; assert equality of canonicalized `SkillResult` across the same scenario matrix.
+- [x] T022 [P] [US2] Extend `tests/property/test_image_generate_props.py` with property tests covering adapter-backed paths (non-mutation of inputs, deterministic mode selection, equivalence under refactoring) while keeping existing 4 tests passing.
+- [x] T023 [US2] Run US2 test suites and confirm RED (characterization/differential/extended property fail) before refactoring; record failure summary.
 
 ### Implementation for User Story 2
 
-- [ ] T024 [US2] Refactor `skills/creative/image-generate/skill.py`: delegate `_discover_cli`→`discover_cli`, `_discover_generation_command`→`discover_generation_command`, `_normalize_output`→`normalize_output`, `_normalize_mcp_config`→`normalize_mcp_config`; use `discover_cli_commands`/`run_cli_generation` in `_execute_cli`; replace inline mode decision with `select_mode`; use `standardize_error` for reason-code normalization; keep schemas, validation, param assembly, MCP stubs, orchestration, and `SkillResult` construction in the skill. Preserve exact output/error strings and metadata.
-- [ ] T025 [US2] Remove any code in `skill.py` made obsolete by the cutover (duplicated discovery/normalization helpers) so no second convention remains; keep `_mcp_*` stubs.
-- [ ] T026 [US2] Run US2 tests and confirm GREEN: all 23 existing image-generate tests pass, characterization + differential + extended property tests pass.
+- [x] T024 [US2] Refactor `skills/creative/image-generate/skill.py`: delegate `_discover_cli`→`discover_cli`, `_discover_generation_command`→`discover_generation_command`, `_normalize_output`→`normalize_output`, `_normalize_mcp_config`→`normalize_mcp_config`; use `discover_cli_commands`/`run_cli_generation` in `_execute_cli`; replace inline mode decision with `select_mode`; use `standardize_error` for reason-code normalization; keep schemas, validation, param assembly, MCP stubs, orchestration, and `SkillResult` construction in the skill. Preserve exact output/error strings and metadata.
+- [x] T025 [US2] Remove any code in `skill.py` made obsolete by the cutover (duplicated discovery/normalization helpers) so no second convention remains; keep `_mcp_*` stubs.
+- [x] T026 [US2] Run US2 tests and confirm GREEN: all 23 existing image-generate tests pass, characterization + differential + extended property tests pass.
 
 **Checkpoint**: US2 refactored and behaviorally equivalent.
 
@@ -101,12 +101,12 @@
 
 ### Tests for User Story 3 (RED PHASE — write first, ensure FAIL) ⚠️
 
-- [ ] T030 [P] [US3] Add flexibility smoke test in `tests/unit/test_artcraft_app_client.py` (or new `tests/unit/test_artcraft_app_client_future_skills.py`) verifying custom keyword lists, `generation_command` override, arbitrary `keys` for `normalize_output`, and `select_mode` for all availability combinations.
+- [x] T030 [P] [US3] Add flexibility smoke test in `tests/unit/test_artcraft_app_client.py` (or new `tests/unit/test_artcraft_app_client_future_skills.py`) verifying custom keyword lists, `generation_command` override, arbitrary `keys` for `normalize_output`, and `select_mode` for all availability combinations.
 
 ### Implementation for User Story 3
 
-- [ ] T031 [US3] Update `quickstart.md` with a future-skill usage example (custom keywords, override, arbitrary keys, mode selection) and note that future creative skills MUST use the shared adapter (no duplicated discovery/invocation).
-- [ ] T032 [US3] Verify adapter has no skill-specific hardcoding (grep for image-generate-specific strings in adapter); document findings. No behavior change expected.
+- [x] T031 [US3] Update `quickstart.md` with a future-skill usage example (custom keywords, override, arbitrary keys, mode selection) and note that future creative skills MUST use the shared adapter (no duplicated discovery/invocation).
+- [x] T032 [US3] Verify adapter has no skill-specific hardcoding (grep for image-generate-specific strings in adapter); document findings. No behavior change expected.
 
 **Checkpoint**: US3 flexibility verified and documented.
 
@@ -116,12 +116,12 @@
 
 **Purpose**: Final verification and cleanup.
 
-- [ ] T040 Run full pytest suite (`python -m pytest -q`) and confirm all suites green (unit, contract, integration, property, characterization), including `tests/integration/test_image_generate_composition.py`.
-- [ ] T041 Run `python scripts/validate_skill.py skills/creative/image-generate` and confirm exit 0.
-- [ ] T042 Run `python scripts/validate_all_skills.py` and confirm exit 0 (no regressions).
-- [ ] T043 Verify all checklist items in `specs/003-shared-cli-mcp-adapter/checklists/` are marked `[x]`; re-mark any that the implementation now satisfies. (Already done in prior step; verify only.)
-- [ ] T044 Review `git diff` for accidental changes, leftover scaffolding, or duplicated helpers; remove throwaway scripts. Confirm only intended files changed.
-- [ ] T045 (Optional) Add CHANGELOG entry for adapter `__version__ = "0.1.0"` if a CHANGELOG exists; otherwise skip.
+- [x] T040 Run full pytest suite (`python -m pytest -q`) and confirm all suites green (unit, contract, integration, property, characterization), including `tests/integration/test_image_generate_composition.py`.
+- [x] T041 Run `python scripts/validate_skill.py skills/creative/image-generate` and confirm exit 0.
+- [x] T042 Run `python scripts/validate_all_skills.py` and confirm exit 0 (no regressions).
+- [x] T043 Verify all checklist items in `specs/003-shared-cli-mcp-adapter/checklists/` are marked `[x]`; re-mark any that the implementation now satisfies. (Already done in prior step; verify only.)
+- [x] T044 Review `git diff` for accidental changes, leftover scaffolding, or duplicated helpers; remove throwaway scripts. Confirm only intended files changed.
+- [x] T045 (Optional) Add CHANGELOG entry for adapter `__version__ = "0.1.0"` if a CHANGELOG exists; otherwise skip.
 
 ---
 
@@ -216,3 +216,14 @@ With multiple developers:
 - Stop at any checkpoint to validate story independently
 - Avoid: vague tasks, same-file conflicts, cross-story dependencies that break independence
 - RED-phase test tasks (T010-T013, T020-T023, T030) must be completed and observed failing before their matching implementation tasks begin.
+
+---
+
+## Phase 7: Convergence (from /speckit.converge)
+
+**Purpose**: Close the gap between FR-008 (transport-neutral reason-code constants) and the adapter implementation, which currently exposes only string literals.
+
+- [x] T050 [P] [US1] Add module-level reason-code constants to `skills/core/artcraft_app_client.py` for `cli_not_found`, `mcp_unavailable`, `neither_available`, and `is_error` (e.g. `REASON_CLI_NOT_FOUND`, `REASON_MCP_UNAVAILABLE`, `REASON_NEITHER_AVAILABLE`, `REASON_IS_ERROR`), each equal to its wire string, and reference them inside `standardize_error` callers where applicable. (Trace: FR-008, spec §Functional Requirements)
+- [x] T051 [P] [US1] Export the new reason-code constants via `__all__` (or document them as public module attributes) and update `tests/contract/artcraft_app_client_api.json` + contract tests if `__all__` changes; bump `__version__` to `0.2.0` and add a CHANGELOG note if one is created. (Trace: FR-008, FR-015, SC-005)
+- [x] T052 [P] [US2] Refactor `skills/creative/image-generate/skill.py` to use the new reason-code constants instead of bare string literals for `reason` metadata, preserving exact output. (Trace: FR-008, FR-009)
+- [x] T053 [US1] Add unit tests in `tests/unit/test_artcraft_app_client.py` asserting the constants exist, equal their wire strings, and are importable; run the adapter unit/contract suites green. (Trace: FR-008, FR-017)

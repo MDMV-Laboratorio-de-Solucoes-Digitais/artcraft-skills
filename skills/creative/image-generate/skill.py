@@ -140,7 +140,7 @@ class ImageGenerateSkill(BaseSkill):
         cfg = inputs.get("mcp_config") or {}
         cfg = self._normalize_mcp_config(cfg)
         if not getattr(self, "_mcp_available", None) or not self._mcp_available(cfg):
-            return SkillResult(success=False, error="MCP server unavailable", metadata={"mode": mode, "reason": "mcp_unavailable"})
+            return SkillResult(success=False, error="MCP server unavailable", metadata={"mode": mode, "reason": artcraft_app_client.REASON_MCP_UNAVAILABLE})
         try:
             keywords = inputs.get("command_keywords") or ["generate", "gen", "image.generate"]
             override = inputs.get("generation_command")
@@ -175,7 +175,7 @@ class ImageGenerateSkill(BaseSkill):
         if mode == "cli":
             cli_path = self._discover_cli(inputs.get("cli_path"))
             if not cli_path:
-                return SkillResult(success=False, error="CLI not found: photocraft-cli", metadata={"mode": mode, "reason": artcraft_app_client.standardize_error("cli_not_found", "CLI not found: photocraft-cli", {}).get("code", "cli_not_found")})
+                return SkillResult(success=False, error="CLI not found: photocraft-cli", metadata={"mode": mode, "reason": artcraft_app_client.REASON_CLI_NOT_FOUND})
             return self._execute_cli(inputs, cli_path, mode)
         elif mode == "mcp":
             return self._execute_mcp(inputs, mode)
@@ -189,7 +189,7 @@ class ImageGenerateSkill(BaseSkill):
                 res = self._execute_mcp(inputs, mode)
                 if res.success:
                     return res
-            return SkillResult(success=False, error="No ArtCraft interface available (CLI or MCP)", metadata={"mode": mode, "reason": artcraft_app_client.standardize_error("neither_available", "No ArtCraft interface available (CLI or MCP)", {}).get("code", "neither_available")})
+            return SkillResult(success=False, error="No ArtCraft interface available (CLI or MCP)", metadata={"mode": mode, "reason": artcraft_app_client.REASON_NEITHER_AVAILABLE})
 
 
 __all__ = ["ImageGenerateSkill"]

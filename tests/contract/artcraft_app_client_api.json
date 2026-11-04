@@ -1,6 +1,6 @@
 {
   "module": "skills.core.artcraft_app_client",
-  "__version__": "0.1.0",
+  "__version__": "0.2.0",
   "__all__": [
     "discover_cli",
     "discover_generation_command",
@@ -15,68 +15,178 @@
   "functions": {
     "discover_cli": {
       "params": [
-        {"name": "cli_path", "kind": "KEYWORD_OR_POSITIONAL", "annotation": "str | None", "default": null}
+        {
+          "name": "cli_path",
+          "kind": "KEYWORD_OR_POSITIONAL",
+          "annotation": "str | None",
+          "default": null
+        }
       ],
       "return": "str | None"
     },
     "discover_generation_command": {
       "params": [
-        {"name": "commands", "kind": "POSITIONAL_OR_KEYWORD", "annotation": "Mapping[str, Any] | Sequence[Any] | None", "default": null},
-        {"name": "keywords", "kind": "KEYWORD_OR_POSITIONAL", "annotation": "Sequence[str] | None", "default": null},
-        {"name": "override", "kind": "KEYWORD_OR_POSITIONAL", "annotation": "str | None", "default": null}
+        {
+          "name": "commands",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "annotation": "Mapping[str, Any] | Sequence[Any] | None",
+          "default": null
+        },
+        {
+          "name": "keywords",
+          "kind": "KEYWORD_OR_POSITIONAL",
+          "annotation": "Sequence[str] | None",
+          "default": null
+        },
+        {
+          "name": "override",
+          "kind": "KEYWORD_OR_POSITIONAL",
+          "annotation": "str | None",
+          "default": null
+        }
       ],
       "return": "str | None"
     },
     "normalize_output": {
       "params": [
-        {"name": "out", "kind": "POSITIONAL_OR_KEYWORD", "annotation": "Mapping[str, Any] | None", "default": null},
-        {"name": "keys", "kind": "KEYWORD_OR_POSITIONAL", "annotation": "Sequence[str] | None", "default": null}
+        {
+          "name": "out",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "annotation": "Mapping[str, Any] | None",
+          "default": null
+        },
+        {
+          "name": "keys",
+          "kind": "KEYWORD_OR_POSITIONAL",
+          "annotation": "Sequence[str] | None",
+          "default": null
+        }
       ],
       "return": "dict[str, Any]"
     },
     "normalize_mcp_config": {
       "params": [
-        {"name": "cfg", "kind": "POSITIONAL_OR_KEYWORD", "annotation": "Mapping[str, Any] | None", "default": null}
+        {
+          "name": "cfg",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "annotation": "Mapping[str, Any] | None",
+          "default": null
+        }
       ],
       "return": "dict[str, Any]"
     },
     "run_cli": {
       "params": [
-        {"name": "cli_path", "kind": "POSITIONAL_OR_KEYWORD", "annotation": "str", "default": null},
-        {"name": "args", "kind": "POSITIONAL_OR_KEYWORD", "annotation": "Sequence[str]", "default": null},
-        {"name": "timeout", "kind": "KEYWORD_OR_POSITIONAL", "annotation": "int", "default": 300}
+        {
+          "name": "cli_path",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "annotation": "str",
+          "default": null
+        },
+        {
+          "name": "args",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "annotation": "Sequence[str]",
+          "default": null
+        },
+        {
+          "name": "timeout",
+          "kind": "KEYWORD_OR_POSITIONAL",
+          "annotation": "int",
+          "default": 300
+        }
       ],
       "return": "subprocess.CompletedProcess"
     },
     "discover_cli_commands": {
       "params": [
-        {"name": "cli_path", "kind": "POSITIONAL_OR_KEYWORD", "annotation": "str", "default": null},
-        {"name": "timeout", "kind": "KEYWORD_OR_POSITIONAL", "annotation": "int", "default": 300}
+        {
+          "name": "cli_path",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "annotation": "str",
+          "default": null
+        },
+        {
+          "name": "timeout",
+          "kind": "KEYWORD_OR_POSITIONAL",
+          "annotation": "int",
+          "default": 300
+        }
       ],
       "return": "list[dict[str, Any]] | Any"
     },
     "run_cli_generation": {
       "params": [
-        {"name": "cli_path", "kind": "POSITIONAL_OR_KEYWORD", "annotation": "str", "default": null},
-        {"name": "command_id", "kind": "POSITIONAL_OR_KEYWORD", "annotation": "str", "default": null},
-        {"name": "params", "kind": "POSITIONAL_OR_KEYWORD", "annotation": "Mapping[str, Any]", "default": null},
-        {"name": "timeout", "kind": "KEYWORD_OR_POSITIONAL", "annotation": "int", "default": 300}
+        {
+          "name": "cli_path",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "annotation": "str",
+          "default": null
+        },
+        {
+          "name": "command_id",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "annotation": "str",
+          "default": null
+        },
+        {
+          "name": "params",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "annotation": "Mapping[str, Any]",
+          "default": null
+        },
+        {
+          "name": "timeout",
+          "kind": "KEYWORD_OR_POSITIONAL",
+          "annotation": "int",
+          "default": 300
+        }
       ],
       "return": "subprocess.CompletedProcess"
     },
     "select_mode": {
       "params": [
-        {"name": "requested_mode", "kind": "POSITIONAL_OR_KEYWORD", "annotation": "str", "default": null},
-        {"name": "cli_available", "kind": "POSITIONAL_OR_KEYWORD", "annotation": "bool", "default": null},
-        {"name": "mcp_available", "kind": "POSITIONAL_OR_KEYWORD", "annotation": "bool", "default": null}
+        {
+          "name": "requested_mode",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "annotation": "str",
+          "default": null
+        },
+        {
+          "name": "cli_available",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "annotation": "bool",
+          "default": null
+        },
+        {
+          "name": "mcp_available",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "annotation": "bool",
+          "default": null
+        }
       ],
       "return": "str"
     },
     "standardize_error": {
       "params": [
-        {"name": "reason", "kind": "POSITIONAL_OR_KEYWORD", "annotation": "str", "default": null},
-        {"name": "message", "kind": "POSITIONAL_OR_KEYWORD", "annotation": "str", "default": null},
-        {"name": "metadata", "kind": "POSITIONAL_OR_KEYWORD", "annotation": "Mapping[str, Any] | None", "default": null}
+        {
+          "name": "reason",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "annotation": "str",
+          "default": null
+        },
+        {
+          "name": "message",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "annotation": "str",
+          "default": null
+        },
+        {
+          "name": "metadata",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "annotation": "Mapping[str, Any] | None",
+          "default": null
+        }
       ],
       "return": "dict[str, Any]"
     }

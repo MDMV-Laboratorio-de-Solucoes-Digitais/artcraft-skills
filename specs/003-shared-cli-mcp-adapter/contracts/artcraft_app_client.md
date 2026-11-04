@@ -2,7 +2,7 @@
 
 Module: `skills.core.artcraft_app_client`
 
-Version: `__version__` starting `0.1.0`. Public façade: `__all__`.
+Version: `__version__` currently `0.2.0` (initial `0.1.0`). Public façade: `__all__`.
 
 ## Functions
 

@@ -13,4 +13,4 @@
 - `select_mode(requested_mode, cli_available, mcp_available) -> str` - Pure mode decision
 - `standardize_error(reason, message, metadata=None) -> dict[str, Any]` - Transport-neutral error
 
-No persistent entities - all stateless utilities. Module exposes `__all__` and `__version__` (starting `0.1.0`).
+No persistent entities - all stateless utilities. Module exposes `__all__` and `__version__` (currently `0.2.0`; initial `0.1.0`).

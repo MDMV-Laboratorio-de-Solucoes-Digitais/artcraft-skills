@@ -2,7 +2,11 @@ import os, sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 from hypothesis import given, strategies as st
 from skills.core.base_skill import SkillResult
-from skills.creative.image_generate.skill import ImageGenerateSkill
+import os, sys
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "skills", "creative", "image-generate")))
+import skill as _ig_skill
+ImageGenerateSkill = _ig_skill.ImageGenerateSkill
 
 
 @given(st.text(min_size=1, max_size=50))
@@ -46,7 +50,9 @@ def test_composition_preserves_fields(data):
         assert res.data[k] == v
 
 from tests._helpers.canonicalize import canonicalize_skill_result
-from tests.reference.image_generate_original import ImageGenerateSkill as OriginalImageGenerateSkill
+import os, sys
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'reference')))
+from image_generate_original import ImageGenerateSkill as OriginalImageGenerateSkill
 
 
 @given(st.text(min_size=1, max_size=50))

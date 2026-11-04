@@ -9,9 +9,17 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../.
 
 import pytest
 
-from tests._helpers.canonicalize import canonicalize_skill_result
-from tests.reference.image_generate_original import ImageGenerateSkill as OriginalSkill
-from skills.creative.image_generate.skill import ImageGenerateSkill as RefactoredSkill
+import os, sys
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '_helpers')))
+from canonicalize import canonicalize_skill_result
+import os, sys
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'reference')))
+from image_generate_original import ImageGenerateSkill as OriginalSkill
+import os, sys
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "skills", "creative", "image-generate")))
+import skill as _ig_skill
+RefactoredSkill = _ig_skill.ImageGenerateSkill
 
 
 SCENARIOS = [

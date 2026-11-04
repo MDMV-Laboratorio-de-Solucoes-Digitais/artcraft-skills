@@ -2,8 +2,14 @@ import os, sys, json, subprocess
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 import pytest
 from skills.core.base_skill import SkillResult
-from skills.creative.image_generate.skill import ImageGenerateSkill
-from tests._helpers.canonicalize import canonicalize_skill_result
+import os, sys
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "skills", "creative", "image-generate")))
+import skill as _ig_skill
+ImageGenerateSkill = _ig_skill.ImageGenerateSkill
+import os, sys
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '_helpers')))
+from canonicalize import canonicalize_skill_result
 
 GOLDEN_DIR = os.path.join(os.path.dirname(__file__), '..', 'golden', 'image_generate')
 

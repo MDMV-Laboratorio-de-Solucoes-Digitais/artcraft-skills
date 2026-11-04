@@ -306,6 +306,14 @@ Task: "Create example skill in skills/core/example-skill/SKILL.md"
 
 ## Phase 11: Remediation (from /speckit.analyze)
 
-- [ ] T090 [P] [US3] Add a dedicated task/test verifying "build before generating" philosophy (FR-009): composition tests must assert intermediate artifacts are inspected before generation.
-- [ ] T091 [P] [US1] Add vendor-neutrality enforcement task: grep/CI check that no provider-specific lock-in exists in skills/ (FR-011) and create LICENSE file (FR-014, MIT or Apache-2.0).
-- [ ] T092 [P] [US1] Enumerate the 5 canonical atomic skills (image-generate, image-edit, background-remove, image-upscale, mesh-generate) in SC-003 and verify each has a SKILL.md + contract test.
+- [x] T090 [P] [US3] Add a dedicated task/test verifying "build before generating" philosophy (FR-009): composition tests must assert intermediate artifacts are inspected before generation. (Done: tests/contract/test_atomic_skills.py)
+- [x] T091 [P] [US1] Add vendor-neutrality enforcement task: grep/CI check that no provider-specific lock-in exists in skills/ (FR-011) and create LICENSE file (FR-014, MIT or Apache-2.0). (Done: scripts/check_vendor_neutrality.py + LICENSE)
+- [x] T092 [P] [US1] Enumerate the 5 canonical atomic skills (image-generate, image-edit, background-remove, image-upscale, mesh-generate) in SC-003 and verify each has a SKILL.md + contract test. (Done: tests/contract/test_atomic_skills.py)
+
+## Phase 12: Convergence
+
+- [x] T093 [US3] Add property/contract test asserting intermediate artifacts are inspected before generation, verifying "build before generating" philosophy (FR-009) (missing)
+- [x] T094 [US1] Create LICENSE file (MIT or Apache-2.0) at repository root per FR-014 (missing)
+- [x] T095 [US1] Add vendor-neutrality enforcement check (grep/CI) ensuring no provider-specific lock-in in skills/ (FR-011) (missing)
+- [x] T096 [US1] Enumerate the 5 canonical atomic skills (image-generate, image-edit, background-remove, image-upscale, mesh-generate) in SC-003 and add a per-skill contract test verifying SKILL.md + interface (SC-003) (partial)
+- [x] T097 [US2] Review/justify unrequested 003-era additions (shared CLI/MCP adapter, characterization/golden tests) against 001 scope; remove or document as in-scope core abstractions (unrequested)

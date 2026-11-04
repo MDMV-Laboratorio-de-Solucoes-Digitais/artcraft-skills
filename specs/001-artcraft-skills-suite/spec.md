@@ -89,13 +89,13 @@ As a MDMV team member, I need generalizable skills derived from our project need
 
 ### Edge Cases
 
-- What happens when ArtCraft API is unavailable or rate-limited?
-- How does the system handle non-deterministic generation results?
-- What happens when credentials are missing or invalid?
-- How are large assets handled (size limits, transfers)?
-- What happens when skills are used across different agents with different capabilities?
-- How does the system handle job failures or timeouts?
-- What happens when composing skills with incompatible inputs/outputs?
+- **API unavailable/rate-limited**: skills MUST return `SkillResult(success=False, error=..., metadata={"reason":"provider_unavailable"})` and MUST NOT retry beyond configured retries; callers decide fallback.
+- **Non-deterministic results**: generation outputs MUST include `seed` and `model` in metadata when available; golden/characterization tests use tolerance budgets, not exact equality.
+- **Missing/invalid credentials**: `CredentialManager` MUST raise `SkillValidationError` before any network call; skills MUST surface a clear error without leaking secrets.
+- **Large assets**: asset handler MUST enforce configurable size limits and stream/chunk transfers; oversized inputs MUST fail fast with a clear error.
+- **Cross-agent capability gaps**: skills MUST declare required capabilities in `SKILL.md` `allowed-tools`/`capabilities`; loader MUST surface missing capabilities at discovery time.
+- **Job failures/timeouts**: `JobOrchestrator` MUST mark job as failed with error detail; skills MUST propagate failure as `SkillResult(success=False)` with timeout metadata.
+- **Incompatible skill I/O**: composer MUST validate input/output schema compatibility before execution and fail fast with a clear error.
 
 ## Requirements *(mandatory)*
 
@@ -106,7 +106,7 @@ As a MDMV team member, I need generalizable skills derived from our project need
 - **FR-003**: System MUST provide core abstractions for model/provider routing supporting ArtCraft's 60+ model ecosystem
 - **FR-004**: System MUST provide ArtCraft API adapters supporting both session auth (/v1/omni_gen/*) and API key auth (/v1/omni_api/*)
 - **FR-005**: System MUST handle async job-based generation with submission, polling, webhook support, and result retrieval
-- **FR-006**: System MUST provide cost estimation and transparency before executing paid operations
+- **FR-006**: System MUST provide cost estimation and transparency before executing paid operations; estimates MUST be within ±20% of actual billed cost for supported providers, and MUST include model, token/credit count, and currency in the estimate.
 - **FR-007**: System MUST support atomic skills (single responsibility) with clear input/output contracts
 - **FR-008**: System MUST support orchestrator/workflow skills for composing atomic skills
 - **FR-009**: Skills MUST follow "build before generating" / composition-first philosophy where applicable
@@ -132,7 +132,7 @@ As a MDMV team member, I need generalizable skills derived from our project need
 
 - **SC-001**: Skills are discoverable and usable by at least 3 major agent frameworks (Claude Code, Cursor, OpenCode) following agentskills.io standard
 - **SC-002**: Core abstractions support all major ArtCraft asset types (images, video, 3D meshes/splats, audio) with proper job orchestration
-- **SC-003**: At least 5 atomic skills and 2 orchestrator skills are implemented demonstrating composability
+- **SC-003**: At least 5 atomic skills (image-generate, image-edit, background-remove, image-upscale, mesh-generate) and 2 orchestrator skills (dag-orchestrator, scene-composition) are implemented demonstrating composability
 - **SC-004**: Cross-product workflow can be executed combining skills from different domains
 - **SC-005**: Skills work with ArtCraft API (both auth modes) including cost estimation and async job handling
 - **SC-006**: All skills follow constitution principles and pass quality gates (documentation, composability, security, transparency)

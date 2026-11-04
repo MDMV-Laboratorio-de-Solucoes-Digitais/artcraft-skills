@@ -266,21 +266,6 @@ Task: "Create example skill in skills/core/example-skill/SKILL.md"
 
 ## Phase 9: Convergence
 
-**Purpose**: Close gaps between spec/plan/tasks and current implementation
-
-- [ ] T068 [P] Complete remaining core abstractions (Asset/Media Handler) per FR-003/FR-010
-- [ ] T069 [P] Implement skill composer utilities fully per FR-008
-- [ ] T070 Create atomic creative skills (image-generate, image-edit, background-remove, image-upscale, mesh-generate) per US3
-- [ ] T071 Create workflow orchestrator and integration skills per US4
-- [ ] T072 Create generalizable MDMV workflow skills (policy-redaction, structured-packager, dag-orchestrator, evidence-audit) per US5
-- [ ] T073 Update tasks.md with all completed tasks marked [X]
-- [ ] T074 Run full test suite and fix any failures
-
-
----
-
-## Phase 9: Convergence
-
 - [x] T068 [P] [US3] Create mesh-generate atomic skill SKILL.md in skills/creative/mesh-generate/ following agentskills.io schema and image-generate pattern (FR-007, missing)
 - [x] T069 [P] [US3] Complete composition/chaining implementation and tests - ensure skills/core/composer.py supports chaining and add integration tests for US3 (T039-T040, partial)
 - [x] T070 [US4] Implement workflow orchestrator/DAG engine in skills/workflow/orchestrator.py per plan (T044, partial)
@@ -318,3 +303,9 @@ Task: "Create example skill in skills/core/example-skill/SKILL.md"
 - Constitution: Compliant (v2.0.0) - no MDMV branding in skills/constitution, follows agentskills.io
 - Quickstart: Available at `specs/001-artcraft-skills-suite/quickstart.md`
 - Success Criteria SC-001-SC-008: Verified against implementation
+
+## Phase 11: Remediation (from /speckit.analyze)
+
+- [ ] T090 [P] [US3] Add a dedicated task/test verifying "build before generating" philosophy (FR-009): composition tests must assert intermediate artifacts are inspected before generation.
+- [ ] T091 [P] [US1] Add vendor-neutrality enforcement task: grep/CI check that no provider-specific lock-in exists in skills/ (FR-011) and create LICENSE file (FR-014, MIT or Apache-2.0).
+- [ ] T092 [P] [US1] Enumerate the 5 canonical atomic skills (image-generate, image-edit, background-remove, image-upscale, mesh-generate) in SC-003 and verify each has a SKILL.md + contract test.

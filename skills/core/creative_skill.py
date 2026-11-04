@@ -1,214 +1,105 @@
-"""Creative skill base class - shared infrastructure for creative skills.
-
-Provides the discover→invoke→normalize→degrade flow that all
-creative skills (image-edit, background-remove, image-upscale, mesh-generate)
-share. Each skill is a thin subclass that provides skill-specific keywords,
-input/output schemas, and parameter assembly.
-
-Follows the image-generate/skill.py pattern but extracted into a reusable
-base class to avoid duplication across creative skills.
-"""
-
-from __future__ import annotations
+"""Shared base class for creative skills using ArtCraft CLI/MCP adapter."""
 
 import json
-import logging
 import subprocess
-import threading
-import time
-from abc import abstractmethod
-from typing import Any
+from typing import Any, Dict, Optional, List
 
-from skills.core import artcraft_app_client
 from skills.core.base_skill import BaseSkill, SkillResult
-
-logger = logging.getLogger("artcraft-skills")
+from skills.core import artcraft_app_client
 
 
 class CreativeSkill(BaseSkill):
-    """Base class for creative skills that wrap the ArtCraft CLI/MCP adapter.
+    """Base class encapsulating discover→resolve→invoke→normalize→degrade flow."""
 
-    Provides the shared discovery→invocation→normalization→degrade flow.
-    Subclasses must implement:
-        - get_input_schema(), get_output_schema() schemas
-        - _build_params() for skill-specific parameter assembly
-        - _get_default_keywords() for command discovery keywords
+    def __init__(self, name: str, description: str, command_keywords: Optional[List[str]] = None):
+        super().__init__(name=name, description=description)
+        self._command_keywords = command_keywords or []
 
-    The base class handles:
-        - CLI discovery via discover_cli()
-        - Command discovery via discover_generation_command()
-        - CLI invocation with retry (exponential backoff + jitter)
-        - Output normalization via normalize_output()
-        - Mode selection via select_mode()
-        - Graceful degradation with reason codes
-    """
+    def _discover_cli(self, cli_path: Optional[str] = None) -> Optional[str]:
+        return artcraft_app_client.discover_cli(cli_path)
 
-    def __init__(
-        self,
-        name: str,
-        description: str,
-        command_keywords: Sequence[str] | None = None,
-        generation_command: str | None = None,
-    ):
-        super().__init__(name, description)
-        self.command_keywords = list(command_keywords) if command_keywords else []
-        self.generation_command = generation_command
-        self._semaphore = threading.Semaphore(3)
-        self._retry_max = 3
+    def _discover_generation_command(self, commands, keywords=None, override=None):
+        kws = keywords if keywords is not None else self._command_keywords
+        return artcraft_app_client.discover_generation_command(commands, kws, override)
 
-    @property
-    def logger(self) -> logging.Logger:
-        return logger
+    def _normalize_output(self, out: Dict[str, Any]) -> Dict[str, Any]:
+        return artcraft_app_client.normalize_output(out)
 
-    def _acquire_semaphore(self) -> None:
-        """Acquire the concurrency semaphore before CLI invocation."""
-        self._semaphore.acquire()
+    def _normalize_mcp_config(self, cfg: Dict[str, Any]) -> Dict[str, Any]:
+        return artcraft_app_client.normalize_mcp_config(cfg)
 
-    def _release_semaphore(self) -> None:
-        """Release the concurrency semaphore after CLI invocation."""
-        self._semaphore.release()
+    def _mcp_available(self, cfg: Dict[str, Any]) -> bool:
+        cfg = self._normalize_mcp_config(cfg)
+        return False
 
-    @abstractmethod
-    def _build_params(self, inputs: Mapping[str, Any]) -> dict[str, Any]:
-        """Build skill-specific params from validated inputs.
+    def _mcp_command_list(self, cfg: Dict[str, Any]):
+        return []
 
-        Subclasses implement this to assemble the params dict that gets
-        passed to the CLI run command. Common params (cli_path, mcp_config,
-        command_keywords, generation_command, mode) are handled by
-        _execute_cli; this method adds skill-specific params.
-        """
-        raise NotImplementedError
+    def _mcp_command_run(self, cfg: Dict[str, Any], tool_id: str, params: Dict[str, Any], timeout: int):
+        return {"is_error": True, "error": "not implemented"}
 
-    @abstractmethod
-    def _get_default_keywords(self) -> list[str]:
-        """Return default keyword list for command discovery.
+    def _build_cli_params(self, inputs: Dict[str, Any]) -> Dict[str, Any]:
+        """Build params dict for CLI call. Override in subclasses."""
+        params: Dict[str, Any] = {}
+        if inputs.get("prompt"):
+            params["prompt"] = inputs["prompt"]
+        if inputs.get("image"):
+            params["image"] = inputs["image"]
+        if inputs.get("model"):
+            params["model"] = inputs["model"]
+        if inputs.get("width") is not None:
+            params["width"] = inputs["width"]
+        if inputs.get("height") is not None:
+            params["height"] = inputs["height"]
+        if inputs.get("aspect_ratio"):
+            params["aspect_ratio"] = inputs["aspect_ratio"]
+        if inputs.get("seed") is not None:
+            params["seed"] = inputs["seed"]
+        if inputs.get("mask"):
+            params["mask"] = inputs["mask"]
+        if inputs.get("scale") is not None:
+            params["scale"] = inputs["scale"]
+        if inputs.get("enhance") is not None:
+            params["enhance"] = inputs["enhance"]
+        if inputs.get("format"):
+            params["format"] = inputs["format"]
+        if inputs.get("return_mask") is not None:
+            params["return_mask"] = inputs["return_mask"]
+        if inputs.get("mode_edit"):
+            params["mode_edit"] = inputs["mode_edit"]
+        if inputs.get("strength") is not None:
+            params["strength"] = inputs["strength"]
+        return params
 
-        Subclasses return their keyword list used to match against the
-        photocraft-cli command registry.
-        """
-        raise NotImplementedError
-
-    def _run_cli_with_retry(
-        self,
-        cli_path: str,
-        args: list[str],
-        timeout: int = 300,
-        max_retries: int = 3,
-    ) -> subprocess.CompletedProcess:
-        """Run CLI command with exponential backoff + jitter on failure.
-
-        Retries on subprocess.TimeoutExpired and non-zero return code.
-        Uses exponential backoff with jitter: delay = 2^attempt + random(0,1).
-        """
-        import random
-
-        last_res: subprocess.CompletedProcess | None = None
-        last_error: str | None = None
-
-        for attempt in range(max_retries + 1):
-            try:
-                res = subprocess.run(
-                    [cli_path] + list(args),
-                    capture_output=True,
-                    text=True,
-                    timeout=timeout,
-                )
-                if res.returncode == 0:
-                    return res
-                last_error = res.stderr or f"CLI command failed (exit code {res.returncode})"
-            except subprocess.TimeoutExpired as exc:
-                last_error = f"Operation timed out after {timeout}s"
-                last_res = exc  # type: ignore[assignment]
-            except Exception as exc:
-                last_error = str(exc)
-                last_res = None  # type: ignore[assignment]
-
-            if attempt < max_retries:
-                delay = (2 ** attempt) + random.uniform(0, 1)
-                logger.warning(
-                    "CLI attempt %d/%d failed: %s. Retrying in %.1fs...",
-                    attempt + 1,
-                    max_retries + 1,
-                    last_error,
-                    delay,
-                )
-                time.sleep(delay)
-
-        # All retries exhausted
-        if isinstance(last_res, subprocess.CompletedProcess):
-            return last_res
-        # Timeout without a CompletedProcess
-        raise TimeoutError(last_error or "CLI command timed out")
-
-    def _execute_cli(
-        self,
-        inputs: Mapping[str, Any],
-        cli_path: str,
-        mode: str,
-    ) -> SkillResult:
-        """Execute generation via CLI with discovery, invocation, normalization.
-
-        Follows the image-generate/skill.py pattern:
-        1. Discover CLI commands via cli_path commands
-        2. Resolve generation command via keyword matching
-        3. Build params from skill-specific builder + common params
-        4. Run CLI with retry logic
-        5. Parse and normalize output
-        """
-        keywords = inputs.get("command_keywords") or self.command_keywords
+    def _execute_cli(self, inputs: Dict[str, Any], cli_path: str, mode: str) -> SkillResult:
+        keywords = inputs.get("command_keywords") or self._command_keywords
         override = inputs.get("generation_command")
         timeout = inputs.get("timeout") or 300
-
-        self._acquire_semaphore()
         try:
-            # Discover CLI commands
             cmds = artcraft_app_client.discover_cli_commands(cli_path, timeout)
-            gen_cmd = artcraft_app_client.discover_generation_command(
-                cmds, keywords, override
-            )
+            gen_cmd = self._discover_generation_command(cmds, keywords, override)
             if not gen_cmd:
                 return SkillResult(
                     success=False,
-                    error=f"No {self.name} capability found in app version ({cli_path})",
+                    error=f"No image-generation capability found in app version ({cli_path})",
                     metadata={"mode": mode, "cli_path": cli_path},
                 )
-
-            # Build params from skill-specific builder + common params
-            params = self._build_params(inputs)
-            params["command"] = gen_cmd
-
-            # Run CLI with retry
-            res = self._run_cli_with_retry(
-                cli_path,
-                ["run", "--cmd", gen_cmd, "--params", json.dumps(params)],
-                timeout,
-            )
-
+            params = self._build_cli_params(inputs)
+            res = artcraft_app_client.run_cli_generation(cli_path, gen_cmd, params, timeout)
             if res.returncode != 0:
                 return SkillResult(
                     success=False,
                     error=res.stderr or "CLI command failed",
-                    metadata={
-                        "mode": mode,
-                        "exit_code": res.returncode,
-                        "command": gen_cmd,
-                        "timeout_s": timeout,
-                    },
+                    metadata={"mode": mode, "exit_code": res.returncode, "command": gen_cmd, "duration_ms": None, "timeout_s": timeout},
                 )
-
-            # Parse and normalize output
-            out: dict[str, Any] = {}
+            out = {}
             if res.stdout:
                 try:
                     out = json.loads(res.stdout)
                 except Exception:
-                    out = {"image_path": res.stdout.strip()}
-            data = artcraft_app_client.normalize_output(out)
-            return SkillResult(
-                success=True,
-                data=data,
-                metadata={"mode": mode, "command": gen_cmd, "interface": "cli"},
-            )
+                    out = {"image_path": res.stdout.strip()} if hasattr(self, '_output_is_mesh') and getattr(self, '_output_is_mesh') else {"image_path": res.stdout.strip()}
+            data = self._normalize_output(out)
+            return SkillResult(success=True, data=data, metadata={"mode": mode, "command": gen_cmd, "interface": "cli"})
         except subprocess.TimeoutExpired:
             return SkillResult(
                 success=False,
@@ -217,73 +108,72 @@ class CreativeSkill(BaseSkill):
             )
         except Exception as e:
             return SkillResult(success=False, error=str(e), metadata={"mode": mode})
-        finally:
-            self._release_semaphore()
 
-    def _execute_mcp(self, inputs: Mapping[str, Any], mode: str) -> SkillResult:
-        """Execute via MCP stub - MCP discovery/invocation stay skill-level per FR-005.
-
-        The adapter only normalizes MCP config/output. Discovery/invocation
-        remain skill-level. This stub returns unavailable so the skill falls
-        back to CLI or reports neither_available.
-        """
+    def _execute_mcp(self, inputs: Dict[str, Any], mode: str) -> SkillResult:
         cfg = inputs.get("mcp_config") or {}
-        cfg = artcraft_app_client.normalize_mcp_config(cfg)
+        cfg = self._normalize_mcp_config(cfg)
+        if not getattr(self, "_mcp_available", None) or not self._mcp_available(cfg):
+            return SkillResult(success=False, error="MCP server unavailable", metadata={"mode": mode, "reason": artcraft_app_client.REASON_MCP_UNAVAILABLE})
+        try:
+            keywords = inputs.get("command_keywords") or self._command_keywords
+            override = inputs.get("generation_command")
+            timeout = inputs.get("timeout") or 300
+            cmds = self._mcp_command_list(cfg) if hasattr(self, "_mcp_command_list") else []
+            gen_cmd = self._discover_generation_command(cmds, keywords, override)
+            if not gen_cmd:
+                return SkillResult(success=False, error="No image-generation capability found in app version", metadata={"mode": mode})
+            params = self._build_cli_params(inputs)
+            res = self._mcp_command_run(cfg, gen_cmd, params, timeout)
+            if isinstance(res, dict) and res.get("is_error"):
+                return SkillResult(success=False, error=res.get("error") or "MCP tool error", metadata={"mode": mode, "is_error": True})
+            if isinstance(res, dict) and res.get("success") is False:
+                return SkillResult(success=False, error=res.get("error") or "MCP tool error", metadata={"mode": mode, "is_error": True})
+            data = self._normalize_output(res if isinstance(res, dict) else {})
+            return SkillResult(success=True, data=data, metadata={"mode": mode, "interface": "mcp", "tool": gen_cmd})
+        except Exception as e:
+            return SkillResult(success=False, error=str(e), metadata={"mode": mode})
 
-        return SkillResult(
-            success=False,
-            error="MCP server unavailable",
-            metadata={
-                "mode": mode,
-                "reason": artcraft_app_client.REASON_MCP_UNAVAILABLE,
-            },
-        )
-
-    def execute(self, inputs: Mapping[str, Any]) -> SkillResult:
-        """Execute the skill with mode selection, CLI/MCP dispatch,
-        and graceful degradation.
-
-        Flow:
-        1. Validate inputs
-        2. Discover CLI availability and MCP availability
-        3. Call select_mode to decide transport
-        4. Dispatch to CLI or MCP execution
-        5. Return SkillResult with canonicalized output
-        """
+    def execute(self, inputs: Dict[str, Any]) -> SkillResult:
         if not self.validate_inputs(inputs):
-            return SkillResult(
-                success=False,
-                error="Invalid input",
-                metadata={},
-            )
+            # Try to give specific error messages like image-generate does
+            if isinstance(inputs, dict):
+                if self.name == "image-generate" or "prompt" in getattr(self, '_required_for_prompt', []):
+                    pass  # handle below
+            # Generic validation error
+            if not isinstance(inputs, dict):
+                return SkillResult(success=False, error="Invalid input", metadata={})
+            # Common cases
+            if "prompt" in self.get_input_schema().get("required", []) and ("prompt" not in inputs or not isinstance(inputs.get("prompt"), str) or not inputs.get("prompt").strip()):
+                return SkillResult(success=False, error="Invalid input: prompt: required", metadata={})
+            if "image" in self.get_input_schema().get("required", []) and ("image" not in inputs or not inputs.get("image")):
+                return SkillResult(success=False, error="Invalid input: image: required", metadata={})
+            if "mode" in inputs and inputs["mode"] not in ("cli", "mcp", "auto"):
+                return SkillResult(success=False, error="Invalid input: mode: invalid", metadata={})
+            if "width" in inputs and isinstance(inputs["width"], (int, float)) and inputs["width"] <= 0:
+                return SkillResult(success=False, error="Invalid input: width: invalid", metadata={})
+            if "height" in inputs and isinstance(inputs["height"], (int, float)) and inputs["height"] <= 0:
+                return SkillResult(success=False, error="Invalid input: height: invalid", metadata={})
+            return SkillResult(success=False, error="Invalid input", metadata={})
 
         mode = inputs.get("mode") or "auto"
-        cli_path = inputs.get("cli_path")
-        mcp_config = inputs.get("mcp_config") or {}
-
-        cli_available = artcraft_app_client.discover_cli(cli_path) is not None
-        mcp_available = bool(
-            getattr(self, "_mcp_available", None)
-            and self._mcp_available(mcp_config)
-        )
-
-        selected = artcraft_app_client.select_mode(
-            requested_mode=mode,
-            cli_available=cli_available,
-            mcp_available=mcp_available,
-        )
-
-        if selected == "cli" and cli_path:
+        if mode == "cli":
+            cli_path = self._discover_cli(inputs.get("cli_path"))
+            if not cli_path:
+                return SkillResult(success=False, error="CLI not found: photocraft-cli", metadata={"mode": mode, "reason": artcraft_app_client.REASON_CLI_NOT_FOUND})
             return self._execute_cli(inputs, cli_path, mode)
-        if selected == "mcp":
-            res = self._execute_mcp(inputs, mode)
-            if res.success:
-                return res
-        return SkillResult(
-            success=False,
-            error="No ArtCraft interface available (CLI or MCP)",
-            metadata={
-                "mode": mode,
-                "reason": artcraft_app_client.REASON_NEITHER_AVAILABLE,
-            },
-        )
+        elif mode == "mcp":
+            return self._execute_mcp(inputs, mode)
+        else:  # auto
+            cli_path = self._discover_cli(inputs.get("cli_path"))
+            mcp_available = bool(getattr(self, "_mcp_available", None) and self._mcp_available(inputs.get("mcp_config") or {}))
+            selected = artcraft_app_client.select_mode("auto", bool(cli_path), mcp_available)
+            if selected == "cli" and cli_path:
+                return self._execute_cli(inputs, cli_path, mode)
+            if selected == "mcp":
+                res = self._execute_mcp(inputs, mode)
+                if res.success:
+                    return res
+            return SkillResult(success=False, error="No ArtCraft interface available (CLI or MCP)", metadata={"mode": mode, "reason": artcraft_app_client.REASON_NEITHER_AVAILABLE})
+
+
+__all__ = ["CreativeSkill"]

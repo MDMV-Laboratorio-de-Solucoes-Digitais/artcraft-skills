@@ -67,9 +67,9 @@
 **Independent Test**: Define skill schema, create template, validate structure, load/discover skills in compatible agent environment
 
 ### Tests for User Story 1 (TDD - Write FIRST, must FAIL)
-- [ ] T013 [P] [US1] Property-based tests for skill naming invariants in tests/property/test_us1_naming.py
-- [ ] T014 [P] [US1] Contract tests for skill interface in tests/contract/test_skill_interface.py
-- [ ] T015 [P] [US1] Integration tests for cross-agent discovery in tests/integration/test_us1_discovery.py
+- [x] T013 [P] [US1] Property-based tests for skill naming invariants in tests/property/test_us1_naming.py
+- [x] T014 [P] [US1] Contract tests for skill interface in tests/contract/test_skill_interface.py
+- [x] T015 [P] [US1] Integration tests for cross-agent discovery in tests/integration/test_us1_discovery.py
 
 ### Implementation for User Story 1
 - [x] T016 [P] [US1] Create skill template directory structure in skills/core/template/
@@ -89,9 +89,9 @@
 **Independent Test**: Create skill using abstractions that authenticates, estimates costs, submits job, polls, retrieves results
 
 ### Tests for User Story 2 (TDD - Write FIRST, must FAIL)
-- [ ] T021 [P] [US2] Property-based tests for credential manager invariants in tests/property/test_us2_creds.py
-- [ ] T022 [P] [US2] Contract tests for API adapters in tests/contract/test_api_adapters.py
-- [ ] T023 [P] [US2] Integration tests for job orchestration in tests/integration/test_us2_jobs.py
+- [x] T021 [P] [US2] Property-based tests for credential manager invariants in tests/property/test_us2_creds.py
+- [x] T022 [P] [US2] Contract tests for API adapters in tests/contract/test_api_adapters.py
+- [x] T023 [P] [US2] Integration tests for job orchestration in tests/integration/test_us2_jobs.py
 
 ### Implementation for User Story 2
 - [x] T024 [P] [US2] Implement Credential Manager (API key + session auth) in skills/core/credentials.py
@@ -113,18 +113,18 @@
 **Independent Test**: Use individual atomic skills independently and compose them (e.g., generate → remove bg → upscale)
 
 ### Tests for User Story 3 (TDD - Write FIRST, must FAIL)
-- [ ] T031 [P] [US3] Property-based tests for skill composition invariants in tests/property/test_us3_composition.py
-- [ ] T032 [P] [US3] Contract tests for atomic skill interfaces in tests/contract/test_atomic_skills.py
-- [ ] T033 [P] [US3] Integration tests for skill chaining in tests/integration/test_us3_chaining.py
+- [x] T031 [P] [US3] Property-based tests for skill composition invariants in tests/property/test_us3_composition.py
+- [x] T032 [P] [US3] Contract tests for atomic skill interfaces in tests/contract/test_atomic_skills.py
+- [x] T033 [P] [US3] Integration tests for skill chaining in tests/integration/test_us3_chaining.py
 
 ### Implementation for User Story 3
 - [x] T034 [P] [US3] Create image generation skill (atomic) in skills/creative/image-generate/SKILL.md
-- [ ] T035 [P] [US3] Create image edit/inpaint skill (atomic) in skills/creative/image-edit/SKILL.md
-- [ ] T036 [P] [US3] Create background removal skill (atomic) in skills/creative/background-remove/SKILL.md
-- [ ] T037 [P] [US3] Create image upscale skill (atomic) in skills/creative/image-upscale/SKILL.md
-- [ ] T038 [P] [US3] Create 3D mesh generation skill (atomic) in skills/creative/mesh-generate/SKILL.md
-- [ ] T039 [US3] Create skill composition utilities in skills/core/composer.py
-- [ ] T040 [US3] Test composition of multiple atomic skills
+- [x] T035 [P] [US3] Create image edit/inpaint skill (atomic) in skills/creative/image-edit/SKILL.md
+- [x] T036 [P] [US3] Create background removal skill (atomic) in skills/creative/background-remove/SKILL.md
+- [x] T037 [P] [US3] Create image upscale skill (atomic) in skills/creative/image-upscale/SKILL.md
+- [x] T038 [P] [US3] Create 3D mesh generation skill (atomic) in skills/creative/mesh-generate/SKILL.md
+- [x] T039 [US3] Create skill composition utilities in skills/core/composer.py
+- [x] T040 [US3] Test composition of multiple atomic skills
 
 **Checkpoint**: User Story 3 fully functional and testable independently
 
@@ -137,9 +137,9 @@
 **Independent Test**: Execute cross-product workflow combining skills from different domains
 
 ### Tests for User Story 4 (TDD - Write FIRST, must FAIL)
-- [ ] T041 [P] [US4] Property-based tests for orchestrator invariants in tests/property/test_us4_orchestrator.py
-- [ ] T042 [P] [US4] Contract tests for orchestrator interface in tests/contract/test_orchestrator.py
-- [ ] T043 [P] [US4] Integration tests for cross-product workflows in tests/integration/test_us4_crossproduct.py
+- [x] T041 [P] [US4] Property-based tests for orchestrator invariants in tests/property/test_us4_orchestrator.py
+- [x] T042 [P] [US4] Contract tests for orchestrator interface in tests/contract/test_orchestrator.py
+- [x] T043 [P] [US4] Integration tests for cross-product workflows in tests/integration/test_us4_crossproduct.py
 
 ### Implementation for User Story 4
 - [x] T044 [P] [US4] Implement workflow orchestrator/DAG engine in skills/workflow/orchestrator.py
@@ -159,9 +159,9 @@
 **Independent Test**: Use skills in non-MDMV contexts, demonstrating generalizability
 
 ### Tests for User Story 5 (TDD - Write FIRST, must FAIL)
-- [ ] T049 [P] [US5] Property-based tests for redaction invariants in tests/property/test_us5_redaction.py
-- [ ] T050 [P] [US5] Contract tests for workflow skills in tests/contract/test_mdmv_workflows.py
-- [ ] T051 [P] [US5] Integration tests for generalizability in tests/integration/test_us5_generalizable.py
+- [x] T049 [P] [US5] Property-based tests for redaction invariants in tests/property/test_us5_redaction.py
+- [x] T050 [P] [US5] Contract tests for workflow skills in tests/contract/test_mdmv_workflows.py
+- [x] T051 [P] [US5] Integration tests for generalizability in tests/integration/test_us5_generalizable.py
 
 ### Implementation for User Story 5
 - [x] T052 [P] [US5] Create policy-redaction middleware (generalizable) in skills/workflow/policy-redaction/SKILL.md

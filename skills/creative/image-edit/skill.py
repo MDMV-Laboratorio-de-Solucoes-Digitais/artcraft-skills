@@ -1,22 +1,19 @@
 """Image Edit Skill - CLI/MCP integration with ArtCraft apps."""
 
-from __future__ import annotations
+from typing import Any, Dict
 
-from collections.abc import Mapping
-from typing import Any, Dict, Optional
-
-from skills.core.base_skill import BaseSkill, SkillResult
-from skills.core import artcraft_app_client
 from skills.core.creative_skill import CreativeSkill
+from skills.core.base_skill import SkillResult
+from skills.core import artcraft_app_client
 
 
 class ImageEditSkill(CreativeSkill):
-    """Edit images via ArtCraft app CLI/MCP (no API)."""
+    """Edit images via ArtCraft app CLI or MCP (no API)."""
 
     def __init__(self):
         super().__init__(
             name="image-edit",
-            description="Edit images with inpainting, outpainting, and compositing capabilities using ArtCraft app CLI/MCP",
+            description="Edit existing images using ArtCraft app CLI/MCP",
             command_keywords=["edit", "inpaint", "outpaint", "composite", "modify", "change"],
         )
 
@@ -28,7 +25,7 @@ class ImageEditSkill(CreativeSkill):
                 "image": {"type": "string"},
                 "prompt": {"type": "string"},
                 "mask": {"type": "string"},
-                "mode_edit": {"type": "string", "enum": ["inpaint", "outpaint", "composite"]},
+                "mode_edit": {"type": "string"},
                 "model": {"type": "string"},
                 "strength": {"type": "number"},
                 "width": {"type": "number"},
@@ -40,6 +37,7 @@ class ImageEditSkill(CreativeSkill):
                 "mcp_config": {"type": "object"},
                 "command_keywords": {"type": "array"},
                 "generation_command": {"type": "string"},
+                "timeout": {"type": "number"},
             },
         }
 
@@ -60,7 +58,7 @@ class ImageEditSkill(CreativeSkill):
     def validate_inputs(self, inputs: Dict[str, Any]) -> bool:
         if not isinstance(inputs, dict):
             return False
-        if "image" not in inputs or not isinstance(inputs.get("image"), str) or not inputs.get("image").strip():
+        if "image" not in inputs or not inputs.get("image"):
             return False
         if "prompt" not in inputs or not isinstance(inputs.get("prompt"), str) or not inputs.get("prompt").strip():
             return False
@@ -72,33 +70,5 @@ class ImageEditSkill(CreativeSkill):
             return False
         return True
 
-    def _build_params(self, inputs: Mapping[str, Any]) -> dict[str, Any]:
-        """Build CLI generation params from validated inputs."""
-        params: dict[str, Any] = {
-            "image": inputs.get("image"),
-            "prompt": inputs.get("prompt"),
-        }
-        if inputs.get("mask"):
-            params["mask"] = inputs["mask"]
-        if inputs.get("mode_edit"):
-            params["mode"] = inputs["mode_edit"]
-        if inputs.get("model"):
-            params["model"] = inputs["model"]
-        if inputs.get("strength") is not None:
-            params["strength"] = inputs["strength"]
-        if inputs.get("width") is not None:
-            params["width"] = inputs["width"]
-        if inputs.get("height") is not None:
-            params["height"] = inputs["height"]
-        if inputs.get("aspect_ratio"):
-            params["aspect_ratio"] = inputs["aspect_ratio"]
-        if inputs.get("seed") is not None:
-            params["seed"] = inputs["seed"]
-        return params
-
-    def _get_default_keywords(self) -> list[str]:
-        return ["edit", "inpaint", "outpaint", "composite", "modify", "change"]
-
 
 __all__ = ["ImageEditSkill"]
-

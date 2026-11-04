@@ -30,12 +30,12 @@
         {
           "name": "background-remove",
           "path": "skills/creative/background-remove/SKILL.md",
-          "description": "Remove backgrounds and isolate subjects with precise matting"
+          "description": "Remove backgrounds from images"
         },
         {
           "name": "image-edit",
           "path": "skills/creative/image-edit/SKILL.md",
-          "description": "Edit images with inpainting, outpainting, and compositing capabilities"
+          "description": "Edit existing images using AI"
         },
         {
           "name": "image-generate",
@@ -45,12 +45,12 @@
         {
           "name": "image-upscale",
           "path": "skills/creative/image-upscale/SKILL.md",
-          "description": "Enhance and upscale images with AI-powered upscaling"
+          "description": "Upscale and enhance images"
         },
         {
           "name": "mesh-generate",
           "path": "skills/creative/mesh-generate/SKILL.md",
-          "description": "Generate 3D meshes from images or text prompts"
+          "description": "Generate 3D meshes from images or text"
         },
         {
           "name": "2d-to-3d-workflow",
@@ -117,12 +117,12 @@
         {
           "name": "background-remove",
           "path": "skills/creative/background-remove/SKILL.md",
-          "description": "Remove backgrounds and isolate subjects with precise matting"
+          "description": "Remove backgrounds from images"
         },
         {
           "name": "image-edit",
           "path": "skills/creative/image-edit/SKILL.md",
-          "description": "Edit images with inpainting, outpainting, and compositing capabilities"
+          "description": "Edit existing images using AI"
         },
         {
           "name": "image-generate",
@@ -132,12 +132,12 @@
         {
           "name": "image-upscale",
           "path": "skills/creative/image-upscale/SKILL.md",
-          "description": "Enhance and upscale images with AI-powered upscaling"
+          "description": "Upscale and enhance images"
         },
         {
           "name": "mesh-generate",
           "path": "skills/creative/mesh-generate/SKILL.md",
-          "description": "Generate 3D meshes from images or text prompts"
+          "description": "Generate 3D meshes from images or text"
         },
         {
           "name": "2d-to-3d-workflow",
@@ -202,12 +202,12 @@
         {
           "name": "background-remove",
           "path": "skills/creative/background-remove/SKILL.md",
-          "description": "Remove backgrounds and isolate subjects with precise matting"
+          "description": "Remove backgrounds from images"
         },
         {
           "name": "image-edit",
           "path": "skills/creative/image-edit/SKILL.md",
-          "description": "Edit images with inpainting, outpainting, and compositing capabilities"
+          "description": "Edit existing images using AI"
         },
         {
           "name": "image-generate",
@@ -217,12 +217,12 @@
         {
           "name": "image-upscale",
           "path": "skills/creative/image-upscale/SKILL.md",
-          "description": "Enhance and upscale images with AI-powered upscaling"
+          "description": "Upscale and enhance images"
         },
         {
           "name": "mesh-generate",
           "path": "skills/creative/mesh-generate/SKILL.md",
-          "description": "Generate 3D meshes from images or text prompts"
+          "description": "Generate 3D meshes from images or text"
         },
         {
           "name": "2d-to-3d-workflow",

@@ -26,7 +26,7 @@
 
 **Purpose**: Project initialization and basic structure per implementation plan
 
-- [ ] T001 Verify skill directory structure exists for all 4 skills under `skills/creative/`
+- [X] T001 Verify skill directory structure exists for all 4 skills under `skills/creative/`
 
 ---
 
@@ -36,7 +36,7 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T002 [P] [US1] Create `CreativeSkill` base class in `skills/core/creative_skill.py` encapsulating discover→resolve→invoke→normalize→degrade flow parameterized by name, description, keywords, and param builder
+- [X] T002 [P] [US1] Create `CreativeSkill` base class in `skills/core/creative_skill.py` encapsulating discover→resolve→invoke→normalize→degrade flow parameterized by name, description, keywords, and param builder
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -50,21 +50,21 @@
 
 ### Implementation for User Story 1
 
-- [ ] T003 [P] [US1]: Create `skills/creative/image-edit/skill.py` with `ImageEditSkill(BaseSkill)` class skeleton, `__init__` with name="image-edit", and `__all__`
-- [ ] T004 [US1]: Implement `ImageEditSkill.get_input_schema()` returning dict with required `image`, `prompt` and optional `mask`, `mode_edit`, `model`, `strength`, `width`, `height`, `aspect_ratio`, `seed`, `mode`, `cli_path`, `mcp_config`, `command_keywords`, `generation_command`
-- [ ] T005 [US1]: Implement `ImageEditSkill.get_output_schema()` returning dict with `image_url`, `image_path`, `asset_id`, `format`, `width`, `height`, `metadata`
-- [ ] T006 [US1]: Implement `ImageEditSkill.validate_inputs()` checking required `image` and `prompt`, optional `mode` enum, `width`/`height` > 0
-- [ ] T007 [P] [US1]: Implement `ImageEditSkill._discover_cli(cli_path)` delegating to `artcraft_app_client.discover_cli(cli_path)`
-- [ ] T008 [P] [US1]: Implement `ImageEditSkill._discover_generation_command(commands, keywords, override)` delegating to `artcraft_app_client.discover_generation_command()` with keywords `['edit', 'inpaint', 'outpaint', 'composite', 'modify', 'change']`
-- [ ] T009 [P] [US1]: Implement `ImageEditSkill._normalize_output(out)` delegating to `artcraft_app_client.normalize_output(out)`
-- [ ] T010 [P] [US1]: Implement `ImageEditSkill._normalize_mcp_config(cfg)` delegating to `artcraft_app_client.normalize_mcp_config(cfg)`
-- [ ] T011 [P] [US1]: Implement `ImageEditSkill._mcp_available(cfg)` returning `False` (default, MCP stub)
-- [ ] T012 [P] [US1]: Implement `ImageEditSkill._mcp_command_list(cfg)` returning `[]` (default, MCP stub)
-- [ ] T013 [P] [US1]: Implement `ImageEditSkill._mcp_command_run(cfg, tool_id, params, timeout)` returning `{"is_error": True, "error": "not implemented"}` (default, MCP stub)
-- [ ] T014 [US1]: Implement `ImageEditSkill._execute_cli(inputs, cli_path, mode)` discovering CLI, resolving command, running generation, normalizing output, handling errors/timeouts
-- [ ] T015 [US1]: Implement `ImageEditSkill._execute_mcp(inputs, mode)` delegating to MCP stubs with reason code `mcp_unavailable`
-- [ ] T016 [US1]: Implement `ImageEditSkill.execute(inputs)` with mode selection via `select_mode`, CLI/MCP dispatch, and graceful degradation with reason codes
-- [ ] T017 [US1]: Set `__all__ = ["ImageEditSkill"]` and verify module imports cleanly
+- [X] T003 [P] [US1]: Create `skills/creative/image-edit/skill.py` with `ImageEditSkill(BaseSkill)` class skeleton, `__init__` with name="image-edit", and `__all__`
+- [X] T004 [US1]: Implement `ImageEditSkill.get_input_schema()` returning dict with required `image`, `prompt` and optional `mask`, `mode_edit`, `model`, `strength`, `width`, `height`, `aspect_ratio`, `seed`, `mode`, `cli_path`, `mcp_config`, `command_keywords`, `generation_command`
+- [X] T005 [US1]: Implement `ImageEditSkill.get_output_schema()` returning dict with `image_url`, `image_path`, `asset_id`, `format`, `width`, `height`, `metadata`
+- [X] T006 [US1]: Implement `ImageEditSkill.validate_inputs()` checking required `image` and `prompt`, optional `mode` enum, `width`/`height` > 0
+- [X] T007 [P] [US1]: Implement `ImageEditSkill._discover_cli(cli_path)` delegating to `artcraft_app_client.discover_cli(cli_path)`
+- [X] T008 [P] [US1]: Implement `ImageEditSkill._discover_generation_command(commands, keywords, override)` delegating to `artcraft_app_client.discover_generation_command()` with keywords `['edit', 'inpaint', 'outpaint', 'composite', 'modify', 'change']`
+- [X] T009 [P] [US1]: Implement `ImageEditSkill._normalize_output(out)` delegating to `artcraft_app_client.normalize_output(out)`
+- [X] T010 [P] [US1]: Implement `ImageEditSkill._normalize_mcp_config(cfg)` delegating to `artcraft_app_client.normalize_mcp_config(cfg)`
+- [X] T011 [P] [US1]: Implement `ImageEditSkill._mcp_available(cfg)` returning `False` (default, MCP stub)
+- [X] T012 [P] [US1]: Implement `ImageEditSkill._mcp_command_list(cfg)` returning `[]` (default, MCP stub)
+- [X] T013 [P] [US1]: Implement `ImageEditSkill._mcp_command_run(cfg, tool_id, params, timeout)` returning `{"is_error": True, "error": "not implemented"}` (default, MCP stub)
+- [X] T014 [US1]: Implement `ImageEditSkill._execute_cli(inputs, cli_path, mode)` discovering CLI, resolving command, running generation, normalizing output, handling errors/timeouts
+- [X] T015 [US1]: Implement `ImageEditSkill._execute_mcp(inputs, mode)` delegating to MCP stubs with reason code `mcp_unavailable`
+- [X] T016 [US1]: Implement `ImageEditSkill.execute(inputs)` with mode selection via `select_mode`, CLI/MCP dispatch, and graceful degradation with reason codes
+- [X] T017 [US1]: Set `__all__ = ["ImageEditSkill"]` and verify module imports cleanly
 
 **Checkpoint**: At this point, User Story 1 should be fully functional and testable independently
 
@@ -78,21 +78,21 @@
 
 ### Implementation for User Story 2
 
-- [ ] T018 [P] [US2]: Create `skills/creative/background-remove/skill.py` with `BackgroundRemoveSkill(BaseSkill)` class skeleton, `__init__` with name="background-remove", and `__all__`
-- [ ] T019 [US2]: Implement `BackgroundRemoveSkill.get_input_schema()` returning dict with required `image` and optional `model`, `return_mask`, `mode`, `cli_path`, `mcp_config`, `command_keywords`, `generation_command`
-- [ ] T020 [US2]: Implement `BackgroundRemoveSkill.get_output_schema()` returning dict with `image_url`, `image_path`, `mask_url`, `asset_id`, `format`, `metadata`
-- [ ] T021 [US2]: Implement `BackgroundRemoveSkill.validate_inputs()` checking required `image`, optional `model`, `return_mask`, `mode` enum
-- [ ] T022 [P] [US2]: Implement `BackgroundRemoveSkill._discover_cli(cli_path)` delegating to `artcraft_app_client.discover_cli(cli_path)`
-- [ ] T023 [P] [US2]: Implement `BackgroundRemoveSkill._discover_generation_command(commands, keywords, override)` delegating to `artcraft_app_client.discover_generation_command()` with keywords `['background', 'remove', 'matting', 'cutout', 'isolate']`
-- [ ] T024 [P] [US2]: Implement `BackgroundRemoveSkill._normalize_output(out)` delegating to `artcraft_app_client.normalize_output(out)`
-- [ ] T025 [P] [US2]: Implement `BackgroundRemoveSkill._normalize_mcp_config(cfg)` delegating to `artcraft_app_client.normalize_mcp_config(cfg)`
-- [ ] T026 [P] [US2]: Implement `BackgroundRemoveSkill._mcp_available(cfg)` returning `False` (default, MCP stub)
-- [ ] T027 [P] [US2]: Implement `BackgroundRemoveSkill._mcp_command_list(cfg)` returning `[]` (default, MCP stub)
-- [ ] T028 [P] [US2]: Implement `BackgroundRemoveSkill._mcp_command_run(cfg, tool_id, params, timeout)` returning `{"is_error": True, "error": "not implemented"}` (default, MCP stub)
-- [ ] T029 [US2]: Implement `BackgroundRemoveSkill._execute_cli(inputs, cli_path, mode)` discovering CLI, resolving command, running generation, normalizing output, handling errors/timeouts
-- [ ] T030 [US2]: Implement `BackgroundRemoveSkill._execute_mcp(inputs, mode)` delegating to MCP stubs with reason code `mcp_unavailable`
-- [ ] T031 [US2]: Implement `BackgroundRemoveSkill.execute(inputs)` with mode selection via `select_mode`, CLI/MCP dispatch, and graceful degradation with reason codes
-- [ ] T032 [US2]: Set `__all__ = ["BackgroundRemoveSkill"]` and verify module imports cleanly
+- [X] T018 [P] [US2]: Create `skills/creative/background-remove/skill.py` with `BackgroundRemoveSkill(BaseSkill)` class skeleton, `__init__` with name="background-remove", and `__all__`
+- [X] T019 [US2]: Implement `BackgroundRemoveSkill.get_input_schema()` returning dict with required `image` and optional `model`, `return_mask`, `mode`, `cli_path`, `mcp_config`, `command_keywords`, `generation_command`
+- [X] T020 [US2]: Implement `BackgroundRemoveSkill.get_output_schema()` returning dict with `image_url`, `image_path`, `mask_url`, `asset_id`, `format`, `metadata`
+- [X] T021 [US2]: Implement `BackgroundRemoveSkill.validate_inputs()` checking required `image`, optional `model`, `return_mask`, `mode` enum
+- [X] T022 [P] [US2]: Implement `BackgroundRemoveSkill._discover_cli(cli_path)` delegating to `artcraft_app_client.discover_cli(cli_path)`
+- [X] T023 [P] [US2]: Implement `BackgroundRemoveSkill._discover_generation_command(commands, keywords, override)` delegating to `artcraft_app_client.discover_generation_command()` with keywords `['background', 'remove', 'matting', 'cutout', 'isolate']`
+- [X] T024 [P] [US2]: Implement `BackgroundRemoveSkill._normalize_output(out)` delegating to `artcraft_app_client.normalize_output(out)`
+- [X] T025 [P] [US2]: Implement `BackgroundRemoveSkill._normalize_mcp_config(cfg)` delegating to `artcraft_app_client.normalize_mcp_config(cfg)`
+- [X] T026 [P] [US2]: Implement `BackgroundRemoveSkill._mcp_available(cfg)` returning `False` (default, MCP stub)
+- [X] T027 [P] [US2]: Implement `BackgroundRemoveSkill._mcp_command_list(cfg)` returning `[]` (default, MCP stub)
+- [X] T028 [P] [US2]: Implement `BackgroundRemoveSkill._mcp_command_run(cfg, tool_id, params, timeout)` returning `{"is_error": True, "error": "not implemented"}` (default, MCP stub)
+- [X] T029 [US2]: Implement `BackgroundRemoveSkill._execute_cli(inputs, cli_path, mode)` discovering CLI, resolving command, running generation, normalizing output, handling errors/timeouts
+- [X] T030 [US2]: Implement `BackgroundRemoveSkill._execute_mcp(inputs, mode)` delegating to MCP stubs with reason code `mcp_unavailable`
+- [X] T031 [US2]: Implement `BackgroundRemoveSkill.execute(inputs)` with mode selection via `select_mode`, CLI/MCP dispatch, and graceful degradation with reason codes
+- [X] T032 [US2]: Set `__all__ = ["BackgroundRemoveSkill"]` and verify module imports cleanly
 
 **Checkpoint**: At this point, User Story 2 should be fully functional and testable independently
 
@@ -106,39 +106,39 @@
 
 ### Implementation for User Story 3 - Part A: image-upscale
 
-- [ ] T033 [P] [US3]: Create `skills/creative/image-upscale/skill.py` with `ImageUpscaleSkill(BaseSkill)` class skeleton, `__init__` with name="image-upscale", and `__all__`
-- [ ] T034 [US3]: Implement `ImageUpscaleSkill.get_input_schema()` returning dict with required `image` and optional `scale`, `model`, `enhance`, `mode`, `cli_path`, `mcp_config`, `command_keywords`, `generation_command`
-- [ ] T035 [US3]: Implement `ImageUpscaleSkill.get_output_schema()` returning dict with `image_url`, `image_path`, `asset_id`, `format`, `width`, `height`, `metadata`
-- [ ] T036 [US3]: Implement `ImageUpscaleSkill.validate_inputs()` checking required `image`, optional `scale`, `model`, `enhance`, `mode` enum
-- [ ] T037 [P] [US3]: Implement `ImageUpscaleSkill._discover_cli(cli_path)` delegating to `artcraft_app_client.discover_cli(cli_path)`
-- [ ] T038 [P] [US3]: Implement `ImageUpscaleSkill._discover_generation_command(commands, keywords, override)` delegating to `artcraft_app_client.discover_generation_command()` with keywords `['upscale', 'enhance', 'super-resolution', 'scale', 'resize']`
-- [ ] T039 [P] [US3]: Implement `ImageUpscaleSkill._normalize_output(out)` delegating to `artcraft_app_client.normalize_output(out)`
-- [ ] T040 [P] [US3]: Implement `ImageUpscaleSkill._normalize_mcp_config(cfg)` delegating to `artcraft_app_client.normalize_mcp_config(cfg)`
-- [ ] T041 [P] [US3]: Implement `ImageUpscaleSkill._mcp_available(cfg)` returning `False` (default, MCP stub)
-- [ ] T042 [P] [US3]: Implement `ImageUpscaleSkill._mcp_command_list(cfg)` returning `[]` (default, MCP stub)
-- [ ] T043 [P] [US3]: Implement `ImageUpscaleSkill._mcp_command_run(cfg, tool_id, params, timeout)` returning `{"is_error": True, "error": "not implemented"}` (default, MCP stub)
-- [ ] T044 [US3]: Implement `ImageUpscaleSkill._execute_cli(inputs, cli_path, mode)` discovering CLI, resolving command, running generation, normalizing output, handling errors/timeouts
-- [ ] T045 [US3]: Implement `ImageUpscaleSkill._execute_mcp(inputs, mode)` delegating to MCP stubs with reason code `mcp_unavailable`
-- [ ] T046 [US3]: Implement `ImageUpscaleSkill.execute(inputs)` with mode selection via `select_mode`, CLI/MCP dispatch, and graceful degradation with reason codes
-- [ ] T047 [US3]: Set `__all__ = ["ImageUpscaleSkill"]` and verify module imports cleanly
+- [X] T033 [P] [US3]: Create `skills/creative/image-upscale/skill.py` with `ImageUpscaleSkill(BaseSkill)` class skeleton, `__init__` with name="image-upscale", and `__all__`
+- [X] T034 [US3]: Implement `ImageUpscaleSkill.get_input_schema()` returning dict with required `image` and optional `scale`, `model`, `enhance`, `mode`, `cli_path`, `mcp_config`, `command_keywords`, `generation_command`
+- [X] T035 [US3]: Implement `ImageUpscaleSkill.get_output_schema()` returning dict with `image_url`, `image_path`, `asset_id`, `format`, `width`, `height`, `metadata`
+- [X] T036 [US3]: Implement `ImageUpscaleSkill.validate_inputs()` checking required `image`, optional `scale`, `model`, `enhance`, `mode` enum
+- [X] T037 [P] [US3]: Implement `ImageUpscaleSkill._discover_cli(cli_path)` delegating to `artcraft_app_client.discover_cli(cli_path)`
+- [X] T038 [P] [US3]: Implement `ImageUpscaleSkill._discover_generation_command(commands, keywords, override)` delegating to `artcraft_app_client.discover_generation_command()` with keywords `['upscale', 'enhance', 'super-resolution', 'scale', 'resize']`
+- [X] T039 [P] [US3]: Implement `ImageUpscaleSkill._normalize_output(out)` delegating to `artcraft_app_client.normalize_output(out)`
+- [X] T040 [P] [US3]: Implement `ImageUpscaleSkill._normalize_mcp_config(cfg)` delegating to `artcraft_app_client.normalize_mcp_config(cfg)`
+- [X] T041 [P] [US3]: Implement `ImageUpscaleSkill._mcp_available(cfg)` returning `False` (default, MCP stub)
+- [X] T042 [P] [US3]: Implement `ImageUpscaleSkill._mcp_command_list(cfg)` returning `[]` (default, MCP stub)
+- [X] T043 [P] [US3]: Implement `ImageUpscaleSkill._mcp_command_run(cfg, tool_id, params, timeout)` returning `{"is_error": True, "error": "not implemented"}` (default, MCP stub)
+- [X] T044 [US3]: Implement `ImageUpscaleSkill._execute_cli(inputs, cli_path, mode)` discovering CLI, resolving command, running generation, normalizing output, handling errors/timeouts
+- [X] T045 [US3]: Implement `ImageUpscaleSkill._execute_mcp(inputs, mode)` delegating to MCP stubs with reason code `mcp_unavailable`
+- [X] T046 [US3]: Implement `ImageUpscaleSkill.execute(inputs)` with mode selection via `select_mode`, CLI/MCP dispatch, and graceful degradation with reason codes
+- [X] T047 [US3]: Set `__all__ = ["ImageUpscaleSkill"]` and verify module imports cleanly
 
 ### Implementation for User Story 3 - Part B: mesh-generate
 
-- [ ] T048 [P] [US3]: Create `skills/creative/mesh-generate/skill.py` with `MeshGenerateSkill(BaseSkill)` class skeleton, `__init__` with name="mesh-generate", and `__all__`
-- [ ] T049 [US3]: Implement `MeshGenerateSkill.get_input_schema()` returning dict with optional `prompt`, `image` (at least one required), `model`, `format`, `mode`, `cli_path`, `mcp_config`, `command_keywords`, `generation_command`
-- [ ] T050 [US3]: Implement `MeshGenerateSkill.get_output_schema()` returning dict with `mesh_url`, `mesh_path`, `asset_id`, `format`, `metadata`
-- [ ] T051 [US3]: Implement `MeshGenerateSkill.validate_inputs()` checking at least one of `prompt` or `image` provided, optional `model`, `format`, `mode` enum
-- [ ] T052 [P] [US3]: Implement `MeshGenerateSkill._discover_cli(cli_path)` delegating to `artcraft_app_client.discover_cli(cli_path)`
-- [ ] T053 [P] [US3]: Implement `MeshGenerateSkill._discover_generation_command(commands, keywords, override)` delegating to `artcraft_app_client.discover_generation_command()` with keywords `['mesh', '3d', 'mesh.generate', 'image-to-3d', 'model']`
-- [ ] T054 [P] [US3]: Implement `MeshGenerateSkill._normalize_output(out)` delegating to `artcraft_app_client.normalize_output(out)`
-- [ ] T055 [P] [US3]: Implement `MeshGenerateSkill._normalize_mcp_config(cfg)` delegating to `artcraft_app_client.normalize_mcp_config(cfg)`
-- [ ] T056 [P] [US3]: Implement `MeshGenerateSkill._mcp_available(cfg)` returning `False` (default, MCP stub)
-- [ ] T057 [P] [US3]: Implement `MeshGenerateSkill._mcp_command_list(cfg)` returning `[]` (default, MCP stub)
-- [ ] T058 [P] [US3]: Implement `MeshGenerateSkill._mcp_command_run(cfg, tool_id, params, timeout)` returning `{"is_error": True, "error": "not implemented"}` (default, MCP stub)
-- [ ] T059 [US3]: Implement `MeshGenerateSkill._execute_cli(inputs, cli_path, mode)` discovering CLI, resolving command, running generation, normalizing output, handling errors/timeouts
-- [ ] T060 [US3]: Implement `MeshGenerateSkill._execute_mcp(inputs, mode)` delegating to MCP stubs with reason code `mcp_unavailable`
-- [ ] T061 [US3]: Implement `MeshGenerateSkill.execute(inputs)` with mode selection via `select_mode`, CLI/MCP dispatch, and graceful degradation with reason codes
-- [ ] T062 [US3]: Set `__all__ = ["MeshGenerateSkill"]` and verify module imports cleanly
+- [X] T048 [P] [US3]: Create `skills/creative/mesh-generate/skill.py` with `MeshGenerateSkill(BaseSkill)` class skeleton, `__init__` with name="mesh-generate", and `__all__`
+- [X] T049 [US3]: Implement `MeshGenerateSkill.get_input_schema()` returning dict with optional `prompt`, `image` (at least one required), `model`, `format`, `mode`, `cli_path`, `mcp_config`, `command_keywords`, `generation_command`
+- [X] T050 [US3]: Implement `MeshGenerateSkill.get_output_schema()` returning dict with `mesh_url`, `mesh_path`, `asset_id`, `format`, `metadata`
+- [X] T051 [US3]: Implement `MeshGenerateSkill.validate_inputs()` checking at least one of `prompt` or `image` provided, optional `model`, `format`, `mode` enum
+- [X] T052 [P] [US3]: Implement `MeshGenerateSkill._discover_cli(cli_path)` delegating to `artcraft_app_client.discover_cli(cli_path)`
+- [X] T053 [P] [US3]: Implement `MeshGenerateSkill._discover_generation_command(commands, keywords, override)` delegating to `artcraft_app_client.discover_generation_command()` with keywords `['mesh', '3d', 'mesh.generate', 'image-to-3d', 'model']`
+- [X] T054 [P] [US3]: Implement `MeshGenerateSkill._normalize_output(out)` delegating to `artcraft_app_client.normalize_output(out)`
+- [X] T055 [P] [US3]: Implement `MeshGenerateSkill._normalize_mcp_config(cfg)` delegating to `artcraft_app_client.normalize_mcp_config(cfg)`
+- [X] T056 [P] [US3]: Implement `MeshGenerateSkill._mcp_available(cfg)` returning `False` (default, MCP stub)
+- [X] T057 [P] [US3]: Implement `MeshGenerateSkill._mcp_command_list(cfg)` returning `[]` (default, MCP stub)
+- [X] T058 [P] [US3]: Implement `MeshGenerateSkill._mcp_command_run(cfg, tool_id, params, timeout)` returning `{"is_error": True, "error": "not implemented"}` (default, MCP stub)
+- [X] T059 [US3]: Implement `MeshGenerateSkill._execute_cli(inputs, cli_path, mode)` discovering CLI, resolving command, running generation, normalizing output, handling errors/timeouts
+- [X] T060 [US3]: Implement `MeshGenerateSkill._execute_mcp(inputs, mode)` delegating to MCP stubs with reason code `mcp_unavailable`
+- [X] T061 [US3]: Implement `MeshGenerateSkill.execute(inputs)` with mode selection via `select_mode`, CLI/MCP dispatch, and graceful degradation with reason codes
+- [X] T062 [US3]: Set `__all__ = ["MeshGenerateSkill"]` and verify module imports cleanly
 
 **Checkpoint**: All user stories should now be independently functional
 
@@ -148,15 +148,15 @@
 
 **Purpose**: Improvements that affect multiple user stories
 
-- [ ] T063 [P] Run `python scripts/validate_skill.py skills/creative/image-edit` and verify passes
-- [ ] T064 [P] Run `python scripts/validate_skill.py skills/creative/background-remove` and verify passes
-- [ ] T065 [P] Run `python scripts/validate_skill.py skills/creative/image-upscale` and verify passes
-- [ ] T066 [P] Run `python scripts/validate_skill.py skills/creative/mesh-generate` and verify passes
-- [ ] T067 [P] Run `python scripts/validate_all_skills.py` and verify all 12 skills valid
-- [ ] T068 [P] Run `python -m pytest` and verify no regressions (baseline 278 tests)
-- [ ] T069 Verify `CreativeSkill` base class is importable from `skills.core`
-- [ ] T070 [P] Review each skill's `SKILL.md` schema matches its `skill.py` `get_input_schema()`/`get_output_schema()` (SC-004)
-- [ ] T071 [P] Verify each skill degrades gracefully with reason codes when CLI/MCP unavailable (SC-005)
+- [X] T063 [P] Run `python scripts/validate_skill.py skills/creative/image-edit` and verify passes
+- [X] T064 [P] Run `python scripts/validate_skill.py skills/creative/background-remove` and verify passes
+- [X] T065 [P] Run `python scripts/validate_skill.py skills/creative/image-upscale` and verify passes
+- [X] T066 [P] Run `python scripts/validate_skill.py skills/creative/mesh-generate` and verify passes
+- [X] T067 [P] Run `python scripts/validate_all_skills.py` and verify all 12 skills valid
+- [X] T068 [P] Run `python -m pytest` and verify no regressions (baseline 278 tests)
+- [X] T069 Verify `CreativeSkill` base class is importable from `skills.core`
+- [X] T070 [P] Review each skill's `SKILL.md` schema matches its `skill.py` `get_input_schema()`/`get_output_schema()` (SC-004)
+- [X] T071 [P] Verify each skill degrades gracefully with reason codes when CLI/MCP unavailable (SC-005)
 
 **Checkpoint**: All 4 creative skills have executable `skill.py` files, all validate, and no regressions in the full test suite
 

@@ -1,0 +1,9 @@
+{
+  "data": null,
+  "error": "CLI not found: photocraft-cli",
+  "metadata": {
+    "mode": "cli",
+    "reason": "cli_not_found"
+  },
+  "success": false
+}

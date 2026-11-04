@@ -1,0 +1,18 @@
+{
+  "data": {
+    "asset_id": null,
+    "format": null,
+    "height": null,
+    "image_path": "/z.png",
+    "image_url": null,
+    "metadata": null,
+    "width": null
+  },
+  "error": null,
+  "metadata": {
+    "command": "forced",
+    "interface": "cli",
+    "mode": "cli"
+  },
+  "success": true
+}

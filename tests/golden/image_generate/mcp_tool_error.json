@@ -1,0 +1,9 @@
+{
+  "data": null,
+  "error": "bad tool",
+  "metadata": {
+    "is_error": true,
+    "mode": "mcp"
+  },
+  "success": false
+}

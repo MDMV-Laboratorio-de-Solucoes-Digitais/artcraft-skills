@@ -333,3 +333,29 @@ def test_standardize_error_none_metadata():
 def test_standardize_error_retryable_type():
     res = A.standardize_error("mcp_unavailable", "x", {})
     assert isinstance(res["retryable"], bool)
+
+# ---------- future-skill flexibility (US3) ----------
+def test_future_skill_custom_keywords_and_override():
+    cmds = {"commands": [{"id": "img.edit", "label": "edit image"}]}
+    assert A.discover_generation_command(cmds, keywords=["edit"], override=None) == "img.edit"
+    assert A.discover_generation_command(cmds, keywords=["nope"], override="forced.cmd") == "forced.cmd"
+
+
+def test_future_skill_arbitrary_normalize_keys():
+    out = {"mesh_url": "m", "vertex_count": 10}
+    res = A.normalize_output(out, keys=["mesh_url", "vertex_count"])
+    assert res == {"mesh_url": "m", "vertex_count": 10}
+
+
+def test_future_skill_select_mode_all_combinations():
+    for cli in (True, False):
+        for mcp in (True, False):
+            mode = A.select_mode("auto", cli, mcp)
+            if cli:
+                assert mode == "cli"
+            elif mcp:
+                assert mode == "mcp"
+            else:
+                assert mode == "none"
+    assert A.select_mode("cli", False, False) == "cli"
+    assert A.select_mode("mcp", False, False) == "mcp"

@@ -359,3 +359,15 @@ def test_future_skill_select_mode_all_combinations():
                 assert mode == "none"
     assert A.select_mode("cli", False, False) == "cli"
     assert A.select_mode("mcp", False, False) == "mcp"
+
+# ---------- reason-code constants (convergence) ----------
+def test_reason_constants_exist_and_equal_wire_strings():
+    assert A.REASON_CLI_NOT_FOUND == "cli_not_found"
+    assert A.REASON_MCP_UNAVAILABLE == "mcp_unavailable"
+    assert A.REASON_NEITHER_AVAILABLE == "neither_available"
+    assert A.REASON_IS_ERROR == "is_error"
+
+
+def test_reason_constants_importable():
+    from skills.core import artcraft_app_client as m
+    assert m.REASON_CLI_NOT_FOUND is not None

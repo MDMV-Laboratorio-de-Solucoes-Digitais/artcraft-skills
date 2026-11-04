@@ -14,7 +14,12 @@ import subprocess
 from collections.abc import Mapping, Sequence
 from typing import Any
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
+
+REASON_CLI_NOT_FOUND = "cli_not_found"
+REASON_MCP_UNAVAILABLE = "mcp_unavailable"
+REASON_NEITHER_AVAILABLE = "neither_available"
+REASON_IS_ERROR = "is_error"
 
 
 def discover_cli(cli_path: str | None = None) -> str | None:

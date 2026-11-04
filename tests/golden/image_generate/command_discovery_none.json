@@ -1,0 +1,9 @@
+{
+  "data": null,
+  "error": "No image-generation capability found in app version (/bin/cli)",
+  "metadata": {
+    "cli_path": "/bin/cli",
+    "mode": "cli"
+  },
+  "success": false
+}

@@ -1,0 +1,9 @@
+{
+  "data": null,
+  "error": "MCP server unavailable",
+  "metadata": {
+    "mode": "mcp",
+    "reason": "mcp_unavailable"
+  },
+  "success": false
+}

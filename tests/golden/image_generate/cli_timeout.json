@@ -1,0 +1,9 @@
+{
+  "data": null,
+  "error": "Operation timed out after 300s",
+  "metadata": {
+    "mode": "cli",
+    "timeout_s": 300
+  },
+  "success": false
+}

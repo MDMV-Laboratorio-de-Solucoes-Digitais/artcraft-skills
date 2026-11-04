@@ -1,0 +1,12 @@
+{
+  "data": null,
+  "error": "boom",
+  "metadata": {
+    "command": "generate",
+    "duration_ms": null,
+    "exit_code": 1,
+    "mode": "cli",
+    "timeout_s": 300
+  },
+  "success": false
+}

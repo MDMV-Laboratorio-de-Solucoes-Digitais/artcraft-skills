@@ -1,0 +1,18 @@
+{
+  "data": {
+    "asset_id": null,
+    "format": null,
+    "height": null,
+    "image_path": "/tmp/img.png",
+    "image_url": null,
+    "metadata": null,
+    "width": 64
+  },
+  "error": null,
+  "metadata": {
+    "command": "generate",
+    "interface": "cli",
+    "mode": "cli"
+  },
+  "success": true
+}

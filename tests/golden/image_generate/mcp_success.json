@@ -1,0 +1,18 @@
+{
+  "data": {
+    "asset_id": null,
+    "format": null,
+    "height": null,
+    "image_path": "/m.png",
+    "image_url": null,
+    "metadata": null,
+    "width": 10
+  },
+  "error": null,
+  "metadata": {
+    "interface": "mcp",
+    "mode": "mcp",
+    "tool": "generate"
+  },
+  "success": true
+}

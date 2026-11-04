@@ -1,0 +1,9 @@
+{
+  "data": null,
+  "error": "No ArtCraft interface available (CLI or MCP)",
+  "metadata": {
+    "mode": "auto",
+    "reason": "neither_available"
+  },
+  "success": false
+}

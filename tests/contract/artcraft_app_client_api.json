@@ -10,7 +10,8 @@
     "discover_cli_commands",
     "run_cli_generation",
     "select_mode",
-    "standardize_error"
+    "standardize_error",
+    "generate_via_editing_commands"
   ],
   "functions": {
     "discover_cli": {

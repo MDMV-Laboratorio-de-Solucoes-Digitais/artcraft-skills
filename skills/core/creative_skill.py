@@ -2,6 +2,9 @@
 
 import json
 import subprocess
+import threading
+import time
+import random
 from typing import Any, Dict, Optional, List
 
 from skills.core.base_skill import BaseSkill, SkillResult
@@ -14,6 +17,9 @@ class CreativeSkill(BaseSkill):
     def __init__(self, name: str, description: str, command_keywords: Optional[List[str]] = None):
         super().__init__(name=name, description=description)
         self._command_keywords = command_keywords or []
+        self._cli_semaphore = threading.BoundedSemaphore(3)
+        self._max_retries = 3
+        self._retry_backoff_base = 0.5
 
     def _discover_cli(self, cli_path: Optional[str] = None) -> Optional[str]:
         return artcraft_app_client.discover_cli(cli_path)
@@ -75,39 +81,58 @@ class CreativeSkill(BaseSkill):
         keywords = inputs.get("command_keywords") or self._command_keywords
         override = inputs.get("generation_command")
         timeout = inputs.get("timeout") or 300
-        try:
-            cmds = artcraft_app_client.discover_cli_commands(cli_path, timeout)
-            gen_cmd = self._discover_generation_command(cmds, keywords, override)
-            if not gen_cmd:
-                return SkillResult(
+        last_error = None
+        for attempt in range(self._max_retries):
+            try:
+                with self._cli_semaphore:
+                    cmds = artcraft_app_client.discover_cli_commands(cli_path, timeout)
+                    gen_cmd = self._discover_generation_command(cmds, keywords, override)
+                    if not gen_cmd:
+                        return SkillResult(
+                            success=False,
+                            error=f"No image-generation capability found in app version ({cli_path})",
+                            metadata={"mode": mode, "cli_path": cli_path},
+                        )
+                    params = self._build_cli_params(inputs)
+                    res = artcraft_app_client.run_cli_generation(cli_path, gen_cmd, params, timeout)
+                    if res.returncode != 0:
+                        last_error = SkillResult(
+                            success=False,
+                            error=res.stderr or "CLI command failed",
+                            metadata={"mode": mode, "exit_code": res.returncode, "command": gen_cmd, "duration_ms": None, "timeout_s": timeout},
+                        )
+                        if attempt < self._max_retries - 1:
+                            sleep_time = self._retry_backoff_base * (2 ** attempt) + random.uniform(0, 0.1)
+                            time.sleep(sleep_time)
+                            continue
+                        return last_error
+                    out = {}
+                    if res.stdout:
+                        try:
+                            out = json.loads(res.stdout)
+                        except Exception:
+                            out = {"image_path": res.stdout.strip()}
+                    data = self._normalize_output(out)
+                    return SkillResult(success=True, data=data, metadata={"mode": mode, "command": gen_cmd, "interface": "cli"})
+            except subprocess.TimeoutExpired:
+                last_error = SkillResult(
                     success=False,
-                    error=f"No image-generation capability found in app version ({cli_path})",
-                    metadata={"mode": mode, "cli_path": cli_path},
+                    error=f"Operation timed out after {timeout}s",
+                    metadata={"mode": mode, "timeout_s": timeout},
                 )
-            params = self._build_cli_params(inputs)
-            res = artcraft_app_client.run_cli_generation(cli_path, gen_cmd, params, timeout)
-            if res.returncode != 0:
-                return SkillResult(
-                    success=False,
-                    error=res.stderr or "CLI command failed",
-                    metadata={"mode": mode, "exit_code": res.returncode, "command": gen_cmd, "duration_ms": None, "timeout_s": timeout},
-                )
-            out = {}
-            if res.stdout:
-                try:
-                    out = json.loads(res.stdout)
-                except Exception:
-                    out = {"image_path": res.stdout.strip()} if hasattr(self, '_output_is_mesh') and getattr(self, '_output_is_mesh') else {"image_path": res.stdout.strip()}
-            data = self._normalize_output(out)
-            return SkillResult(success=True, data=data, metadata={"mode": mode, "command": gen_cmd, "interface": "cli"})
-        except subprocess.TimeoutExpired:
-            return SkillResult(
-                success=False,
-                error=f"Operation timed out after {timeout}s",
-                metadata={"mode": mode, "timeout_s": timeout},
-            )
-        except Exception as e:
-            return SkillResult(success=False, error=str(e), metadata={"mode": mode})
+                if attempt < self._max_retries - 1:
+                    sleep_time = self._retry_backoff_base * (2 ** attempt) + random.uniform(0, 0.1)
+                    time.sleep(sleep_time)
+                    continue
+                return last_error
+            except Exception as e:
+                last_error = SkillResult(success=False, error=str(e), metadata={"mode": mode})
+                if attempt < self._max_retries - 1:
+                    sleep_time = self._retry_backoff_base * (2 ** attempt) + random.uniform(0, 0.1)
+                    time.sleep(sleep_time)
+                    continue
+                return last_error
+        return last_error or SkillResult(success=False, error="Unknown error", metadata={"mode": mode})
 
     def _execute_mcp(self, inputs: Dict[str, Any], mode: str) -> SkillResult:
         cfg = inputs.get("mcp_config") or {}
@@ -135,14 +160,8 @@ class CreativeSkill(BaseSkill):
 
     def execute(self, inputs: Dict[str, Any]) -> SkillResult:
         if not self.validate_inputs(inputs):
-            # Try to give specific error messages like image-generate does
-            if isinstance(inputs, dict):
-                if self.name == "image-generate" or "prompt" in getattr(self, '_required_for_prompt', []):
-                    pass  # handle below
-            # Generic validation error
             if not isinstance(inputs, dict):
                 return SkillResult(success=False, error="Invalid input", metadata={})
-            # Common cases
             if "prompt" in self.get_input_schema().get("required", []) and ("prompt" not in inputs or not isinstance(inputs.get("prompt"), str) or not inputs.get("prompt").strip()):
                 return SkillResult(success=False, error="Invalid input: prompt: required", metadata={})
             if "image" in self.get_input_schema().get("required", []) and ("image" not in inputs or not inputs.get("image")):

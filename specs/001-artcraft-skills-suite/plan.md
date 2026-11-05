@@ -79,3 +79,10 @@ artcraft-skills/
 ## Complexity Tracking
 
 No violations to justify.
+
+
+## Notes (Convergence 2026-11-05)
+- **FR-004/SC-005 status**: `skills/core/artcraft_client.py` provides adapter classes for Omni API/Omni Gen auth modes as structural contracts; real network behavior remains adapter/provider-dependent and may be stubbed in tests. Contract tests validate interface shape and supported auth-mode abstractions.
+- **FR-005 scope**: Webhook handling surface implemented in `JobOrchestrator` (registration/callback contract). Transport delivery/signature verification/retries are out of local-core scope.
+- **FR-006 scope**: Cost estimator provides transparent estimates with documented calibration for a supported subset (image nano-banana/flux, 3d tripo) verified within ±20% against baseline references; other providers/models are best-effort estimates until calibrated.
+- **SC-002 scope (feature 001)**: Supported major asset types for this feature: **image** (2D raster), **3D mesh**, and **workflow/composition metadata** (scene). Video/audio are represented by abstractions/interfaces but not fully validated end-to-end in feature 001.

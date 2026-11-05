@@ -105,7 +105,7 @@ As a MDMV team member, I need generalizable skills derived from our project need
 - **FR-002**: System MUST support skill discovery and loading compatible with Claude Code, Cursor, Codex, Gemini, OpenCode, and other agentskills.io compatible agents
 - **FR-003**: System MUST provide core abstractions for model/provider routing supporting ArtCraft's 60+ model ecosystem
 - **FR-004**: System MUST provide ArtCraft API adapters supporting both session auth (/v1/omni_gen/*) and API key auth (/v1/omni_api/*)
-- **FR-005**: System MUST handle async job-based generation with submission, polling, webhook support, and result retrieval
+- **FR-005**: System MUST handle async job-based generation with submission, polling, and result retrieval. **Webhook support (feature 001 scope)**: `JobOrchestrator` MUST provide a webhook handling surface (registration + inbound callback contract/payload validation) for adapter integration; transport-level delivery, signature verification, and retries are adapter/provider responsibilities and MAY be stubbed in local/test mode.
 - **FR-006**: System MUST provide cost estimation and transparency before executing paid operations; estimates MUST be within ±20% of actual billed cost for supported providers, and MUST include model, token/credit count, and currency in the estimate.
 - **FR-007**: System MUST support atomic skills (single responsibility) with clear input/output contracts
 - **FR-008**: System MUST support orchestrator/workflow skills for composing atomic skills

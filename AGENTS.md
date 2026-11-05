@@ -2,97 +2,146 @@
 
 ## Project Overview
 
-ArtCraft Skills Suite: open-source, composable AI agent skills ecosystem following the [agentskills.io](https://agentskills.io) standard. Skills provide "build before generating" workflows across 2D/raster, vector, 3D/spatial, video/motion, audio, documents/presentations, and CAD/technical design. Two implementation tiers: declarative `SKILL.md` skills (most creative/integration/workflow) and Python `BaseSkill` subclasses (image-generate and shared adapter). Governed by `.specify/memory/constitution.md` (v2.0.0).
+ArtCraft Skills Suite: an open-source, composable AI agent skills ecosystem following the [agentskills.io](https://agentskills.io) standard. It provides "build before generating" workflows across creative domains (raster, vector, 3D/spatial, video/motion, audio, documents/presentations, CAD/technical design). 
+
+- **Implementation tiers**: Declarative `SKILL.md` skills (YAML frontmatter + Markdown) for most workflow/integration skills; Python `BaseSkill` subclasses for executable skills (e.g., image generation/adapters).
+- **Governance**: Guided by `.specify/memory/constitution.md` (v2.0.0). Feature specs/plans/tasks live under `specs/`.
+- **Status**: 12 skills validated; no root package/build system.
 
 ## Architecture & Data Flow
 
-- **Skill System**: Each skill is `skills/{category}/{name}/` with `SKILL.md` (YAML frontmatter + Markdown body). Categories: `core/`, `creative/`, `integration/`, `workflow/`.
-- **Discovery/Loading**: `scripts/skill_loader.py` (`SkillLoader`) recursively finds `SKILL.md`, parses frontmatter (requires `---` delimiters), loads metadata/content, flags `scripts/`, `references/`, `assets/`.
-- **Validation**: `scripts/validate_skill.py` enforces agentskills.io rules (kebab-case name matching dir, description 1–1024 chars, optional compatibility ≤500). `validate_all_skills.py` skips `template/` and `example-skill/`.
-- **Registration**: `scripts/register_skills.py` updates `.specify/extensions/.registry`.
-- **Core abstractions** (`skills/core/`): `BaseSkill`/`SkillResult` contract; `SkillComposer` (sequential/parallel composition, short-circuits on failure); `DAGOrchestrator` (cycle detection, readiness, wave execution); plus job orchestration, credentials, provider routing, asset handling, cost estimation.
-- **Shared adapter** (`skills/core/artcraft_app_client.py`): stateless CLI/MCP infrastructure (discovery, invocation, normalization, mode selection, error standardization) extracted from image-generate; reason-code constants; `__version__`.
-- **Data flow**: Author `SKILL.md` → validate → load → register → consume by agents/composers. Python skills execute synchronously returning `SkillResult`.
-- **Python skills** (e.g. `creative/image-generate/skill.py`) delegate to the shared adapter and keep schemas/validation/orchestration/`SkillResult` construction.
+### Core Abstractions (`skills/core/`)
+- **`base_skill.py`**: `SkillResult` (dataclass: `success`, `data`, `error`, `metadata`), `BaseSkill` (ABC) with `get_input_schema()`, `get_output_schema()`, `execute(inputs) -> SkillResult`, `validate_inputs()`, `get_metadata()`.
+- **`creative_skill.py`**: `CreativeSkill(BaseSkill)` template for ArtCraft app integration. Implements discover → resolve → invoke → normalize → degrade for CLI/MCP with mode selection (`cli`/`mcp`/`auto`), `threading.BoundedSemaphore(3)`, retry with exponential backoff + jitter (max 3 attempts). Most creative skills inherit from it; `ImageGenerateSkill` is an outlier extending `BaseSkill` directly.
+- **`artcraft_app_client.py`**: Stateless CLI/MCP adapter (discovery, command resolution, normalization, mode selection, error standardization). Shared by `CreativeSkill`. Reason codes: `REASON_CLI_NOT_FOUND`, `REASON_MCP_UNAVAILABLE`, `REASON_NEITHER_AVAILABLE`.
+- **`composer.py`**: `SkillComposer` for sequential (`compose`) and parallel (`compose_parallel`) chaining. Sequential passes `result.data` forward, wrapping non-dict data as `{'result': ...}` and short-circuiting on failure.
+- **`orchestrator.py`**: `DAGOrchestrator` with `DAGNode`/`NodeStatus`, cycle detection (DFS), ready-node resolution, wave execution.
+- **Utilities**: `utils.py` (`SkillError`, logging/env/config helpers), `credentials.py` (`CredentialManager`), `artcraft_client.py` (API stubs like `OmniApiClient`/`OmniGenClient`), `provider_router.py`, `asset_handler.py`, `cost_estimator.py`, `job_orchestrator.py`.
+
+### Data Flow
+1. Author `skills/{category}/{name}/SKILL.md` (YAML frontmatter) or Python skill in `skill.py`.
+2. Validate via `scripts/validate_skill.py` / `scripts/validate_all_skills.py` (agentskills.io rules).
+3. Discover/load via `scripts/skill_loader.py` (`SkillLoader`).
+4. Register via `scripts/register_skills.py` → `.specify/extensions/.registry`.
+5. Execute via `BaseSkill.execute()`; creative skills go through `CreativeSkill` → `artcraft_app_client` (CLI/MCP) with normalization to `SkillResult`.
+
+### Inheritance Patterns
+- **Template method**: `CreativeSkill` provides orchestration; subclasses override `get_input_schema()`, `get_output_schema()`, `validate_inputs()`, set `command_keywords`, optionally override MCP hooks/param building.
+- **Two styles**: Most creative skills extend `CreativeSkill` (thin). `skills/creative/image-generate/skill.py` extends `BaseSkill` directly with its own flow.
+- **Composition/DAG**: `SkillComposer` and `DAGOrchestrator` enable multi-skill workflows.
 
 ## Key Directories
 
-- `skills/` — skill packages by category. `core/` holds base abstractions and utilities.
-- `scripts/` — Python utilities: `validate_skill.py`, `validate_all_skills.py`, `skill_loader.py`, `register_skills.py` (stdlib + PyYAML).
-- `tests/` — `unit/`, `integration/`, `contract/`, `property/`, `characterization/`, `_helpers/`, `reference/`, `golden/`. No root `conftest.py`.
-- `specs/` — feature specs/plans/tasks/contracts/checklists (Spec Kit).
-- `docs/` — guides: skill-authoring, core-abstractions, cross-product, generalizable-workflows.
-- `.specify/` — Spec Kit templates, memory (constitution v2.0.0), workflows, extensions, scripts.
-- `.omp/` — OMP command definitions mirroring Spec Kit.
+| Directory | Purpose |
+|-----------|---------|
+| `skills/` | Skill packages by category (`core/`, `creative/`, `integration/`, `workflow/`). Each skill may have `SKILL.md`, `skill.py`, `scripts/`, `references/`, `assets/`. |
+| `skills/core/` | Base abstractions, orchestrators, composers, adapters, utilities. |
+| `skills/creative/` | Creative skills inheriting from `CreativeSkill` or `BaseSkill` (e.g., `image-generate/`, `image-edit/`, `background-remove/`, `image-upscale/`, `mesh-generate/`). |
+| `scripts/` | Tooling: `validate_skill.py`, `validate_all_skills.py`, `skill_loader.py`, `register_skills.py`, `check_vendor_neutrality.py`. Stdlib + PyYAML. |
+| `tests/` | Layered tests: `unit/`, `integration/`, `contract/`, `property/`, `characterization/`, `_helpers/`, `reference/`, `golden/`. No root `conftest.py` (only `tests/characterization/conftest.py`). |
+| `specs/` | Feature specs/plans/tasks/contracts/checklists (Spec Kit). |
+| `docs/` | Guides: `skill-authoring.md`, `core-abstractions.md`, `cross-product.md`, `generalizable-workflows.md`, `architecture.md`. |
+| `.specify/` | Spec Kit templates, `memory/constitution.md` (v2.0.0), workflows, extensions, scripts. |
+| `.omp/` | OMP command definitions mirroring Spec Kit. |
 
 ## Development Commands
 
 ```bash
-# Validate a single skill
+# Validate skills (agentskills.io)
 python scripts/validate_skill.py skills/category/skill-name
-
-# Validate all non-template/example skills
 python scripts/validate_all_skills.py
 
-# Discover and print skills
+# Discover/load/register
 python scripts/skill_loader.py
-
-# Register skills into Spec Kit registry
 python scripts/register_skills.py
 
-# Run all tests
+# Run tests (from repo root)
 pytest
-
-# Run tests by layer
 pytest tests/unit/
 pytest tests/integration/
 pytest tests/contract/
 pytest tests/property/
-
-# Run specific test
-pytest tests/unit/test_image_generate.py -v
+pytest tests/characterization/
 pytest -v -x
+pytest tests/unit/test_image_generate.py -v
 ```
 
-No build step and no package manager: dependencies (PyYAML, pytest, hypothesis) are assumed installed. Tests run from repo root.
+**Notes**: Run from repo root. No build/package manager/lint/format tools configured. Dependencies assumed installed (`PyYAML`, `pytest`, `hypothesis`). Tests use `--import-mode=importlib` and often set `sys.path` manually.
 
 ## Code Conventions & Common Patterns
 
-- **Skill format (agentskills.io)**: `SKILL.md` starts with `---` YAML frontmatter: `name` (kebab-case matching dir, 1–64, `^[a-z0-9]+(-[a-z0-9]+)*$`), `description` (1–1024). Optional: `license`, `compatibility` (≤500), `metadata`, `allowed-tools`, `inputs`/`outputs`, `capabilities`, `dependencies`, `type` (`atomic`/`orchestrator`, default `atomic`).
-- **Naming**: skill names/dirs kebab-case; Python modules snake_case; tests `test_*.py`, classes `Test*`, methods `test_*`. Classes PascalCase; functions/vars snake_case; constants UPPER_SNAKE.
-- **Adapter pattern**: function-based stateless module in `skills/core/`; thin skill classes wrap adapter calls (`_discover_cli`, etc.). Inputs use `Mapping`/`Sequence`; returns concrete `dict`/`str | None`. Metadata dicts carry `mode`, `interface`, `command`, `exit_code`, `timeout_s`, `reason`, `is_error`.
-- **Reason codes**: shared constants `REASON_CLI_NOT_FOUND`, `REASON_MCP_UNAVAILABLE`, `REASON_NEITHER_AVAILABLE`, `REASON_IS_ERROR`.
-- **Error handling**: skills return `SkillResult(success=False, error=...)` rather than raising; exceptions caught and stringified. Adapter discovery returns `None`/`[]`; invocation propagates OS/timeout. `standardize_error` builds transport-neutral shape with retryable flag.
-- **Async/state**: no async/await anywhere; execution is synchronous. Async jobs simulated via `JobOrchestrator` with polling/wait and idempotency (in-memory). State held in instance dicts; no persistence layer.
-- **BaseSkill interface**: inherit `BaseSkill(name, description)`, implement `get_input_schema()`, `get_output_schema()`, `execute(inputs) -> SkillResult`. `SkillResult` defaults `metadata={}`.
-- **Composition**: `SkillComposer` sequential (`compose`) or parallel (`compose_parallel`). Sequential threads data (dict passthrough or wrapped as `{'result': ...}`), short-circuits on failure.
-- **DAG**: `DAGOrchestrator` manages nodes/dependencies with DFS cycle detection, ready-node resolution, wave execution.
-- **Validation-first**: strict naming/description/compatibility; name must match directory.
+### Naming & Style
+- **Skills**: Directories/names kebab-case matching `SKILL.md` `name` (`^[a-z0-9]+(-[a-z0-9]+)*$`), 1–64 chars. Description 1–1024 chars, optional `compatibility` ≤500.
+- **Python**: Modules/files snake_case, classes PascalCase (`BaseSkill`, `SkillResult`, `CreativeSkill`), functions/variables snake_case, constants UPPER_SNAKE.
+- **Tests**: `test_*.py`, classes `Test*`, methods `test_*`.
+
+### Skill Structure
+- **SKILL.md** frontmatter: `---` delimited YAML with required `name`, `description`. Optional: `license`, `compatibility`, `metadata`, `allowed-tools`, `inputs`/`outputs`, `capabilities`, `dependencies`, `type` (`atomic`/`orchestrator`, default `atomic`).
+- **Python skills**: Inherit from `BaseSkill` or `CreativeSkill`. Implement `get_input_schema()`, `get_output_schema()`, `execute(inputs) -> SkillResult`. Return `SkillResult` (never raise for expected failures); catch exceptions and stringify.
+
+### Patterns
+- **Result objects**: All operations return `SkillResult(success=bool, data=Any, error=str|None, metadata=dict)`. Metadata often includes `mode`, `interface`, `command`, `exit_code`, `timeout_s`, `reason`, `is_error`.
+- **Adapter pattern**: `artcraft_app_client` centralizes transport; `CreativeSkill` delegates discovery/normalization/mode selection there. Skills remain thin.
+- **Keyword-driven discovery**: CLI/MCP commands resolved via keywords/overrides passed through `artcraft_app_client`.
+- **Composition**: `SkillComposer.compose()` threads dict data (non-dict wrapped as `{'result': ...}`), short-circuits on failure. `compose_parallel()` runs independent skills.
+- **DAG orchestration**: `DAGOrchestrator` manages dependencies with cycle detection and wave execution.
+- **Validation-first**: Strict agentskills.io validation; input validation returns structured errors.
+- **Resilience**: `CreativeSkill` uses `BoundedSemaphore(3)`, retries up to 3 times with exponential backoff + jitter on transient failures (timeouts/non-zero exits), preserving metadata on final failure.
+- **Error standardization**: Reason codes and consistent `SkillResult` shapes across CLI/MCP paths.
+- **No async/await**: Synchronous execution throughout core.
+
+### Dependency Injection / State
+- Skills instantiated directly; configuration via inputs/env helpers (`utils.get_config`). Credentials via `CredentialManager`. No global DI container; dependencies passed explicitly.
 
 ## Important Files
 
-- `.specify/memory/constitution.md` — governance/principles (v2.0.0)
-- `docs/skill-authoring.md`, `docs/core-abstractions.md`, `docs/cross-product.md`, `docs/generalizable-workflows.md`
-- `scripts/validate_skill.py`, `scripts/skill_loader.py`, `scripts/register_skills.py`, `scripts/validate_all_skills.py`
-- `skills/core/base_skill.py`, `composer.py`, `orchestrator.py`, `utils.py`, `asset_context.py`, `job_orchestrator.py`, `credentials.py`, `artcraft_client.py`, `provider_router.py`, `asset_handler.py`, `cost_estimator.py`, `artcraft_app_client.py`
-- `skills/creative/image-generate/skill.py` — reference Python skill
-- `specs/001-artcraft-skills-suite/contracts/skill-schema.json`
-- `.specify/extensions/.registry`, `.specify/extensions.yml`
-- `ROADMAP.md`, `OBJETIVO.md`
+| File | Purpose |
+|------|---------|
+| `skills/core/base_skill.py` | `SkillResult` and `BaseSkill` contract. |
+| `skills/core/creative_skill.py` | Shared CreativeSkill base with CLI/MCP orchestration, retries, semaphore. |
+| `skills/core/artcraft_app_client.py` | Shared CLI/MCP adapter (discovery/normalization/mode selection). |
+| `skills/core/composer.py` | `SkillComposer` for sequential/parallel chaining. |
+| `skills/core/orchestrator.py` | `DAGOrchestrator` for dependency-aware workflows. |
+| `skills/creative/image-generate/skill.py` | Reference Python skill (extends `BaseSkill` directly). |
+| `scripts/validate_skill.py`, `scripts/validate_all_skills.py` | Skill validation against agentskills.io rules. |
+| `scripts/skill_loader.py`, `scripts/register_skills.py` | Discovery/loading/registration. |
+| `pytest.ini` | Pytest config (`--import-mode=importlib`, `testpaths=tests`). |
+| `.specify/memory/constitution.md` | Governance (v2.0.0). |
+| `specs/001-artcraft-skills-suite/contracts/skill-schema.json` | Skill schema contract. |
 
 ## Runtime/Tooling Preferences
 
-- **Runtime**: Python 3. Scripts use only stdlib + PyYAML.
-- **Dependencies**: PyYAML required for frontmatter parsing. No `requirements.txt`, `pyproject.toml`, `setup.py`, `setup.cfg`, `package.json`, or other package manifests at root.
-- **Testing**: `pytest` required; `hypothesis` for property-based tests. Tests assume running from repo root. No lint/format tooling configured (no ruff/black/isort/pre-commit).
-- **Tooling**: Spec Kit (bash scripts under `.specify/scripts/bash/`, templates/workflows in `.specify/` and `.omp/`), extensions framework.
-- **Constraints**: Skills must be composable and self-contained; follow agentskills.io strictly; validate with `scripts/validate_all_skills.py` before committing. No root build/package system.
+- **Runtime**: Python 3 (scripts use stdlib only where possible).
+- **Dependencies**: `PyYAML` required for frontmatter parsing. `pytest` and `hypothesis` for testing. No `requirements.txt`, `pyproject.toml`, `setup.py`, `setup.cfg`, `package.json` at root.
+- **Package manager**: None configured.
+- **Build/Lint/Format**: No build step, no lint/format tooling configured (no ruff/black/isort/pre-commit).
+- **Tooling**: Spec Kit (`.specify/`, `.omp/`), agentskills.io validation enforced.
 
 ## Testing & QA
 
-- **Test layout**: `tests/unit/` (loader/extensions/skills), `tests/integration/` (composition/DAG/workflows/cross-product/generalizable), `tests/contract/` (BaseSkill/interfaces/adapters/contracts), `tests/property/` (Hypothesis invariants/schema/US1-5), `tests/characterization/` (golden master), `tests/_helpers/`, `tests/reference/`, `tests/golden/`. No root `conftest.py`; only `tests/characterization/conftest.py` (adds `--update-golden`).
-- **Frameworks**: `pytest` (class/function based), `hypothesis` for property tests.
-- **Running**: `pytest` from repo root; filter by layer/path/name. Some tests manipulate `sys.path`. Validation: `python scripts/validate_all_skills.py`, `python scripts/validate_skill.py <skill>`.
-- **Patterns**: Contract tests enforce `BaseSkill` interface; integration tests use mocks/helpers; property tests verify schema/invariants (kebab-case, description 1–1024, compatibility ≤500). Characterization/golden-master + differential tests for refactor equivalence. Mocking via `monkeypatch` (subprocess.run, shutil.which, os.path.exists), `unittest.mock`, fake `CompletedProcess`.
-- **Quality gates** (Constitution): functionality, documentation, compatibility, composability, performance, security, transparency, error handling. Skills must be independently testable with clear contracts.
-- **Current state**: 12 skills validated; test suite covers US1–US5 across all layers. Follow existing patterns and ensure validation/tests pass.
+### Structure
+- `tests/unit/` - Isolated unit tests (adapters, utilities, core primitives). Heavy mocking of `subprocess`, `shutil`, filesystem.
+- `tests/integration/` - Cross-component workflows (composition, DAG/orchestration, cross-product). Tests `SkillComposer`/orchestrators with mock skills.
+- `tests/contract/` - Interface/schema contracts (`BaseSkill`, `SkillResult`, adapters, workflows).
+- `tests/property/` - Hypothesis property tests enforcing invariants (determinism, immutability of inputs, mode validation, composition behavior).
+- `tests/characterization/` - Golden-master/differential tests. Uses `tests/golden/*` fixtures and `tests/_helpers/canonicalize.py` to strip non-determinism; supports `--update-golden` via `tests/characterization/conftest.py`.
+- `tests/_helpers/`, `tests/reference/` - Shared utilities and reference implementations for differential testing.
+
+### Running Tests
+```bash
+pytest                    # All tests
+pytest -v                 # Verbose
+pytest -x                 # Stop on first failure
+pytest tests/unit/        # By layer
+pytest tests/property/    # Property tests
+pytest tests/characterization/  # Golden tests
+pytest --update-golden    # Regenerate golden masters (if needed)
+```
+
+### Patterns & Expectations
+- **Canonicalization**: Use `tests/_helpers/canonicalize.canonicalize_skill_result()` to normalize volatile metadata (`duration_ms`, `timeout_s`) for stable comparisons.
+- **Mock-first**: CLI/MCP paths faked via monkeypatch (`subprocess.run`, discovery functions) for deterministic tests.
+- **TDD-friendly**: Some tests marked RED-phase; resilience/composition features have dedicated property + characterization tests.
+- **Traceability**: Tests often map to specs/US1-5.
+- **Quality gates** (per constitution): Functionality, documentation, compatibility, composability, performance, security, transparency, error handling. Skills must be independently testable with clear contracts.
+- **Current state**: All tests pass (357 passed as of recent runs). Validate with `python scripts/validate_all_skills.py` before committing.

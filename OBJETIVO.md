@@ -29,35 +29,45 @@ Criar um framework completo e extensível de habilidades para agentes de IA que 
 - **Ecossistema criativo de agent skills** (`pexo-skills`, `generative-media-skills`, `scenario`, `muapi`, `open-clip`, `claude-remotion-skill`) confirma demanda por skills de imagem/vídeo/áudio/3D para agentes. Fases 3–5 do roadmap visam esses domínios via apps ArtCraft, sem reimplementar provedores.
 - **MCP**: spec 2026-07-28 (core stateless); MCP é o padrão dominante para ferramentas criativas. Decisão documentada: discovery/invocation MCP permanecem a nível de skill (FR-005), adapter normaliza config/output — alinhado ao padrão de adaptadores finos sobre servidores MCP reais.
 
-### Caminho Percorrido
+## Estado Atual (Verificado — 2026-11-04)
+
+**Branch**: `dev` (commit `14530b2`). Apenas `dev` e `main` remotos/locais restantes. Todos os PRs abertos mergeados.
+
+- **Feature 001** (`001-artcraft-skills-suite`): Ciclo Spec Kit executado até implement; **68/98 tarefas (~69%)** completas. Verificação/convergência pendentes.
+- **Feature 003** (`003-shared-cli-mcp-adapter`): **Convergida**. Adapter compartilhado `skills/core/artcraft_app_client.py` (9 funções, reason codes, `__version__=0.2.0`), `image-generate` refatorado com equivalência verificada.
+- **Feature 004** (`004-implement-python-creative-skills`): **Completa e convergida**. Adicionado `skills/core/creative_skill.py` e skills Python executáveis para `image-edit`, `background-remove`, `image-upscale`, `mesh-generate`. Schemas `SKILL.md` ↔ `skill.py` alinhados. Testes property-based e characterization adicionados (47 novos testes).
+- **Constituição**: `.specify/memory/constitution.md` v2.0.0 em vigor.
+- **Skills**: **12/12 validadas** (`python scripts/validate_all_skills.py` → `all_valid=True`). **5 skills criativos** com implementações Python executáveis via adapter compartilhado.
+- **Testes**: **351 passando** (`python -m pytest -q` → `351 passed`), sem regressões.
+- **Documentação**: `docs/skill-authoring.md`, `docs/core-abstractions.md`, `docs/cross-product.md`, `docs/generalizable-workflows.md`, `docs/architecture.md`, `AGENTS.md`.
+- **Ferramentas**: CodeGraph sincronizado, Archify atualizado.
+
+## Caminho Percorrido
 - **Fundação Completa (100%)**: Schema agentskills.io, validação, descoberta/carregamento, registro no Spec Kit, abstrações core implementadas e testadas.
-- **Feature 003 Concluída e Convergida**: Adapter compartilhado `skills/core/artcraft_app_client.py` (9 funções, reason codes, `__version__=0.2.0`), refactor de `image-generate` com equivalência verificada (golden master + differential + property), 41/41 checklists, analyze + converge executados.
-- **Skills Implementadas**: 14 skills validadas em `core/`, `creative/`, `workflow/` e `integration/`.
+- **Adapter Compartilhado (100%)**: `artcraft_app_client.py` com degradação graciosa, reason codes e integração CLI/MCP.
+- **Skills Criativos Python (100%)**: Todos os 4 skills da feature 004 implementados com `CreativeSkill` base class, testes dedicados adicionados.
 - **Composição e Orquestração**: `SkillComposer` e `DAGOrchestrator` funcionais com testes abrangentes.
 - **Workflows Generalizáveis**: Padrões derivados e abstraídos sem branding específico.
-- **Governança**: Constituição v2.0.0 estabelecida, fluxo Spec Kit executado até convergência (003) e parcialmente (001).
-- **Testes**: 278 testes passando (unit/contract/integration/property/characterization) com pytest 9.0.3 + Hypothesis.
-- **Documentação**: `docs/skill-authoring.md`, `core-abstractions.md`, `cross-product.md`, `generalizable-workflows.md`, `architecture.md`, `AGENTS.md`.
-- **Tooling**: CodeGraph sincronizado, artefatos Archify, pytest/Hypothesis.
+- **Governança**: Constituição v2.0.0 estabelecida, fluxo Spec Kit executado até convergência (003, 004).
 
-### O Que Ainda Falta
-- **Feature 001 (artcraft-skills-suite)**: 68/98 tarefas concluídas; faltam 30 tarefas (testes de propriedade/contrato/integração para US1–US5, skills criativas em Python, compositor, orquestrador, abstrações restantes). Analyze/converge não executados. `tasks.md` desatualizado (21 `[ ]` stale).
-- **Implementações Concretas**: 5 skills criativos agora têm `skill.py` (image-generate, image-edit, background-remove, image-upscale, mesh-generate) via adapter compartilhado.
-- **Expansão de Mídias**: Implementar fases 3-5 (vídeo/motion, áudio/documentos/apresentações, CAD/precisão).
-- **Integrações Profundas**: Processamento em lote, templates de projeto e wiring completo com app ArtCraft.
-- **Execução Real**: Validação end-to-end com provedores reais e hardening de job orchestration.
-- **Testes Perdidos**: Os 23 testes originais de image-generate (unit/contract/integration) foram perdidos durante reset/merge; cobertura substituída por golden/differential/property.
-- **Diferenciação**: Publicar benchmarks/cobertura vs. packs concorrentes; contribuir para client showcase do agentskills.io.
+## O Que Ainda Falta
+- **Feature 001 (artcraft-skills-suite)**: 68/98 tarefas (~69%) concluídas; faltam ~30 tarefas. Analyze/converge não executados. Alguns testes originais de `image-generate` perdidos durante merge (cobertura substituída por golden/differential/property).
+- **Expansão de Mídias**: Fases 3-5 (vídeo/motion, áudio/documentos/apresentações, CAD/precisão) — majoritariamente não iniciadas.
+- **Processamento em lote e templates** (Phase 6): Pendente.
+- **Hardening de orquestração**: Validação end-to-end com provedores reais, melhorias em polling/webhook/retry/idempotency.
+- **Integração MCP funcional**: Atualmente apenas stubs; conexão real, descoberta de tools e execução via MCP pendentes.
+- **Resiliência**: Retry com exponential backoff + jitter, rate limiting e concurrency limiter por instância.
+- **Observabilidade**: Logging estruturado e métricas RED efetivamente integrados aos skills.
 
 ## Métricas de Sucesso
 
-- ✅ **Validação**: 14/14 skills passando (all_valid=True)
-- ✅ **Testes**: 278/278 testes passando (unit/contract/integration/property/characterization)
+- ✅ **Validação**: 12/12 skills passando (all_valid=True)
+- ✅ **Testes**: 351/351 testes passando (unit/contract/integration/property/characterization)
 - ✅ **Padrão**: Compatível com agentskills.io em múltiplos agentes
-- ✅ **Feature 003**: Convergida (adapter compartilhado + refactor image-generate)
+- ✅ **Feature 003**: Convergida
+- ✅ **Feature 004**: Completa e convergida com cobertura de testes
 - 🔄 **Feature 001**: 68/98 tarefas (~69% completo)
 - ⏳ **Cobertura Completa**: Expansão para todas as mídias criativas planejadas
-- ✅ **Implementações Python**: 5/5 skills criativos com código executável
 
 ## Diretrizes de Desenvolvimento
 

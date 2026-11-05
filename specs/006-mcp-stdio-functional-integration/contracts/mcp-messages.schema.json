@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://artcraft.local/specs/006-mcp-stdio-functional-integration/contracts/mcp-messages.schema.json",
+  "title": "MCP stdio minimal messages (006 reference)",
+  "description": "Reference shapes for deterministic mock/fake MCP stdio tests in 006. Not a full MCP schema; covers tools/list and tools/call minimum used by the adapter contract.",
+  "type": "object",
+  "$defs": {
+    "jsonrpcId": {
+      "oneOf": [
+        { "type": "string" },
+        { "type": "integer" }
+      ]
+    },
+    "toolDescriptor": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "description": { "type": "string" },
+        "inputSchema": { "type": "object" }
+      },
+      "additionalProperties": true
+    },
+    "toolsListRequest": {
+      "type": "object",
+      "required": ["jsonrpc", "id", "method"],
+      "properties": {
+        "jsonrpc": { "const": "2.0" },
+        "id": { "$ref": "#/$defs/jsonrpcId" },
+        "method": { "const": "tools/list" },
+        "params": { "type": "object" }
+      },
+      "additionalProperties": true
+    },
+    "toolsListResponse": {
+      "type": "object",
+      "required": ["jsonrpc", "id", "result"],
+      "properties": {
+        "jsonrpc": { "const": "2.0" },
+        "id": { "$ref": "#/$defs/jsonrpcId" },
+        "result": {
+          "type": "object",
+          "required": ["tools"],
+          "properties": {
+            "tools": {
+              "type": "array",
+              "items": { "$ref": "#/$defs/toolDescriptor" }
+            },
+            "nextCursor": { "type": "string" }
+          },
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    },
+    "toolsCallRequest": {
+      "type": "object",
+      "required": ["jsonrpc", "id", "method", "params"],
+      "properties": {
+        "jsonrpc": { "const": "2.0" },
+        "id": { "$ref": "#/$defs/jsonrpcId" },
+        "method": { "const": "tools/call" },
+        "params": {
+          "type": "object",
+          "required": ["name"],
+          "properties": {
+            "name": { "type": "string", "minLength": 1 },
+            "arguments": { "type": "object" }
+          },
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    },
+    "toolsCallResponse": {
+      "type": "object",
+      "required": ["jsonrpc", "id", "result"],
+      "properties": {
+        "jsonrpc": { "const": "2.0" },
+        "id": { "$ref": "#/$defs/jsonrpcId" },
+        "result": {
+          "type": "object",
+          "properties": {
+            "content": { "type": "array" },
+            "isError": { "type": "boolean" },
+            "structuredContent": {}
+          },
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    },
+    "jsonrpcErrorResponse": {
+      "type": "object",
+      "required": ["jsonrpc", "id", "error"],
+      "properties": {
+        "jsonrpc": { "const": "2.0" },
+        "id": { "$ref": "#/$defs/jsonrpcId" },
+        "error": {
+          "type": "object",
+          "required": ["code", "message"],
+          "properties": {
+            "code": { "type": "integer" },
+            "message": { "type": "string" },
+            "data": {}
+          },
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    }
+  }
+}

@@ -171,6 +171,21 @@ def standardize_error(
     return result
 
 
+def generate_via_editing_commands(
+    cli_path: str,
+    output_path: str,
+    width: int = 16,
+    height: int = 16,
+    color: tuple = (101, 67, 33, 255),
+    timeout: int = 300,
+) -> subprocess.CompletedProcess:
+    """Fallback: generate simple pixel art using available editing commands."""
+    params = {"width": width, "height": height}
+    args = ["run", "--new", json.dumps(params), "--cmd", "paint.bucket", 
+            "--params", json.dumps({"color": list(color)}), "--out", output_path]
+    return run_cli(cli_path, args, timeout=timeout)
+
+
 __all__ = [
     "discover_cli",
     "discover_generation_command",
@@ -181,4 +196,5 @@ __all__ = [
     "run_cli_generation",
     "select_mode",
     "standardize_error",
+    "generate_via_editing_commands",
 ]

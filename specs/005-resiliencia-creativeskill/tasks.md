@@ -19,7 +19,7 @@
 
 ## Phase 1: Setup
 **Purpose**: Project preparation
-- [ ] T001 Review current `skills/core/creative_skill.py` implementation and existing tests
+- [ ] T001 [X] Review current `skills/core/creative_skill.py` implementation and existing tests
 
 ---
 
@@ -33,15 +33,15 @@
 **Independent Test**: Skills retry on transient CLI failures and respect concurrency limits
 
 ### Tests for User Story 1 (TDD - Write FIRST, RED phase)
-- [ ] T002 [P] [US1] Add property test for retry behavior in `tests/property/test_creative_skills_resilience_props.py` (RED)
-- [ ] T003 [P] [US1] Add characterization tests for retry/backoff/semaphore in `tests/characterization/test_creative_skills_resilience_behavior.py` (RED)
+- [ ] T002 [X] [P] [US1] Add property test for retry behavior in `tests/property/test_creative_skills_resilience_props.py` (RED)
+- [ ] T003 [X] [P] [US1] Add characterization tests for retry/backoff/semaphore in `tests/characterization/test_creative_skills_resilience_behavior.py` (RED)
 
 ### Implementation for User Story 1
-- [ ] T004 [US1] Add imports (`threading`, `time`, `random`) to `skills/core/creative_skill.py`
-- [ ] T005 [US1] Add semaphore (`threading.BoundedSemaphore(3)`) as instance attribute in `CreativeSkill.__init__`
-- [ ] T006 [US1] Implement retry logic with exponential backoff + jitter (max 3 attempts) in `CreativeSkill._execute_cli`
-- [ ] T007 [US1] Wrap CLI execution with semaphore in `CreativeSkill._execute_cli`
-- [ ] T008 [US1] Ensure TimeoutExpired and appropriate errors are retried, preserving metadata on final failure
+- [ ] T004 [X] [US1] Add imports (`threading`, `time`, `random`) to `skills/core/creative_skill.py`
+- [ ] T005 [X] [US1] Add semaphore (`threading.BoundedSemaphore(3)`) as instance attribute in `CreativeSkill.__init__`
+- [ ] T006 [X] [US1] Implement retry logic with exponential backoff + jitter (max 3 attempts) in `CreativeSkill._execute_cli`
+- [ ] T007 [X] [US1] Wrap CLI execution with semaphore in `CreativeSkill._execute_cli`
+- [ ] T008 [X] [US1] Ensure TimeoutExpired and appropriate errors are retried, preserving metadata on final failure
 
 **Checkpoint**: User Story 1 should be functional and testable independently
 
@@ -52,9 +52,9 @@
 **Independent Test**: All existing tests pass
 
 ### Implementation for User Story 2
-- [ ] T009 [US2] Ensure `SkillResult` structure unchanged and metadata preserved
-- [ ] T010 [US2] Verify mocks in existing tests continue to work
-- [ ] T011 [US2] Run existing creative skills tests to confirm backward compatibility
+- [ ] T009 [X] [US2] Ensure `SkillResult` structure unchanged and metadata preserved
+- [ ] T010 [X] [US2] Verify mocks in existing tests continue to work
+- [ ] T011 [X] [US2] Run existing creative skills tests to confirm backward compatibility
 
 **Checkpoint**: Backward compatibility maintained
 
@@ -63,10 +63,10 @@
 ## Phase 5: Polish & Cross-Cutting Concerns
 **Purpose**: Final verification
 
-- [ ] T012 Run resilience tests: `python -m pytest tests/property/test_creative_skills_resilience_props.py tests/characterization/test_creative_skills_resilience_behavior.py -v`
-- [ ] T013 Run full test suite: `python -m pytest -q` to ensure no regressions (target: 351+ tests passing)
-- [ ] T014 Verify all 5 creative skills benefit from base class changes
-- [ ] T015 Atomic commit with detailed summary of edits made
+- [ ] T012 [X] Run resilience tests: `python -m pytest tests/property/test_creative_skills_resilience_props.py tests/characterization/test_creative_skills_resilience_behavior.py -v`
+- [ ] T013 [X] Run full test suite: `python -m pytest -q` to ensure no regressions (target: 351+ tests passing)
+- [ ] T014 [X] Verify all 5 creative skills benefit from base class changes
+- [ ] T015 [X] Atomic commit with detailed summary of edits made
 
 ---
 
@@ -98,6 +98,14 @@
 
 **Purpose**: Formal closure via converge process
 
-- [ ] T016 Run `/speckit.converge` validation for feature 005
-- [ ] T017 Verify all FR-001 through FR-005 and SC-001 through SC-005 are satisfied
-- [ ] T018 Document convergence completion
+- [ ] T016 [X] Run `/speckit.converge` validation for feature 005
+- [ ] T017 [X] Verify all FR-001 through FR-005 and SC-001 through SC-005 are satisfied
+- [ ] T018 [X] Document convergence completion
+
+
+**Evidence (2026-11-05, T016-T018 / convergence closure)**:
+- `skills/core/creative_skill.py`: `_cli_semaphore = threading.BoundedSemaphore(3)`, retry loop (max 3) with exponential backoff + jitter (`_retry_backoff_base * 2**attempt + random.uniform(0,0.1)`), retries on timeout/transient CLI failures, semaphore wraps CLI execution.
+- Resilience tests pass: `6 passed` (`tests/property/test_creative_skills_resilience_props.py`, `tests/characterization/test_creative_skills_resilience_behavior.py`).
+- Backward compatibility: `373 passed`, `12/12 skills validated` (full suite/regression check 2026-11-05). SkillResult contract preserved.
+- FR coverage: FR-001 retry+backoff+jitter (max 3) ✓; FR-002 semaphore max 3 ✓; FR-003 transient timeout/error retry ✓; FR-004 additive/contract-preserving ✓; FR-005 benefits all CreativeSkill heirs ✓.
+- SC coverage: SC-001 transient timeout retry ✓; SC-002 concurrency limited to 3 ✓; SC-003 existing tests pass (373) ✓; SC-004 SkillResult unchanged ✓; SC-005 centralized in base class ✓.

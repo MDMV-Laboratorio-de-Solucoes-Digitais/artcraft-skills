@@ -92,3 +92,12 @@
 3. Implement T004-T008
 4. Verify tests pass
 5. Ensure backward compatibility (Phase 4)
+
+
+## Phase 6: Convergence
+
+**Purpose**: Formal closure via converge process
+
+- [ ] T016 Run `/speckit.converge` validation for feature 005
+- [ ] T017 Verify all FR-001 through FR-005 and SC-001 through SC-005 are satisfied
+- [ ] T018 Document convergence completion

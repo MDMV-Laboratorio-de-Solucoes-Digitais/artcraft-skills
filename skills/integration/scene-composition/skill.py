@@ -10,6 +10,12 @@ from skills.core.asset_context import AssetContext
 class SceneCompositionSkill(BaseSkill):
     """Compose scenes from multiple asset types (cross-product workflow)."""
 
+    def __init__(self) -> None:
+        super().__init__(
+            name="scene-composition",
+            description="Cross-product workflow for composing scenes from multiple asset types",
+        )
+
     def get_input_schema(self) -> Dict[str, Any]:
         return {
             "type": "object",

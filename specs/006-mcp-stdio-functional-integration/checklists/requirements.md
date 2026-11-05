@@ -13,7 +13,7 @@
 
 ## Requirement Completeness
 
-- [ ] No [NEEDS CLARIFICATION] markers remain
+- [x] No [NEEDS CLARIFICATION] markers remain
 - [x] Requirements are testable and unambiguous
 - [x] Success criteria are measurable
 - [x] Success criteria are technology-agnostic (no implementation details)
@@ -31,8 +31,8 @@
 
 ## Notes
 
-- 3 clarification markers remain (maximum allowed), all scope/contract-critical:
-  - FR-001: initial MCP target/entrypoint confirmation.
-  - FR-002: 1–2 supported MCP operations and end-to-end acceptance mapping.
-  - FR-005: automatic-selection order/precedence (CLI/MCP/fallback) preserving current behavior.
-- Carried-forward non-blocking planning questions (dependency choice SDK vs minimal client, exact timeout/cancel/retry/roots controls, optional real-integration environment, formal owner) are captured in assessment artifacts and should be resolved in `/speckit.clarify` or `/speckit.plan` without expanding scope.
+- Validation passed (2026-11-05). Clarifications resolved with recommended decisions (all accepted):
+  - **Q1 (FR-001, B):** Generic stdio MCP tools contract; PhotoCraft headless MCP as confirmed reference target for documentation/optional validation; default CI acceptance uses deterministic mock/fake MCP.
+  - **Q2 (FR-002, A):** Capability discovery + one operation invocation; end-to-end value = deterministic mock MCP path mapped to `image-edit` (primary example) returns normalized `SkillResult` success/structured failure; target-specific tool naming documented as reference mapping.
+  - **Q3 (FR-005, C default A):** Explicit mode always wins; default `auto` remains back-compatible (CLI available → MCP available/configured → fallback/degradation); no MCP-preferred default in 006.
+- Planning/open questions carried forward (non-blocking for spec, resolve in `/speckit.plan`): SDK `mcp` vs minimal sync JSON-RPC client (repo is sync), exact `mcp_config`/launch fields and PhotoCraft roots mapping, precise runtime failthrough on selected-path failure, “MCP available/configured” definition, timeout/cancel/retry/reason-code details, optional `@pytest.mark.integration` real-target suite, whether `image-generate` (BaseSkill outlier) is aligned in 006 or follow-up, formal owner.

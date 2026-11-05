@@ -68,11 +68,11 @@ A maintainer runs automated checks locally or in continuous integration. The MCP
 
 ### Functional Requirements
 
-- **FR-001**: The system MUST support a minimum functional MCP integration over the local standard-input/standard-output transport for at least one confirmed initial ArtCraft application entrypoint. [NEEDS CLARIFICATION: Which initial MCP target/entrypoint is confirmed for this feature (e.g., PhotoCraft headless MCP entrypoint with required access roots), and is that target in scope for default support or reference-only validation?]
-- **FR-002**: The system MUST provide MCP capability discovery and invocation for 1–2 supported operations that demonstrate end-to-end value for at least one existing creative skill. [NEEDS CLARIFICATION: Which 1–2 MCP capabilities/operations are in scope, how do they map to an existing skill operation, and what constitutes “end-to-end value” for acceptance?]
+- **FR-001**: The system MUST support a minimum functional MCP integration over the local standard-input/standard-output transport using a generic, standards-compliant MCP tools contract (capability discovery and operation invocation). PhotoCraft headless MCP is the confirmed **reference target** for documentation and optional/manual validation; default automated acceptance remains deterministic mock/fake MCP verification, not a mandatory real PhotoCraft binary or blanket default support for every environment.
+- **FR-002**: The system MUST provide MCP capability discovery and one supported operation invocation that demonstrates end-to-end value for at least one existing creative-skill path. For 006 acceptance, “end-to-end value” means: a deterministic mock MCP path performs discovery plus invocation for one supported operation mapped to the `image-edit` creative-skill path (primary example) and returns a normalized success or structured failure in the existing skill result contract. Target-specific tool naming (for example, PhotoCraft engine-oriented tool mappings) MUST be documented as reference mapping, not hard-coded as the universal contract.
 - **FR-003**: The system MUST normalize MCP success and failure outcomes into the existing skill result contract without changing public skill schemas or breaking backward-compatible inputs/outputs.
 - **FR-004**: The system MUST preserve existing non-MCP behavior: current CLI and fallback paths remain available, and MCP integration MUST NOT remove or regress them.
-- **FR-005**: The system MUST apply a documented selection policy when multiple execution paths are possible (explicit MCP request, explicit non-MCP request, and automatic selection). [NEEDS CLARIFICATION: What is the automatic-selection order and precedence among CLI, MCP, and fallback to preserve current behavior while enabling MCP value?]
+- **FR-005**: The system MUST apply a documented selection policy when multiple execution paths are possible (explicit MCP request, explicit non-MCP request, and automatic selection). **Explicit mode always wins**. The **default automatic-selection behavior MUST remain back-compatible**: prefer CLI when CLI is available, then MCP when MCP is available/configured, then fallback/degradation according to existing documented rules. Any MCP-preferred automatic behavior is out of minimum-scope default behavior and, if introduced later, MUST be explicitly opted into and documented without breaking public schemas.
 - **FR-006**: The system MUST handle MCP unavailability, startup/communication timeout, invalid protocol/response data, missing capability, and operation failure as structured, diagnosable outcomes with clear reasons.
 - **FR-007**: The system MUST isolate subprocess communication safely: protocol communication MUST remain usable even when diagnostic output is present, and failures MUST not leave the skill in an unsafe or ambiguous state.
 - **FR-008**: The system MUST support deterministic automated verification for the minimum MCP scope using mock/fake MCP servers or subprocesses; standard repository verification MUST NOT require real credentials, paid services, network access, or mandatory real ArtCraft binaries.
@@ -97,18 +97,26 @@ A maintainer runs automated checks locally or in continuous integration. The MCP
 - **SC-004**: Standard automated verification for this feature completes without real credentials, paid services, network access, or mandatory real ArtCraft binaries in 100% of CI/local default runs.
 - **SC-005**: Maintainers and integrators can identify, from project documentation, the supported initial target, supported operations, selection policy, and out-of-scope boundaries in under 5 minutes during review/onboarding.
 
+## Clarifications
+
+### Session 2026-11-05
+
+- Q: Initial MCP target/entrypoint — default support or reference-only validation? → A: Generic stdio MCP tools contract as 006 deliverable; PhotoCraft headless MCP confirmed as reference target for documentation/optional validation; default CI acceptance uses deterministic mock/fake MCP (Q1:B).
+- Q: Which 1–2 MCP operations and end-to-end acceptance mapping? → A: Protocol-level capability discovery plus one operation invocation; end-to-end value = deterministic mock MCP path mapped to the `image-edit` creative-skill path returns normalized `SkillResult` success/structured failure; target-specific tool naming documented as reference mapping (Q2:A).
+- Q: Automatic-selection order/precedence? → A: Explicit mode always wins; default `auto` remains back-compatible = CLI available → MCP available/configured → fallback/degradation; no MCP-preferred default in 006 (Q3:C, default A).
+
 ## Assumptions
 
-- The first implementation targets the smallest valuable slice (Option A): one confirmed MCP entrypoint and 1–2 operations, not broad multi-app/multi-domain coverage.
-- PhotoCraft is a reference candidate because public project documentation describes a local MCP entrypoint; final in-scope target and required access boundaries are confirmed during clarification/planning and documented before implementation is considered complete.
+- The first implementation targets the smallest valuable slice (Option A): one confirmed reference target (PhotoCraft headless MCP) and one invoked operation after discovery, proven via deterministic mock/fake MCP, not broad multi-app/multi-domain coverage.
+- PhotoCraft is the reference validation candidate because public project documentation describes a local MCP entrypoint; exact reference command/roots and any target-specific mapping are finalized during planning and documented before implementation is considered complete.
 - Existing public skill input/output schemas and the `SkillResult` contract remain stable; MCP support is additive.
 - Deterministic mock/fake MCP subprocess coverage is sufficient for standard CI confidence; real-environment validation is optional and environment-dependent.
 - Safe operational defaults (bounded waiting, clear failure reasons, isolation of diagnostic output from protocol handling) are required; exact control values and any optional advanced controls are selected during planning within the minimum-scope goal.
-- Selection-policy behavior is treated as user-visible: it must preserve current expectations for existing CLI/fallback users unless an explicit, documented MCP choice is made.
+- Selection-policy behavior is treated as user-visible: default automatic behavior preserves current expectations for existing CLI/fallback users unless an explicit MCP choice is made.
 - Roadmap/objective hygiene (001/005/006 state, 373 tests, next focus MCP) is already handled and not part of this feature’s deliverable.
 
 ## Dependencies
 
 - Availability of assessment artifacts for this slug (`intake`, `research`, `problem`, `concept`, `decision`) as product context.
 - Existence of current creative-skill execution paths (CLI and fallback) that must remain compatible.
-- Access to accurate MCP target documentation/behavior for the confirmed initial entrypoint (PhotoCraft or equivalent) before final operation mapping is locked.
+- Access to accurate MCP target documentation/behavior for the confirmed reference entrypoint (PhotoCraft) before final reference mapping documentation is locked.

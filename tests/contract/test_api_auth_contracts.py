@@ -9,14 +9,14 @@ from skills.core.credentials import Credentials
 
 
 def test_omni_api_client_contract():
-    c = artcraft_client.OmniApiClient(credentials=Credentials(auth_mode="api_key", api_key="test-key"))
-    assert c.credentials.api_key == "test-key"
+    c = artcraft_client.OmniApiClient(credentials=Credentials(auth_mode="api_key", value="test-key", provider_id="artcraft"))
+    assert c.credentials.value == "test-key"
     assert hasattr(c, "generate_image")
     assert hasattr(c, "get_job_status")
 
 
 def test_omni_gen_client_contract():
-    c = artcraft_client.OmniGenClient(credentials=Credentials(auth_mode="session", session_token="sess"))
-    assert c.credentials.session_token == "sess"
+    c = artcraft_client.OmniGenClient(credentials=Credentials(auth_mode="session", value="sess", provider_id="artcraft"))
+    assert c.credentials.value == "sess"
     assert hasattr(c, "generate_image")
     assert hasattr(c, "get_job_status")

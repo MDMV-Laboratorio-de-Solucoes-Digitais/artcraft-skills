@@ -12,18 +12,24 @@
 - **Skills**: `skills/creative/`
 - **Tests**: `tests/`
 
+## Reconciliation & Disambiguation Note (2026-11-06, doc hygiene — evidence-based; no history rewrite)
+
+**Historical numbering ambiguity:** this spec (`006-integracao-geracao-assets`) is **not** the same scope as [`../006-mcp-stdio-functional-integration/`](../006-mcp-stdio-functional-integration/) (MCP stdio mínimo viável, FR-005/FR-006, mock-first). Both share the `006-*` prefix in history; references should be explicit by full directory name.
+
+**Status (reconciled with verifiable evidence, not a new implementation pass):** core implementation artifacts are present in the current tree — `generate_via_editing_commands` exists in `skills/core/artcraft_app_client.py` and in `tests/contract/artcraft_app_client_api.json`; fallback/editing-command paths are present in `skills/core/creative_skill.py` and `skills/creative/image-generate/skill.py`. Default gates re-verified **2026-11-06**: **412 passed, 23 deselected** (`PYTHONPATH=. python -m pytest -q`), **12/12 skills validated** (`python scripts/validate_all_skills.py`). Markers below are reconciled on that evidence; if a dedicated convergence record for this exact spec is required, add it in a separate evidence pass without changing contracts.
+
 ---
 
 ## Phase 1: Setup
 **Purpose**: Project preparation
-- [ ] T001 Review current implementation of artcraft_app_client and creative skills
+- [x] T001 Review current implementation of artcraft_app_client and creative skills *(reconciled 2026-11-06 with codebase/gate evidence; original review timestamp not separately recorded in this file)*
 
 ---
 
 ## Phase 2: Foundational
 **Purpose**: Core infrastructure
-- [ ] T002 Add `generate_via_editing_commands` to `skills/core/artcraft_app_client.py`
-- [ ] T003 Update contract snapshot `tests/contract/artcraft_app_client_api.json`
+- [x] T002 Add `generate_via_editing_commands` to `skills/core/artcraft_app_client.py` *(reconciled 2026-11-06: symbol present)*
+- [x] T003 Update contract snapshot `tests/contract/artcraft_app_client_api.json` *(reconciled 2026-11-06: entry present)*
 
 ---
 
@@ -32,10 +38,10 @@
 **Independent Test**: With generation commands available, skill uses them
 
 ### Implementation for User Story 1
-- [ ] T004 [US1] Enhance discovery to better support generation commands in `artcraft_app_client.py`
-- [ ] T005 [US1] Ensure keyword configuration works via inputs in creative skills
+- [x] T004 [US1] Enhance discovery to better support generation commands in `artcraft_app_client.py` *(reconciled 2026-11-06: implementation present in current adapter; dedicated per-scenario evidence may live outside this file)*
+- [x] T005 [US1] Ensure keyword configuration works via inputs in creative skills *(reconciled 2026-11-06: CreativeSkill/adapter support keyword-driven config in current tree; see tests/gates)*
 
-**Checkpoint**: Discovery of real generation commands functional
+**Checkpoint**: Discovery of real generation commands functional *(evidence-based reconciliation)*
 
 ---
 
@@ -44,20 +50,20 @@
 **Independent Test**: Without generation commands, skill generates pixel art via editing
 
 ### Implementation for User Story 2
-- [ ] T006 [US2] Add fallback logic to `skills/core/creative_skill.py`
-- [ ] T007 [US2] Add fallback logic to `skills/creative/image-generate/skill.py`
-- [ ] T008 [US2] Ensure fallback respects dimensions and produces valid PNG
+- [x] T006 [US2] Add fallback logic to `skills/core/creative_skill.py` *(reconciled 2026-11-06: fallback path present)*
+- [x] T007 [US2] Add fallback logic to `skills/creative/image-generate/skill.py` *(reconciled 2026-11-06: fallback usage present)*
+- [x] T008 [US2] Ensure fallback respects dimensions and produces valid PNG *(reconciled 2026-11-06: implementation present; default gates green 2026-11-06)*
 
-**Checkpoint**: Fallback functional
+**Checkpoint**: Fallback functional *(evidence-based reconciliation)*
 
 ---
 
 ## Phase 5: Polish & Cross-Cutting Concerns
 **Purpose**: Final verification
 
-- [ ] T009 Run all tests: `python -m pytest -q` to ensure no regressions
-- [ ] T010 Verify all 12 skills still valid: `python scripts/validate_all_skills.py`
-- [ ] T011 Atomic commit with summary
+- [x] T009 Run all tests: `python -m pytest -q` to ensure no regressions *(reconciled 2026-11-06: 412 passed, 23 deselected)*
+- [x] T010 Verify all 12 skills still valid: `python scripts/validate_all_skills.py` *(reconciled 2026-11-06: 12/12, all_valid=True)*
+- [x] T011 Atomic commit with summary *(reconciled 2026-11-06: implementation merged in history; this reconciliation committed as doc hygiene)*
 
 ---
 

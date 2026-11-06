@@ -438,6 +438,21 @@ def mcp_tools_call(cfg: Mapping[str, Any], tool_name: str, arguments: Mapping[st
     return _mcp_failure(REASON_MCP_INVALID_RESPONSE, "MCP tools/call response missing result", error_stage="invocation", tool=tool_name)
 
 
+def generate_via_editing_commands(
+    cli_path: str,
+    output_path: str,
+    width: int = 16,
+    height: int = 16,
+    color: tuple = (101, 67, 33, 255),
+    timeout: int = 300,
+) -> subprocess.CompletedProcess:
+    """Fallback: generate simple pixel art using available editing commands."""
+    params = {"width": width, "height": height}
+    args = ["run", "--new", json.dumps(params), "--cmd", "paint.bucket",
+            "--params", json.dumps({"color": list(color)}), "--out", output_path]
+    return run_cli(cli_path, args, timeout=timeout)
+
+
 __all__ = [
     "discover_cli",
     "discover_generation_command",
@@ -448,6 +463,7 @@ __all__ = [
     "run_cli_generation",
     "select_mode",
     "standardize_error",
+    "generate_via_editing_commands",
     "mcp_tools_list",
     "mcp_tools_call",
     "REASON_CLI_NOT_FOUND",

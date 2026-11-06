@@ -5,6 +5,7 @@ import subprocess
 import threading
 import time
 import random
+import os
 from typing import Any, Dict, Optional, List
 
 from skills.core.base_skill import BaseSkill, SkillResult
@@ -118,7 +119,7 @@ class CreativeSkill(BaseSkill):
             params["strength"] = inputs["strength"]
         return params
 
-    def _execute_cli(self, inputs: Dict[str, Any], cli_path: str, mode: str) -> SkillResult:
+    def _execute_cli_with_fallback(self, inputs: Dict[str, Any], cli_path: str, mode: str) -> SkillResult:
         keywords = inputs.get("command_keywords") or self._command_keywords
         override = inputs.get("generation_command")
         timeout = inputs.get("timeout") or 300
@@ -129,11 +130,21 @@ class CreativeSkill(BaseSkill):
                     cmds = artcraft_app_client.discover_cli_commands(cli_path, timeout)
                     gen_cmd = self._discover_generation_command(cmds, keywords, override)
                     if not gen_cmd:
-                        return SkillResult(
-                            success=False,
-                            error=f"No image-generation capability found in app version ({cli_path})",
-                            metadata={"mode": mode, "cli_path": cli_path},
-                        )
+                        # Try fallback to editing commands for simple pixel art
+                        try:
+                            width = inputs.get("width") or 16
+                            height = inputs.get("height") or 16
+                            output_path = inputs.get("output_path") or f"/tmp/artcraft-{int(time.time())}.png"
+                            res = artcraft_app_client.generate_via_editing_commands(cli_path, output_path, int(width), int(height), timeout=timeout)
+                            if res.returncode == 0 and os.path.exists(output_path):
+                                return SkillResult(success=True, data={"image_path": output_path, "width": width, "height": height}, 
+                                                 metadata={"mode": mode, "interface": "cli", "method": "fallback_editing"})
+                            last_error = SkillResult(success=False, error="Fallback via editing commands failed", 
+                                                    metadata={"mode": mode, "cli_path": cli_path})
+                        except Exception as e:
+                            last_error = SkillResult(success=False, error=f"No image-generation capability found in app version ({cli_path})", 
+                                                    metadata={"mode": mode, "cli_path": cli_path})
+                        return last_error
                     params = self._build_cli_params(inputs)
                     res = artcraft_app_client.run_cli_generation(cli_path, gen_cmd, params, timeout)
                     if res.returncode != 0:
@@ -174,6 +185,9 @@ class CreativeSkill(BaseSkill):
                     continue
                 return last_error
         return last_error or SkillResult(success=False, error="Unknown error", metadata={"mode": mode})
+
+    def _execute_cli(self, inputs: Dict[str, Any], cli_path: str, mode: str) -> SkillResult:
+        return self._execute_cli_with_fallback(inputs, cli_path, mode)
 
     def _execute_mcp(self, inputs: Dict[str, Any], mode: str) -> SkillResult:
         cfg = inputs.get("mcp_config") or {}

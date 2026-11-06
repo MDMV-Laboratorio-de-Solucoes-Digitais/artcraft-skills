@@ -2,6 +2,8 @@
 
 import json
 import subprocess
+import os
+import time
 from typing import Any, Dict, Optional
 
 from skills.core.base_skill import BaseSkill, SkillResult
@@ -96,6 +98,16 @@ class ImageGenerateSkill(BaseSkill):
             cmds = artcraft_app_client.discover_cli_commands(cli_path, timeout)
             gen_cmd = self._discover_generation_command(cmds, keywords, override)
             if not gen_cmd:
+                try:
+                    width = inputs.get("width") or 16
+                    height = inputs.get("height") or 16
+                    output_path = inputs.get("output_path") or f"/tmp/artcraft-{int(time.time())}.png"
+                    res = artcraft_app_client.generate_via_editing_commands(cli_path, output_path, int(width), int(height), timeout=timeout)
+                    if res.returncode == 0 and os.path.exists(output_path):
+                        return SkillResult(success=True, data={"image_path": output_path, "width": width, "height": height}, 
+                                         metadata={"mode": mode, "interface": "cli", "method": "fallback_editing"})
+                except Exception:
+                    pass
                 return SkillResult(
                     success=False,
                     error=f"No image-generation capability found in app version ({cli_path})",

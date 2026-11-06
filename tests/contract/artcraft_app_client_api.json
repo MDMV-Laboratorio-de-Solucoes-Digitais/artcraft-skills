@@ -11,6 +11,7 @@
     "run_cli_generation",
     "select_mode",
     "standardize_error",
+    "generate_via_editing_commands",
     "mcp_tools_list",
     "mcp_tools_call",
     "REASON_CLI_NOT_FOUND",
@@ -247,6 +248,47 @@
         }
       ],
       "return": "dict[str, Any]"
+    },
+    "generate_via_editing_commands": {
+      "params": [
+        {
+          "name": "cli_path",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "annotation": "str",
+          "default": null
+        },
+        {
+          "name": "output_path",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "annotation": "str",
+          "default": null
+        },
+        {
+          "name": "width",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "annotation": "int",
+          "default": 16
+        },
+        {
+          "name": "height",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "annotation": "int",
+          "default": 16
+        },
+        {
+          "name": "color",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "annotation": "tuple",
+          "default": "(101, 67, 33, 255)"
+        },
+        {
+          "name": "timeout",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "annotation": "int",
+          "default": 300
+        }
+      ],
+      "return": "subprocess.CompletedProcess"
     }
   }
 }

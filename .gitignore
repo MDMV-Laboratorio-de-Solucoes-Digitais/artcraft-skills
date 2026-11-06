@@ -21,6 +21,7 @@ Thumbs.db
 .pytest_cache/
 .hypothesis/
 
+
 # Local/tool artifacts
 .claude/
 skills-lock.json

@@ -256,33 +256,56 @@ PYTHONPATH=. python -m pytest -q \
 Result: `39 passed, 23 deselected in 5.48s`. Confirms 006 MCP contract/unit/property/selection behavior preserved, FR-005/FR-006 compatibility preserved, 007 property invariants satisfied, and 007 optional integration remains excluded by default marker.
 
 ### T020 — Opt-in local real PhotoCraft smoke (authorized local only)
-Environment note: `photocraft-cli` was found on PATH in this environment (`/usr/bin/photocraft-cli`), but **no explicit user authorization was provided in this conversation to execute the real local MCP server smoke**. Per 007 safety/opt-in controls, the real smoke was **not executed**.
+**Prior record (preserved, honest):** `photocraft-cli` was found on PATH (`/usr/bin/photocraft-cli`) earlier, but **no explicit user authorization** was provided in that conversation to execute the real local MCP server smoke; that run was **not executed** and SC-001 was not exercised.
 
-**Status (honest)**: `opt-in run not executed; explicit authorization/prerequisite confirmation unavailable in this conversation` — **SC-001 not exercised in this environment** (documentation/runbook + deterministic harness evidence only; not a claim of real-server success).
+**T022 authorized execution (2026-11-06, explicit user authorization provided in this conversation):** opt-in local PhotoCraft MCP stateless smoke executed via the 007 harness (`tests/integration/test_mcp_stdio_photocraft_optional.py::run_photocraft_mcp_smoke`) with safe temp roots and bounded timeout. Evidence recorded from observed run only (no secrets/PII/raw sensitive payload dumps).
 
-Full runbook/template/limits are documented above and in `contracts/photocraft-mcp-smoke-contract.md`. Safe execution, if explicitly authorized:
+| Field | Observed value |
+|---|---|
+| Date (UTC) | `2026-11-06T04:51:37.034304+00:00` |
+| Commit (repo state at run) | `0d597dc` |
+| Opt-in | `ARTCRAFT_MCP_INTEGRATION=1` (explicit opt-in; excluded from default CI) |
+| Authorization | Explicit user authorization provided in conversation to run opt-in local PhotoCraft MCP smoke (T022) with safe temp roots and bounded timeout |
+| Binary override env | `ARTCRAFT_MCP_PHOTOCRAFT_BIN=/usr/bin/photocraft-cli` (preferred absolute override) |
+| Resolved executable / source | `/usr/bin/photocraft-cli` (`override_env`, available/actionable) |
+| Version context | `photocraft-cli 0.20.1 (327c4cc82, 2026-11-03)` |
+| Command shape (roots passed) | `photocraft-cli mcp --automation-read-root <abs-temp-read> --automation-write-root <abs-temp-write>` (normalized via adapter config; exact temp paths created by harness) |
+| Timeout | `30` seconds (bounded) |
+| Roots policy | `mode=temp_auto`, isolated absolute temp roots created, `cleanup_owner=harness`, `auto_deleted_override=null` |
+| Post-run cleanup | Temp roots removed after run: `read=true`, `write=true` (`roots.cleaned=true`, `roots.temp_paths_removed=true`) |
+| Stateless boundary | `stateless=true`, `session_reuse=false`, `artifact_cycle=false`; adapter reuse only (`artcraft_app_client.mcp_tools_list` then `mcp_tools_call`) |
+| MCP attempted | `true` |
+| `tools/list` capability presence | `supports_command_list=true`, `required_capability_present=true`, observed sample `["command_list"]`, `version_tolerant=true` (minimal presence check; no exact count/full catalog/order asserted) |
+| `tools/call command_list` result-shape summary | `ok=true`, `is_error=false`, `normalizable=true`, parsed type `list` (defensive non-error/normalizable evidence; large catalog content not dumped) |
+| Reason / error_stage | `null` / not applicable (passed) |
+| Limits (explicit) | Engine/editor automation only (headless PhotoCraft MCP command discovery). **No prompt-based AI image/video/audio/3D generation claim. No provider/model routing claim. No stateful multi-call artifact cycle. No default CI dependence.** |
+
+**Status (honest, observed)**: `opt-in run executed with explicit authorization; safe temp roots cleaned; bounded timeout; stateless tools/list + command_list passed with version-tolerant capability presence and non-error normalizable result-shape evidence` — **SC-001 exercised for this local environment (evidence-backed, scoped to stateless engine/editor smoke only)**.
+
+Full runbook/template/limits remain documented above and in `contracts/photocraft-mcp-smoke-contract.md`. Safe execution pattern:
 ```bash
 cd /home/luis/development/artcraft-skills
-PYTHONPATH=. ARTCRAFT_MCP_INTEGRATION=1 python -m pytest -q -m integration tests/integration/test_mcp_stdio_photocraft_optional.py
+PYTHONPATH=. ARTCRAFT_MCP_INTEGRATION=1 ARTCRAFT_MCP_PHOTOCRAFT_BIN=/absolute/path/to/photocraft-cli \
+  python -m pytest -q -m integration tests/integration/test_mcp_stdio_photocraft_optional.py
 ```
-Optional binary override (preferred when explicit): `ARTCRAFT_MCP_PHOTOCRAFT_BIN=/absolute/path/to/photocraft-cli`. Default roots: auto-created isolated temp absolute read/write roots with harness cleanup. Explicit authorized overrides: absolute `ARTCRAFT_MCP_READ_ROOT`/`ARTCRAFT_MCP_WRITE_ROOT` are maintainer-managed and never auto-deleted. Bounded timeout required. Evidence must record: date/env/commit, opt-in, resolved binary/version, roots policy/cleanup, command shape, timeout, capability presence summary (`command_list`, version-tolerant), `command_list` result-shape summary (defensive/non-error/normalizable), reason/error_stage if skipped/failed, **stateless per-call boundary (no session reuse, no artifact cycle)**, and **engine/editor automation only — no AI generation/provider/model claim**.
+Optional explicit authorized roots: absolute `ARTCRAFT_MCP_READ_ROOT`/`ARTCRAFT_MCP_WRITE_ROOT` are maintainer-managed and never auto-deleted.
 
-### T021 — FR/SC traceability (lightweight)
+### T021 — FR/SC traceability (lightweight, updated from observed T022 evidence)
 | ID | Attestation / evidence |
 |---|---|
-| FR-001 | Opt-in gate preserved (`ARTCRAFT_MCP_INTEGRATION=1`); default `-m "not integration"` excludes optional integration (T018/T019). |
-| FR-002 | Harness performs stateless `artcraft_app_client.mcp_tools_list` then `mcp_tools_call(...,"command_list",...)` with bounded timeout; deterministic integration-selected tests pass (22 passed, 1 skipped). Real authorized server execution not exercised (SC-001). |
-| FR-003 | `command_list` is safe deterministic engine/editor discovery target; minimal args `{}`; no AI-generation/provider/model claim asserted by harness/tests/docs. |
-| FR-004 | Binary override preferred + opt-in-only PATH resolved absolute; temp auto roots cleaned, explicit absolute overrides maintainer-managed; bounded timeout; no unsafe state leakage represented by harness/cleanup tests. |
+| FR-001 | Opt-in gate preserved (`ARTCRAFT_MCP_INTEGRATION=1`); default `-m "not integration"` excludes optional integration (T018/T019). Real smoke executed only under explicit authorization (T022). |
+| FR-002 | Harness performed stateless `artcraft_app_client.mcp_tools_list` then `mcp_tools_call(...,"command_list",...)` with bounded timeout (30s). **Observed authorized real local run passed** (T022): MCP attempted, `command_list` capability present, `command_list` invocation non-error/normalizable. Deterministic integration-selected tests pass (22 passed, 1 skipped). |
+| FR-003 | `command_list` is a safe deterministic engine/editor discovery target; minimal args `{}`; no AI-generation/provider/model claim asserted by harness/tests/docs/run evidence. |
+| FR-004 | Binary override preferred + opt-in-only PATH resolved absolute; temp auto roots cleaned (`temp_roots_removed_after_run read/write true`), explicit absolute overrides maintainer-managed; bounded timeout; no unsafe state leakage indicated by observed cleanup and harness tests. |
 | FR-005 | No silent MCP→CLI reroute; 006 selection/explicit-MCP behavior preserved by T019 targeted matrix and no `skills/core/*` production changes. |
-| FR-006 | Classifier/skip/failure paths map to `mcp_unavailable|mcp_misconfigured|mcp_startup_timeout|mcp_call_timeout|mcp_invalid_response|mcp_missing_capability|mcp_tool_error` with actionable `error_stage` where applicable; taxonomy preserved/additive-compatible. |
-| FR-007 | Runbook + evidence template in this quickstart; T018–T021/T014/T008 evidence recorded. |
-| FR-008 | Stateless per-call adapter boundary documented/enforced in harness/tests; no cross-call artifact cycle; limits explicit. |
+| FR-006 | Classifier/skip/failure paths map to `mcp_unavailable|mcp_misconfigured|mcp_startup_timeout|mcp_call_timeout|mcp_invalid_response|mcp_missing_capability|mcp_tool_error` with actionable `error_stage` where applicable; taxonomy preserved/additive-compatible. Authorized T022 run reported no error reason. |
+| FR-007 | Runbook + evidence template in this quickstart; T008/T014/T018–T023 evidence recorded, including observed T022 real-server summary. |
+| FR-008 | Stateless per-call adapter boundary documented/enforced and observed (`stateless=true`, `session_reuse=false`, `artifact_cycle=false`); no cross-call artifact cycle; limits explicit. |
 | FR-009 | No new public AI capability/workflow/stateful session API; adapter reuse only. |
-| SC-001 | **Not exercised** in this environment (no explicit authorization for real local opt-in smoke). Deterministic harness/runbook/evidence path implemented; real proof requires authorized local run. |
-| SC-002 | Default mock-first gates green: `412 passed, 23 deselected`, `12/12 all_valid=True`. |
-| SC-003 | FR-006-aligned actionable outcomes + bounded timeout/cleanup covered by deterministic tests/matrix. |
-| SC-004 | Quickstart/runbook/evidence template states stateless non-AI limits and command shape; discoverable in spec-local artifact. |
+| SC-001 | **Exercised in this local environment under explicit authorization (T022, 2026-11-06)**: real MCP capability discovery plus one safe deterministic `command_list` invocation passed with version-tolerant presence and non-error normalizable result-shape evidence, temp roots cleaned, bounded timeout, stateless non-AI scope only. |
+| SC-002 | Default mock-first gates green: `412 passed, 23 deselected`, `12/12 all_valid=True` (T018). |
+| SC-003 | FR-006-aligned actionable outcomes + bounded timeout/cleanup covered by deterministic tests/matrix; T022 observed safe cleanup. |
+| SC-004 | Quickstart/runbook/evidence records command shape, safety controls, observed proof, stateless boundary, and explicit non-AI-generation limits. |
 | SC-005 | 006 MCP contract/unit/property/selection suites preserved (T019); no public schema/CLI/fallback/FR-005/FR-006 contract changes. |
 
 **Checklists (reviewer-owned, coverage awareness only; markers not toggled)**:
@@ -291,4 +314,4 @@ Optional binary override (preferred when explicit): `ARTCRAFT_MCP_PHOTOCRAFT_BIN
 - `specs/007-photocraft-mcp-smoke/checklists/mcp-protocol-capability.md` (reviewed `[x]`, PASS; commit 593d3a3)
 - `specs/007-photocraft-mcp-smoke/checklists/safety-opt-in-isolation.md` (reviewed `[x]`, PASS; commits 593d3a3,fca9305)
 
-**Honest status**: implementation/harness/tests/docs and default/targeted regression gates are green. **Real opt-in PhotoCraft MCP smoke (SC-001) not exercised** because explicit local authorization was not provided here; 007 must not be reported as fully end-to-end verified against a real server in this environment.
+**Honest status (T023 attestation update)**: implementation/harness/tests/docs and default/targeted regression gates remain green. **SC-001 was exercised in this local environment under explicit user authorization (T022)** with safe temp roots, bounded timeout, stateless `tools/list` + `command_list` discovery/invocation evidence, and temp-root cleanup observed. Evidence is **scoped only** to deterministic engine/editor MCP smoke against `photocraft-cli 0.20.1`; **no prompt-based AI generation/provider/model behavior is claimed or supported by this slice**. Phase 6/Phase 7 verification tasks attest completeness only from recorded evidence.

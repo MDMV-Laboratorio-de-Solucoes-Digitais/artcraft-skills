@@ -395,52 +395,54 @@ def run_photocraft_mcp_smoke(
         out.update({"binary": binary, "stateless": True, "session_reuse": False, "artifact_cycle": False})
         return out
 
+    roots_ref: Dict[str, Any] = {}
+    result: Optional[Dict[str, Any]] = None
     try:
         with provision_smoke_roots(read_override=read_root_override, write_override=write_root_override) as roots:
+            roots_ref = roots
             cfg = A.normalize_mcp_config(dict(mcp_config)) if mcp_config is not None else _build_mcp_config(binary, roots, timeout or 30)
             t = timeout or int(cfg.get("timeout") or 30)
             listed = _tools_list(cfg, timeout=t)
             caps = _capability_presence(listed)
             if not caps.get("supports_command_list"):
-                out = classify_photocraft_mcp_smoke_outcome(
+                result = classify_photocraft_mcp_smoke_outcome(
                     reason=A.REASON_MCP_MISSING_CAPABILITY,
                     mcp_attempted=True,
                     opt_in=True,
                     error_stage="capability_check",
                     message="command_list capability not present",
                 )
-                out.update({"binary": binary, "roots": dict(roots), "capability_presence": caps, "capabilities": caps, "tools_list": listed, "stateless": True, "session_reuse": False, "artifact_cycle": False})
-                return out
-            called = _tools_call(cfg, SMOKE_TOOL, {}, timeout=t)
-            invocation = parse_command_list_result(called)
-            if not invocation.get("ok"):
-                out = classify_photocraft_mcp_smoke_outcome(
-                    reason=invocation.get("reason") or A.REASON_MCP_TOOL_ERROR,
-                    mcp_attempted=True,
-                    opt_in=True,
-                    error_stage="call",
-                    message="command_list invocation failed",
-                )
-                out.update({"binary": binary, "roots": dict(roots), "capability_presence": caps, "capabilities": caps, "invocation": invocation, "command_list": invocation, "stateless": True, "session_reuse": False, "artifact_cycle": False})
-                return out
-            result = {
-                "outcome": "passed",
-                "ok": True,
-                "stateless": True,
-                "session_reuse": False,
-                "artifact_cycle": False,
-                "mcp_attempted": True,
-                "binary": binary,
-                "roots": dict(roots),
-                "capability_presence": caps,
-                "capabilities": caps,
-                "invocation": invocation,
-                "command_list": invocation,
-                "tool_target": SMOKE_TOOL,
-                "version_tolerant": True,
-            }
-            _assert_no_ai_generation_claim(result)
-            return result
+                result.update({"binary": binary, "roots": roots, "capability_presence": caps, "capabilities": caps, "tools_list": listed, "stateless": True, "session_reuse": False, "artifact_cycle": False})
+            else:
+                called = _tools_call(cfg, SMOKE_TOOL, {}, timeout=t)
+                invocation = parse_command_list_result(called)
+                if not invocation.get("ok"):
+                    result = classify_photocraft_mcp_smoke_outcome(
+                        reason=invocation.get("reason") or A.REASON_MCP_TOOL_ERROR,
+                        mcp_attempted=True,
+                        opt_in=True,
+                        error_stage="call",
+                        message="command_list invocation failed",
+                    )
+                    result.update({"binary": binary, "roots": roots, "capability_presence": caps, "capabilities": caps, "invocation": invocation, "command_list": invocation, "stateless": True, "session_reuse": False, "artifact_cycle": False})
+                else:
+                    result = {
+                        "outcome": "passed",
+                        "ok": True,
+                        "stateless": True,
+                        "session_reuse": False,
+                        "artifact_cycle": False,
+                        "mcp_attempted": True,
+                        "binary": binary,
+                        "roots": roots,
+                        "capability_presence": caps,
+                        "capabilities": caps,
+                        "invocation": invocation,
+                        "command_list": invocation,
+                        "tool_target": SMOKE_TOOL,
+                        "version_tolerant": True,
+                    }
+                    _assert_no_ai_generation_claim(result)
     except ValueError as e:
         out = classify_photocraft_mcp_smoke_outcome(reason=A.REASON_MCP_MISCONFIGURED, mcp_attempted=False, opt_in=True, error_stage="config", message=str(e))
         out.update({"binary": binary, "stateless": True, "session_reuse": False, "artifact_cycle": False})
@@ -452,6 +454,11 @@ def run_photocraft_mcp_smoke(
         out = classify_photocraft_mcp_smoke_outcome(reason=reason, mcp_attempted=True, opt_in=True, error_stage=stage, message=str(e))
         out.update({"binary": binary, "stateless": True, "session_reuse": False, "artifact_cycle": False})
         return out
+    if result is None:
+        result = classify_photocraft_mcp_smoke_outcome(reason=A.REASON_MCP_INVALID_RESPONSE, mcp_attempted=True, opt_in=True, error_stage="call")
+    if isinstance(result.get("roots"), dict) and roots_ref:
+        result["roots"] = roots_ref
+    return result
 
 
 def _assert_no_ai_generation_claim(payload: Any) -> None:

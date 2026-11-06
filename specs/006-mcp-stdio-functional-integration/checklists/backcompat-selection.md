@@ -10,45 +10,45 @@
 
 ## Requirement Completeness
 
-- [ ] CHK001 Are explicit-mode requirements (`cli`, `mcp`, `auto`) fully specified, including authoritative precedence when modes/paths conflict? [Completeness, Spec §FR-005, §Clarifications Q3, §Edge Cases]
-- [ ] CHK002 Are requirements defined for the default automatic-selection path when CLI is available, when MCP is available/configured, and when neither path is usable? [Completeness, Spec §FR-005, §User Story 2 Scenario 1]
-- [ ] CHK003 Are requirements specified for preserving existing CLI and fallback behavior as available non-MCP paths after MCP integration? [Completeness, Spec §FR-004, §User Story 2]
-- [ ] CHK004 Are requirements defined for “no available interface/capability” outcomes with structured, diagnosable failure information? [Completeness, Spec §FR-006, §User Story 2 Scenario 1, §Key Entities]
-- [ ] CHK005 Are requirements specified for how MCP outcomes map into the existing skill result contract without changing public skill schemas? [Completeness, Spec §FR-003, §SC-001, §SC-002]
-- [ ] CHK006 Are requirements documented for reason/error metadata needed by callers/operators to distinguish CLI, MCP, selection, and fallback failures? [Completeness, Spec §FR-006, §SC-002, Gap]
-- [ ] CHK007 Are baseline compatibility gates (existing test/validation expectations) captured as requirements-level acceptance constraints for 006? [Completeness, Spec §User Story 2 Scenario 3, §SC-003]
+- [x] CHK001 Are explicit-mode requirements (`cli`, `mcp`, `auto`) fully specified, including authoritative precedence when modes/paths conflict? [Completeness, Spec §FR-005, §Clarifications Q3, §Edge Cases]
+- [x] CHK002 Are requirements defined for the default automatic-selection path when CLI is available, when MCP is available/configured, and when neither path is usable? [Completeness, Spec §FR-005, §User Story 2 Scenario 1]
+- [x] CHK003 Are requirements specified for preserving existing CLI and fallback behavior as available non-MCP paths after MCP integration? [Completeness, Spec §FR-004, §User Story 2]
+- [x] CHK004 Are requirements defined for “no available interface/capability” outcomes with structured, diagnosable failure information? [Completeness, Spec §FR-006, §User Story 2 Scenario 1, §Key Entities]
+- [x] CHK005 Are requirements specified for how MCP outcomes map into the existing skill result contract without changing public skill schemas? [Completeness, Spec §FR-003, §SC-001, §SC-002]
+- [x] CHK006 Are requirements documented for reason/error metadata needed by callers/operators to distinguish CLI, MCP, selection, and fallback failures? [Completeness, Spec §FR-006, §SC-002, Gap]
+- [x] CHK007 Are baseline compatibility gates (existing test/validation expectations) captured as requirements-level acceptance constraints for 006? [Completeness, Spec §User Story 2 Scenario 3, §SC-003]
 
 ## Requirement Clarity
 
-- [ ] CHK008 Is “MCP available/configured” defined clearly enough to prevent inconsistent interpretations across explicit and automatic selection? [Clarity, Spec §FR-005, §Clarifications Q3, Gap]
-- [ ] CHK009 Is the prohibition on MCP-preferred default automatic behavior stated unambiguously for 006 scope? [Clarity, Spec §FR-005, §Clarifications Q3, §Assumptions]
-- [ ] CHK010 Is the term “fallback/degradation according to existing documented rules” specific enough to identify what behavior is preserved versus what is newly defined? [Clarity, Spec §FR-004, §FR-005, Ambiguity]
-- [ ] CHK011 Are requirements clear about whether explicit `mode=mcp` may silently reroute to CLI/fallback on MCP failure, or must return a structured MCP failure? [Clarity, Spec §FR-005, §FR-006, §User Story 1 Scenario 3, §Edge Cases]
-- [ ] CHK012 Is “public skill schemas unchanged” scoped precisely (inputs, outputs, required fields, enums/default semantics) to avoid accidental contract drift? [Clarity, Spec §FR-003, §Assumptions, §SC-003]
-- [ ] CHK013 Are “actionable” failure reasons defined with minimum content quality (what failed, why/which path, and whether selection context is known) while staying non-technical where appropriate? [Clarity, Spec §FR-006, §SC-002, §SC-005]
+- [x] CHK008 Is “MCP available/configured” defined clearly enough to prevent inconsistent interpretations across explicit and automatic selection? [Clarity, Spec §FR-005, §Clarifications Q3, Gap]
+- [x] CHK009 Is the prohibition on MCP-preferred default automatic behavior stated unambiguously for 006 scope? [Clarity, Spec §FR-005, §Clarifications Q3, §Assumptions]
+- [x] CHK010 Is the term “fallback/degradation according to existing documented rules” specific enough to identify what behavior is preserved versus what is newly defined? [Clarity, Spec §FR-004, §FR-005, Ambiguity]
+- [x] CHK011 Are requirements clear about whether explicit `mode=mcp` may silently reroute to CLI/fallback on MCP failure, or must return a structured MCP failure? [Clarity, Spec §FR-005, §FR-006, §User Story 1 Scenario 3, §Edge Cases]
+- [x] CHK012 Is “public skill schemas unchanged” scoped precisely (inputs, outputs, required fields, enums/default semantics) to avoid accidental contract drift? [Clarity, Spec §FR-003, §Assumptions, §SC-003]
+- [x] CHK013 Are “actionable” failure reasons defined with minimum content quality (what failed, why/which path, and whether selection context is known) while staying non-technical where appropriate? [Clarity, Spec §FR-006, §SC-002, §SC-005]
 
 ## Requirement Consistency
 
-- [ ] CHK014 Do FR-003, FR-004, FR-005, and SC-003 consistently reinforce additive MCP integration without regressions to existing contracts/paths? [Consistency, Spec §FR-003–FR-005, §SC-003]
-- [ ] CHK015 Do selection-policy statements in clarifications, assumptions, user stories, and edge cases align on CLI-first default automatic behavior? [Consistency, Spec §Clarifications Q3, §Assumptions, §User Story 2, §Edge Cases]
-- [ ] CHK016 Are requirements consistent about where graceful fallback is allowed versus where explicit-path failure must be surfaced? [Consistency, Spec §FR-004, §FR-005, §FR-006]
-- [ ] CHK017 Do success criteria and failure scenarios use compatible notions of “normalized result contract” and “structured failure”? [Consistency, Spec §SC-001, §SC-002, §FR-003, §FR-006]
+- [x] CHK014 Do FR-003, FR-004, FR-005, and SC-003 consistently reinforce additive MCP integration without regressions to existing contracts/paths? [Consistency, Spec §FR-003–FR-005, §SC-003]
+- [x] CHK015 Do selection-policy statements in clarifications, assumptions, user stories, and edge cases align on CLI-first default automatic behavior? [Consistency, Spec §Clarifications Q3, §Assumptions, §User Story 2, §Edge Cases]
+- [x] CHK016 Are requirements consistent about where graceful fallback is allowed versus where explicit-path failure must be surfaced? [Consistency, Spec §FR-004, §FR-005, §FR-006]
+- [x] CHK017 Do success criteria and failure scenarios use compatible notions of “normalized result contract” and “structured failure”? [Consistency, Spec §SC-001, §SC-002, §FR-003, §FR-006]
 
 ## Scenario & Edge Case Coverage
 
-- [ ] CHK018 Are primary scenarios covered for explicit CLI, explicit MCP, and automatic selection when each relevant path is available? [Coverage, Spec §FR-005, §User Story 1, §User Story 2]
-- [ ] CHK019 Are alternate scenarios covered when MCP is configured but unavailable, partially usable, or excluded by default auto selection? [Coverage, Spec §User Story 2, §Edge Cases]
-- [ ] CHK020 Are exception scenarios covered for invalid MCP responses, timeouts, missing capabilities, and operation failures without breaking existing result contracts? [Coverage, Spec §FR-006, §SC-002, §Edge Cases]
-- [ ] CHK021 Are recovery/retry-after-failure scenarios addressed at requirement level (no unsafe state leakage; documented selection/fallback behavior on subsequent attempts)? [Coverage, Spec §Edge Cases, §FR-007, Gap]
-- [ ] CHK022 Are requirements defined for ambiguous coexistence of `cli_path`, `mcp_config`, and automatic selection inputs so precedence is reviewable? [Coverage, Spec §Key Entities, §FR-005, Gap]
-- [ ] CHK023 Are non-MCP fallback scenarios bounded so 006 does not implicitly redefine broader fallback behavior outside minimum MCP integration? [Coverage, Spec §FR-004, §Assumptions, Gap]
+- [x] CHK018 Are primary scenarios covered for explicit CLI, explicit MCP, and automatic selection when each relevant path is available? [Coverage, Spec §FR-005, §User Story 1, §User Story 2]
+- [x] CHK019 Are alternate scenarios covered when MCP is configured but unavailable, partially usable, or excluded by default auto selection? [Coverage, Spec §User Story 2, §Edge Cases]
+- [x] CHK020 Are exception scenarios covered for invalid MCP responses, timeouts, missing capabilities, and operation failures without breaking existing result contracts? [Coverage, Spec §FR-006, §SC-002, §Edge Cases]
+- [x] CHK021 Are recovery/retry-after-failure scenarios addressed at requirement level (no unsafe state leakage; documented selection/fallback behavior on subsequent attempts)? [Coverage, Spec §Edge Cases, §FR-007, Gap]
+- [x] CHK022 Are requirements defined for ambiguous coexistence of `cli_path`, `mcp_config`, and automatic selection inputs so precedence is reviewable? [Coverage, Spec §Key Entities, §FR-005, Gap]
+- [x] CHK023 Are non-MCP fallback scenarios bounded so 006 does not implicitly redefine broader fallback behavior outside minimum MCP integration? [Coverage, Spec §FR-004, §Assumptions, Gap]
 
 ## Acceptance Criteria, Dependencies & Assumptions
 
-- [ ] CHK024 Are SC-001–SC-003 measurable acceptance criteria traceable to specific FRs and scenario classes? [Acceptance Criteria, Spec §SC-001–SC-003, §FR-001–FR-006]
-- [ ] CHK025 Is the dependency on existing creative-skill execution paths documented with explicit compatibility expectations? [Dependency, Spec §Dependencies, §FR-004]
-- [ ] CHK026 Are assumptions about user-visible selection behavior and back-compatibility validated or flagged as requiring reviewer confirmation? [Assumption, Spec §Assumptions, §Clarifications Q3]
-- [ ] CHK027 Are exclusions (multi-app/tool breadth, non-stdio transports, schema changes, backend/provider work) clear enough to prevent scope creep during planning/implementation? [Consistency, Spec §FR-001, §FR-008, §FR-010, §Assumptions]
+- [x] CHK024 Are SC-001–SC-003 measurable acceptance criteria traceable to specific FRs and scenario classes? [Acceptance Criteria, Spec §SC-001–SC-003, §FR-001–FR-006]
+- [x] CHK025 Is the dependency on existing creative-skill execution paths documented with explicit compatibility expectations? [Dependency, Spec §Dependencies, §FR-004]
+- [x] CHK026 Are assumptions about user-visible selection behavior and back-compatibility validated or flagged as requiring reviewer confirmation? [Assumption, Spec §Assumptions, §Clarifications Q3]
+- [x] CHK027 Are exclusions (multi-app/tool breadth, non-stdio transports, schema changes, backend/provider work) clear enough to prevent scope creep during planning/implementation? [Consistency, Spec §FR-001, §FR-008, §FR-010, §Assumptions]
 
 ## Notes
 

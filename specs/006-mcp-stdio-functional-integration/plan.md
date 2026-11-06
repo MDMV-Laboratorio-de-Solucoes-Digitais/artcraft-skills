@@ -5,7 +5,7 @@
 
 ## Summary
 
-Enable minimal functional MCP integration for ArtCraft creative skills over local stdio: a generic, standards-compliant MCP tools contract (`tools/list` discovery + one `tools/call` invocation) implemented in the existing adapter/skill layer with deterministic mock/fake subprocess tests. PhotoCraft headless MCP is the **reference target** for documentation/optional validation; default CI acceptance is mock-first (no real binaries/credentials/network). The design preserves `SkillResult`, public skill schemas, CLI/fallback behavior, and back-compatible default `auto` selection (CLI available → MCP available/configured → fallback/degradation). Primary end-to-end example: `image-edit` via the shared `CreativeSkill` path.
+Enable minimal functional MCP integration for ArtCraft creative skills over local stdio: a generic, standards-compliant MCP tools contract (`tools/list` discovery + one `tools/call` invocation) implemented in the existing adapter/skill layer with deterministic mock/fake subprocess tests. PhotoCraft headless MCP is the **reference target** for documentation/optional validation; default CI acceptance is mock-first (no real binaries/credentials/network). The design preserves `SkillResult`, public skill schemas, CLI/fallback behavior, and back-compatible default `auto` selection (CLI available → MCP available/configured → fallback/degradation). **Clarify (2026-11-05, Q4–Q8/A):** explicit `mode=mcp` never silently reroutes to CLI/fallback; FR-006 requires additive minimum failure metadata (`error`+hint, `mode`, stable `reason`, `interface`/`tool`, `error_stage`, safe context); FR-007 specifies behavioral subprocess-session invariants (JSON-RPC `id` correlation, stdout protocol/stderr diagnostics, cleanup/objective completion, session invalid after partial-startup/transport failure, no blind non-idempotent retries) while exact numeric control values remain bounded/deferred; fallback/schema/selection/recovery/ambiguous-input bounds and a spec-level verification contract are defined in `spec.md`. Primary end-to-end example: `image-edit` via the shared `CreativeSkill` path.
 
 ## Technical Context
 
@@ -16,7 +16,7 @@ Enable minimal functional MCP integration for ArtCraft creative skills over loca
 **Target Platform**: Local development/agent environments where Python skills run (Linux/macOS/Windows-compatible Python subprocess behavior where feasible); MCP server is launched as local subprocess per `mcp_config`.  
 **Project Type**: Python skills library/adapter (single repo, `skills/core` + `skills/creative` + `tests`).  
 **Performance Goals**: MCP path adds bounded, predictable overhead only when selected; no regression to existing CLI path latency characteristics beyond explicit timeout bounds. Discovery+single invocation should complete within configured timeout for mock scenarios; no throughput target beyond existing skill behavior.  
-**Constraints**: Preserve public schemas and `SkillResult`; no stdout protocol pollution (MCP stdio requires stdout JSON-RPC only, stderr diagnostics); bounded startup/call timeouts; safe subprocess cleanup; graceful degradation; mock-first determinism; no mandatory credentials/network/real binaries in default CI; follow Constitution v2.0.0 and AGENTS.md.  
+**Constraints**: Preserve public schemas and `SkillResult` (FR-003 scope clarified); no stdout protocol pollution (MCP stdio stdout JSON-RPC only, stderr diagnostics); bounded startup/call timeouts with safe subprocess cleanup and objective completion; explicit `mode=mcp` no silent reroute (FR-005 Q4:A); FR-006 minimum additive failure metadata; FR-007 behavioral session invariants (exact numeric values deferred per spec Assumptions); graceful degradation per bounded existing rules; mock-first determinism and spec verification contract; no mandatory credentials/network/real binaries in default CI; follow Constitution v2.0.0 and AGENTS.md.
 **Scale/Scope**: 1 reference target (PhotoCraft, docs/optional validation), 1 primary skill example (`image-edit`), 1 supported invocation after `tools/list` discovery in acceptance; generic adapter contract reusable by other `CreativeSkill` subclasses without schema changes.
 
 ## Constitution Check
@@ -119,9 +119,22 @@ Re-evaluated after Phase 1 artifacts:
 |-----------|------------|-------------------------------------|
 | None | — | — |
 
+## Clarify Decisions (2026-11-05, applied to spec/contracts)
+
+- **Q4/A — Explicit MCP no silent fallback**: `mode=mcp` returns structured MCP failure on any MCP-path failure; no CLI/fallback reroute. Resolves `spec.md` US1 Scenario 3 tension.
+- **Q5/A — Minimum failure metadata**: additive `error`+remediation hint, `metadata.mode`, stable `metadata.reason` (006 set), `metadata.interface`/`metadata.tool` when attempted, `metadata.error_stage` where available, bounded safe context; no secrets/PII.
+- **Q6/A — Subprocess-session invariants**: JSON-RPC `id` correlation; unmatched/duplicate/late/unsolicited messages do not corrupt results; EOF/exit-mid-transmission/invalid framing/partial unusable response classified + cleaned up; spawn/launch failures classified with guidance; session invalid after partial startup/transport failure; cleanup objective completion; no blind non-idempotent retries. Exact timeout/signal durations deferred.
+- **Q7/A — Bounded fallback/schema/selection/recovery**: fallback rules bounded to current `CreativeSkill`/adapter + contract §2/§6; schema stability scoped to existing inputs/enums/defaults + `SkillResult` + additive metadata; explicit selection/recovery/ambiguous-input rules clarified in spec FR-005.
+- **Q8/A — Verification contract**: minimum deterministic mock stdio scenario classes, selection/back-compat evidence, parity boundary, ambiguous-failure evidence protocol, regression set, minimum supported environment (Linux+Python/pytest+mock/test entrypoint).
+- **Q9/A — Optional correlation metadata**: FR-006 minimum fields remain required; additive optional correlation/trace fields may be included when safe (`request_id`/JSON-RPC id, `operation_id`/session token); explicit mode remains observable.
+- **Q10/A — Repeatability/classification stability**: deterministic mock scenario classes require stable FR-006 `reason`/`error_stage` under same conditions; nondeterministic classification is a defect for 006 mock scope.
+- **Q11/A — Evidence traceability**: acceptance evidence maps covered scenario classes to FR/SC IDs (lightweight table/inline tags).
+- **Q12/A — Conformance baseline**: pre-006 green `SkillResult`/schema + existing `CreativeSkill`/adapter CLI/selection behavior on integration branch; record commit/SHA or test summary in implementation PR.
+
 ## Planning Notes / Risks (tracked)
 
 - **Sync vs async MCP SDK**: 006 uses minimal sync client to fit existing skill execution model; if scope expands, revisit SDK behind adapter boundary.
 - **PhotoCraft tool mapping**: engine-oriented (`command_list`/`command_run`) vs capability-specific tools; reference mapping must not leak into generic contract.
 - **`image-generate` outlier**: extends `BaseSkill` with duplicated MCP/CLI flow; verify no regressions and schedule alignment follow-up if needed.
-- **Failthrough semantics**: no new CLI→MCP failthrough in 006; document clearly to avoid ambiguity.
+- **Failthrough semantics**: explicit `mode=mcp` never silently reroutes (Q4/A); default `auto` remains CLI-first with no new CLI→MCP failthrough (D3).
+- **Numeric control values deferred**: timeout/signal escalation durations, exact fixture/marker names/mechanics remain implementation choices within bounded behavioral invariants (spec Assumptions/FR-007).

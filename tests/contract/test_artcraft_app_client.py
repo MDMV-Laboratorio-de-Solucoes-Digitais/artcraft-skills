@@ -24,6 +24,9 @@ EXPECTED_FUNCTIONS = [
     "run_cli_generation",
     "select_mode",
     "standardize_error",
+    # 006 MCP stdio additive API
+    "mcp_tools_list",
+    "mcp_tools_call",
 ]
 
 
@@ -40,17 +43,17 @@ def test_module_importable():
     assert m.__name__ == "skills.core.artcraft_app_client"
 
 
-def test_all_nine_functions_present():
-    """All nine public functions must exist and be callable."""
+def test_all_expected_functions_present():
+    """All expected public functions must exist and be callable."""
     for name in EXPECTED_FUNCTIONS:
         assert hasattr(adapter, name), f"missing function: {name}"
         assert callable(getattr(adapter, name)), f"not callable: {name}"
 
 
-def test_function_count_at_least_nine():
-    """Adapter exposes at least the nine documented functions."""
+def test_function_count_at_least_expected():
+    """Adapter exposes at least the expected documented functions."""
     present = [n for n in EXPECTED_FUNCTIONS if hasattr(adapter, n) and callable(getattr(adapter, n))]
-    assert len(present) >= 9
+    assert len(present) >= len(EXPECTED_FUNCTIONS)
 
 
 def test_version_present_and_matches_snapshot():

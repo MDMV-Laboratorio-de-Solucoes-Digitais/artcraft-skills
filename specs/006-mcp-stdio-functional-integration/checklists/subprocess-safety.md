@@ -10,44 +10,44 @@
 
 ## Requirement Completeness
 
-- [ ] CHK001 Are requirements specified for safe local subprocess lifecycle outcomes (startup, communication, timeout, termination/cleanup) at the behavior level? [Completeness, Spec §FR-001, §FR-006, §FR-007, §Edge Cases]
-- [ ] CHK002 Are requirements defined for bounded waiting/time-limit behavior when the subprocess starts but does not produce a usable protocol response? [Completeness, Spec §FR-006, §Edge Cases, §Assumptions]
-- [ ] CHK003 Are requirements specified for separating protocol communication from diagnostic output so diagnostics cannot corrupt normalized results? [Completeness, Spec §FR-007, §Edge Cases]
-- [ ] CHK004 Are requirements defined for unavailable or misconfigured MCP entrypoints, including minimum actionable failure information? [Completeness, Spec §FR-006, §User Story 2 Scenario 1]
-- [ ] CHK005 Are requirements defined for invalid protocol/response data, partial/unmappable structured data, missing capability, and operation failure as distinct diagnosable cases where relevant? [Completeness, Spec §FR-006, §User Story 1 Scenarios 2–3, §Edge Cases]
-- [ ] CHK006 Are requirements documented for reference-target access boundaries/roots and related configuration constraints as operational boundaries (not mandatory CI dependencies)? [Completeness, Spec §FR-001, §FR-009, §FR-010, §Dependencies]
-- [ ] CHK007 Are requirements specified for preventing unsafe or ambiguous state after MCP failures, timeouts, or invalid responses? [Completeness, Spec §FR-007, §Edge Cases]
+- [x] CHK001 Are requirements specified for safe local subprocess lifecycle outcomes (startup, communication, timeout, termination/cleanup) at the behavior level? [Completeness, Spec §FR-001, §FR-006, §FR-007, §Edge Cases]
+- [x] CHK002 Are requirements defined for bounded waiting/time-limit behavior when the subprocess starts but does not produce a usable protocol response? [Completeness, Spec §FR-006, §Edge Cases, §Assumptions]
+- [x] CHK003 Are requirements specified for separating protocol communication from diagnostic output so diagnostics cannot corrupt normalized results? [Completeness, Spec §FR-007, §Edge Cases]
+- [x] CHK004 Are requirements defined for unavailable or misconfigured MCP entrypoints, including minimum actionable failure information? [Completeness, Spec §FR-006, §User Story 2 Scenario 1]
+- [x] CHK005 Are requirements defined for invalid protocol/response data, partial/unmappable structured data, missing capability, and operation failure as distinct diagnosable cases where relevant? [Completeness, Spec §FR-006, §User Story 1 Scenarios 2–3, §Edge Cases]
+- [x] CHK006 Are requirements documented for reference-target access boundaries/roots and related configuration constraints as operational boundaries (not mandatory CI dependencies)? [Completeness, Spec §FR-001, §FR-009, §FR-010, §Dependencies]
+- [x] CHK007 Are requirements specified for preventing unsafe or ambiguous state after MCP failures, timeouts, or invalid responses? [Completeness, Spec §FR-007, §Edge Cases]
 
 ## Requirement Clarity
 
-- [ ] CHK008 Is “safely stop” defined clearly enough to cover user/operator expectations for cleanup and subsequent operation readiness without prescribing mechanism details? [Clarity, Spec §User Story 2 Scenario 2, §FR-007]
-- [ ] CHK009 Is “protocol communication remains usable” clarified with objective boundaries (what must not be corrupted, what diagnostics may exist)? [Clarity, Spec §FR-007, §Edge Cases]
-- [ ] CHK010 Are timeout/failure requirements clear about required outcome categories (timeout, invalid response, unavailable, missing capability, operation failure) and minimum metadata? [Clarity, Spec §FR-006, §SC-002]
-- [ ] CHK011 Is the distinction between reference-target operational constraints (e.g., PhotoCraft roots) and generic MCP contract requirements unambiguous? [Clarity, Spec §FR-001, §FR-009, §Assumptions]
-- [ ] CHK012 Are requirements clear that optional real-environment validation may require environment-specific boundaries, while default verification must not? [Clarity, Spec §FR-008, §FR-010, §SC-004]
+- [x] CHK008 Is “safely stop” defined clearly enough to cover user/operator expectations for cleanup and subsequent operation readiness without prescribing mechanism details? [Clarity, Spec §User Story 2 Scenario 2, §FR-007]
+- [x] CHK009 Is “protocol communication remains usable” clarified with objective boundaries (what must not be corrupted, what diagnostics may exist)? [Clarity, Spec §FR-007, §Edge Cases]
+- [x] CHK010 Are timeout/failure requirements clear about required outcome categories (timeout, invalid response, unavailable, missing capability, operation failure) and minimum metadata? [Clarity, Spec §FR-006, §SC-002]
+- [x] CHK011 Is the distinction between reference-target operational constraints (e.g., PhotoCraft roots) and generic MCP contract requirements unambiguous? [Clarity, Spec §FR-001, §FR-009, §Assumptions]
+- [x] CHK012 Are requirements clear that optional real-environment validation may require environment-specific boundaries, while default verification must not? [Clarity, Spec §FR-008, §FR-010, §SC-004]
 
 ## Requirement Consistency
 
-- [ ] CHK013 Do FR-006 and FR-007 consistently require structured diagnosability without unsafe state leakage across all listed MCP failure classes? [Consistency, Spec §FR-006, §FR-007, §Edge Cases]
-- [ ] CHK014 Do safety/cleanup expectations in user stories, edge cases, and assumptions align (no manual cleanup required after handled failures)? [Consistency, Spec §User Story 2 Scenario 2, §Edge Cases, §Assumptions]
-- [ ] CHK015 Do reference-target notes consistently avoid promoting PhotoCraft-specific roots/tools into mandatory universal requirements for 006? [Consistency, Spec §FR-001, §FR-002, §Assumptions, §Dependencies]
-- [ ] CHK016 Do error-handling requirements align with normalized result-contract requirements so failure reporting does not break public schemas? [Consistency, Spec §FR-003, §FR-006, §SC-002]
+- [x] CHK013 Do FR-006 and FR-007 consistently require structured diagnosability without unsafe state leakage across all listed MCP failure classes? [Consistency, Spec §FR-006, §FR-007, §Edge Cases]
+- [x] CHK014 Do safety/cleanup expectations in user stories, edge cases, and assumptions align (no manual cleanup required after handled failures)? [Consistency, Spec §User Story 2 Scenario 2, §Edge Cases, §Assumptions]
+- [x] CHK015 Do reference-target notes consistently avoid promoting PhotoCraft-specific roots/tools into mandatory universal requirements for 006? [Consistency, Spec §FR-001, §FR-002, §Assumptions, §Dependencies]
+- [x] CHK016 Do error-handling requirements align with normalized result-contract requirements so failure reporting does not break public schemas? [Consistency, Spec §FR-003, §FR-006, §SC-002]
 
 ## Scenario & Edge Case Coverage
 
-- [ ] CHK017 Are exception scenarios defined for startup/connectivity failures, response timeouts, invalid/unexpected protocol data, and operation errors? [Coverage, Spec §FR-006, §SC-002, §Edge Cases]
-- [ ] CHK018 Are scenarios defined for missing/renamed/ambiguous capabilities discovered after a successful connection/list operation? [Coverage, Spec §FR-002, §FR-006, §Edge Cases]
-- [ ] CHK019 Are scenarios defined for invalid or missing required reference-target access boundaries in optional/manual validation contexts? [Coverage, Spec §Edge Cases, §FR-009, Gap]
-- [ ] CHK020 Are recovery scenarios defined for repeated attempts after an MCP failure, including state/reset expectations and policy-consistent path selection? [Coverage, Spec §Edge Cases, §FR-005, §FR-007, Gap]
-- [ ] CHK021 Are requirements specified for concurrent or overlapping usage risks where subprocess/resource contention could affect diagnosability or safety? [Coverage, Gap, Spec §FR-007]
-- [ ] CHK022 Are requirements defined for bounding diagnostic capture/reporting so operational detail is useful but does not create uncontrolled exposure risk? [Coverage, Gap, Spec §FR-006, §FR-007]
+- [x] CHK017 Are exception scenarios defined for startup/connectivity failures, response timeouts, invalid/unexpected protocol data, and operation errors? [Coverage, Spec §FR-006, §SC-002, §Edge Cases]
+- [x] CHK018 Are scenarios defined for missing/renamed/ambiguous capabilities discovered after a successful connection/list operation? [Coverage, Spec §FR-002, §FR-006, §Edge Cases]
+- [x] CHK019 Are scenarios defined for invalid or missing required reference-target access boundaries in optional/manual validation contexts? [Coverage, Spec §Edge Cases, §FR-009, Gap]
+- [x] CHK020 Are recovery scenarios defined for repeated attempts after an MCP failure, including state/reset expectations and policy-consistent path selection? [Coverage, Spec §Edge Cases, §FR-005, §FR-007, Gap]
+- [x] CHK021 Are requirements specified for concurrent or overlapping usage risks where subprocess/resource contention could affect diagnosability or safety? [Coverage, Gap, Spec §FR-007]
+- [x] CHK022 Are requirements defined for bounding diagnostic capture/reporting so operational detail is useful but does not create uncontrolled exposure risk? [Coverage, Gap, Spec §FR-006, §FR-007]
 
 ## Security, Privacy & Operational Assumptions
 
-- [ ] CHK023 Are requirements specified to prevent leakage of secrets, credentials, tokens, or sensitive local path details in actionable errors/metadata/documented examples? [Security, Gap, Spec §FR-006, §FR-009]
-- [ ] CHK024 Are requirements/assumptions documented for least-privilege access boundaries when using a real MCP-capable target in optional validation? [Security, Assumption, Spec §FR-010, §Dependencies]
-- [ ] CHK025 Are assumptions about deterministic mock/fake subprocess behavior validated against the need to represent critical real failure classes (timeout, invalid response, missing capability)? [Assumption, Spec §FR-008, §SC-001, §SC-002]
-- [ ] CHK026 Are dependencies on reference-target documentation clearly identified as inputs for final reference mapping and operational notes, not blockers for generic mock-first acceptance? [Dependency, Spec §Dependencies, §FR-001, §FR-010]
+- [x] CHK023 Are requirements specified to prevent leakage of secrets, credentials, tokens, or sensitive local path details in actionable errors/metadata/documented examples? [Security, Gap, Spec §FR-006, §FR-009]
+- [x] CHK024 Are requirements/assumptions documented for least-privilege access boundaries when using a real MCP-capable target in optional validation? [Security, Assumption, Spec §FR-010, §Dependencies]
+- [x] CHK025 Are assumptions about deterministic mock/fake subprocess behavior validated against the need to represent critical real failure classes (timeout, invalid response, missing capability)? [Assumption, Spec §FR-008, §SC-001, §SC-002]
+- [x] CHK026 Are dependencies on reference-target documentation clearly identified as inputs for final reference mapping and operational notes, not blockers for generic mock-first acceptance? [Dependency, Spec §Dependencies, §FR-001, §FR-010]
 
 ## Notes
 

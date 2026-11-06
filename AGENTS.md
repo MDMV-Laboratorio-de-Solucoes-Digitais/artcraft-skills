@@ -6,14 +6,14 @@ ArtCraft Skills Suite: an open-source, composable AI agent skills ecosystem foll
 
 - **Implementation tiers**: Declarative `SKILL.md` skills (YAML frontmatter + Markdown) for most workflow/integration skills; Python `BaseSkill` subclasses for executable skills (e.g., image generation/adapters).
 - **Governance**: Guided by `.specify/memory/constitution.md` (v2.0.0). Feature specs/plans/tasks live under `specs/`.
-- **Status**: 12 skills validated; no root package/build system.
+- **Status**: 12 skills validated; no root package/build system. Default test suite: `399 passed, 1 deselected` (`pytest -q`; `integration` marker excluded by default). Validate: `python scripts/validate_all_skills.py` → `all_valid=True`.
 
 ## Architecture & Data Flow
 
 ### Core Abstractions (`skills/core/`)
 - **`base_skill.py`**: `SkillResult` (dataclass: `success`, `data`, `error`, `metadata`), `BaseSkill` (ABC) with `get_input_schema()`, `get_output_schema()`, `execute(inputs) -> SkillResult`, `validate_inputs()`, `get_metadata()`.
-- **`creative_skill.py`**: `CreativeSkill(BaseSkill)` template for ArtCraft app integration. Implements discover → resolve → invoke → normalize → degrade for CLI/MCP with mode selection (`cli`/`mcp`/`auto`), `threading.BoundedSemaphore(3)`, retry with exponential backoff + jitter (max 3 attempts). Most creative skills inherit from it; `ImageGenerateSkill` is an outlier extending `BaseSkill` directly.
-- **`artcraft_app_client.py`**: Stateless CLI/MCP adapter (discovery, command resolution, normalization, mode selection, error standardization). Shared by `CreativeSkill`. Reason codes: `REASON_CLI_NOT_FOUND`, `REASON_MCP_UNAVAILABLE`, `REASON_NEITHER_AVAILABLE`.
+- **`creative_skill.py`**: `CreativeSkill(BaseSkill)` template for ArtCraft app integration. Implements discover → resolve → invoke → normalize → degrade for CLI/MCP with mode selection (`cli`/`mcp`/`auto`), `threading.BoundedSemaphore(3)`, retry with exponential backoff + jitter (max 3 attempts). 006 MCP stdio is functional: `_mcp_available/_mcp_command_list/_mcp_command_run/_execute_mcp` use the adapter for `tools/list` + one `tools/call` with normalized `SkillResult`. **FR-005**: explicit mode wins; `mode=mcp` returns structured MCP failure with **no silent CLI/fallback reroute**; default `auto` is back-compatible CLI-first when CLI is available, else MCP when CLI is unavailable and MCP is configured/available, else structured `neither_available` degradation. Most creative skills inherit from it; `ImageGenerateSkill` is an outlier extending `BaseSkill` directly (duplicated MCP/CLI flow; verify back-compat when changing shared behavior).
+- **`artcraft_app_client.py`**: Stateless CLI/MCP adapter (discovery, command resolution, normalization, mode selection, error standardization). Shared by `CreativeSkill`. 006 adds minimal sync MCP stdio JSON-RPC transport helpers (`mcp_tools_list`, `mcp_tools_call`): newline-delimited JSON-RPC on stdout only, stderr diagnostics, bounded timeouts, request-id correlation, safe subprocess cleanup. Additive public exports/reason codes include `REASON_CLI_NOT_FOUND`, `REASON_MCP_UNAVAILABLE`, `REASON_MCP_MISCONFIGURED`, `REASON_MCP_STARTUP_TIMEOUT`, `REASON_MCP_CALL_TIMEOUT`, `REASON_MCP_INVALID_RESPONSE`, `REASON_MCP_MISSING_CAPABILITY`, `REASON_MCP_TOOL_ERROR`, `REASON_NEITHER_AVAILABLE`, `REASON_IS_ERROR` (contract snapshot: `tests/contract/artcraft_app_client_api.json`, adapter `__version__ 0.3.0`).
 - **`composer.py`**: `SkillComposer` for sequential (`compose`) and parallel (`compose_parallel`) chaining. Sequential passes `result.data` forward, wrapping non-dict data as `{'result': ...}` and short-circuiting on failure.
 - **`orchestrator.py`**: `DAGOrchestrator` with `DAGNode`/`NodeStatus`, cycle detection (DFS), ready-node resolution, wave execution.
 - **Utilities**: `utils.py` (`SkillError`, logging/env/config helpers), `credentials.py` (`CredentialManager`), `artcraft_client.py` (API stubs like `OmniApiClient`/`OmniGenClient`), `provider_router.py`, `asset_handler.py`, `cost_estimator.py`, `job_orchestrator.py`.
@@ -38,7 +38,7 @@ ArtCraft Skills Suite: an open-source, composable AI agent skills ecosystem foll
 | `skills/core/` | Base abstractions, orchestrators, composers, adapters, utilities. |
 | `skills/creative/` | Creative skills inheriting from `CreativeSkill` or `BaseSkill` (e.g., `image-generate/`, `image-edit/`, `background-remove/`, `image-upscale/`, `mesh-generate/`). |
 | `scripts/` | Tooling: `validate_skill.py`, `validate_all_skills.py`, `skill_loader.py`, `register_skills.py`, `check_vendor_neutrality.py`. Stdlib + PyYAML. |
-| `tests/` | Layered tests: `unit/`, `integration/`, `contract/`, `property/`, `characterization/`, `_helpers/`, `reference/`, `golden/`. No root `conftest.py` (only `tests/characterization/conftest.py`). |
+| `tests/` | Layered tests: `unit/`, `integration/`, `contract/`, `property/`, `characterization/`, `_helpers/`, `reference/`, `golden/`. No root `conftest.py` (only `tests/characterization/conftest.py`). `_helpers/fake_mcp_stdio_server.py` provides deterministic mock MCP stdio subprocess scenarios for 006. |
 | `specs/` | Feature specs/plans/tasks/contracts/checklists (Spec Kit). |
 | `docs/` | Guides: `skill-authoring.md`, `core-abstractions.md`, `cross-product.md`, `generalizable-workflows.md`, `architecture.md`. |
 | `.specify/` | Spec Kit templates, `memory/constitution.md` (v2.0.0), workflows, extensions, scripts. |
@@ -55,16 +55,16 @@ python scripts/validate_all_skills.py
 python scripts/skill_loader.py
 python scripts/register_skills.py
 
-# Run tests (from repo root)
-pytest
+# Run tests (from repo root). Default addopts exclude `integration` marker.
+pytest                    # Default suite (mock-first, deterministic)
+pytest -m integration     # Optional real integration tests (explicit prereqs only)
 pytest tests/unit/
-pytest tests/integration/
+pytest tests/integration/ # Usually deselected by default marker
 pytest tests/contract/
 pytest tests/property/
 pytest tests/characterization/
 pytest -v -x
-pytest tests/unit/test_image_generate.py -v
-```
+pytest tests/unit/test_mcp_stdio_transport.py -v
 
 **Notes**: Run from repo root. No build/package manager/lint/format tools configured. Dependencies assumed installed (`PyYAML`, `pytest`, `hypothesis`). Tests use `--import-mode=importlib` and often set `sys.path` manually.
 
@@ -80,15 +80,15 @@ pytest tests/unit/test_image_generate.py -v
 - **Python skills**: Inherit from `BaseSkill` or `CreativeSkill`. Implement `get_input_schema()`, `get_output_schema()`, `execute(inputs) -> SkillResult`. Return `SkillResult` (never raise for expected failures); catch exceptions and stringify.
 
 ### Patterns
-- **Result objects**: All operations return `SkillResult(success=bool, data=Any, error=str|None, metadata=dict)`. Metadata often includes `mode`, `interface`, `command`, `exit_code`, `timeout_s`, `reason`, `is_error`.
-- **Adapter pattern**: `artcraft_app_client` centralizes transport; `CreativeSkill` delegates discovery/normalization/mode selection there. Skills remain thin.
+- **Result objects**: All operations return `SkillResult(success=bool, data=Any, error=str|None, metadata=dict)`. Metadata often includes `mode`, `interface`, `command`/`tool`, `exit_code`, `timeout_s`, `reason`, `is_error`, and additive `error_stage` for MCP failures.
+- **Adapter pattern**: `artcraft_app_client` centralizes transport; `CreativeSkill` delegates discovery/normalization/mode selection there. MCP stdio uses `tools/list` discovery + `tools/call` invocation via the adapter; skills remain thin.
 - **Keyword-driven discovery**: CLI/MCP commands resolved via keywords/overrides passed through `artcraft_app_client`.
 - **Composition**: `SkillComposer.compose()` threads dict data (non-dict wrapped as `{'result': ...}`), short-circuits on failure. `compose_parallel()` runs independent skills.
 - **DAG orchestration**: `DAGOrchestrator` manages dependencies with cycle detection and wave execution.
 - **Validation-first**: Strict agentskills.io validation; input validation returns structured errors.
 - **Resilience**: `CreativeSkill` uses `BoundedSemaphore(3)`, retries up to 3 times with exponential backoff + jitter on transient failures (timeouts/non-zero exits), preserving metadata on final failure.
-- **Error standardization**: Reason codes and consistent `SkillResult` shapes across CLI/MCP paths.
-- **No async/await**: Synchronous execution throughout core.
+- **Error standardization**: Reason codes and consistent `SkillResult` shapes across CLI/MCP paths. MCP failures carry additive FR-006 metadata (actionable `error`, `metadata.mode`, stable `metadata.reason`, `interface`/`tool` when attempted, `error_stage` where available) without leaking secrets/PII.
+- **MCP stdio safety**: stdout is protocol-only (newline-delimited JSON-RPC); stderr is diagnostics. Bounded timeouts, JSON-RPC id correlation, and safe subprocess cleanup on failure/timeout.
 
 ### Dependency Injection / State
 - Skills instantiated directly; configuration via inputs/env helpers (`utils.get_config`). Credentials via `CredentialManager`. No global DI container; dependencies passed explicitly.
@@ -98,14 +98,14 @@ pytest tests/unit/test_image_generate.py -v
 | File | Purpose |
 |------|---------|
 | `skills/core/base_skill.py` | `SkillResult` and `BaseSkill` contract. |
-| `skills/core/creative_skill.py` | Shared CreativeSkill base with CLI/MCP orchestration, retries, semaphore. |
-| `skills/core/artcraft_app_client.py` | Shared CLI/MCP adapter (discovery/normalization/mode selection). |
-| `skills/core/composer.py` | `SkillComposer` for sequential/parallel chaining. |
+| `skills/core/creative_skill.py` | Shared CreativeSkill base with CLI/MCP orchestration, retries, semaphore, and functional MCP stdio hooks/selection. |
+| `skills/core/artcraft_app_client.py` | Shared CLI/MCP adapter (discovery/normalization/mode selection, MCP stdio `tools/list`+`tools/call`, FR-006 reasons). |
+| `tests/contract/artcraft_app_client_api.json` | Reviewed characterization snapshot of additive `artcraft_app_client` API exports/signatures. |
 | `skills/core/orchestrator.py` | `DAGOrchestrator` for dependency-aware workflows. |
 | `skills/creative/image-generate/skill.py` | Reference Python skill (extends `BaseSkill` directly). |
 | `scripts/validate_skill.py`, `scripts/validate_all_skills.py` | Skill validation against agentskills.io rules. |
 | `scripts/skill_loader.py`, `scripts/register_skills.py` | Discovery/loading/registration. |
-| `pytest.ini` | Pytest config (`--import-mode=importlib`, `testpaths=tests`). |
+| `pytest.ini` | Pytest config (`--import-mode=importlib -m "not integration"`, `testpaths=tests`, `integration` marker). |
 | `.specify/memory/constitution.md` | Governance (v2.0.0). |
 | `specs/001-artcraft-skills-suite/contracts/skill-schema.json` | Skill schema contract. |
 
@@ -140,8 +140,8 @@ pytest --update-golden    # Regenerate golden masters (if needed)
 
 ### Patterns & Expectations
 - **Canonicalization**: Use `tests/_helpers/canonicalize.canonicalize_skill_result()` to normalize volatile metadata (`duration_ms`, `timeout_s`) for stable comparisons.
-- **Mock-first**: CLI/MCP paths faked via monkeypatch (`subprocess.run`, discovery functions) for deterministic tests.
-- **TDD-friendly**: Some tests marked RED-phase; resilience/composition features have dedicated property + characterization tests.
+- **Mock-first**: CLI/MCP paths faked via monkeypatch (`subprocess.run`, discovery functions) for deterministic tests. 006 MCP stdio uses `tests/_helpers/fake_mcp_stdio_server.py` (newline-delimited JSON-RPC stdout, stderr diagnostics, deterministic scenarios).
+- **Optional real integration**: `tests/integration/test_mcp_stdio_photocraft_optional.py` is `@pytest.mark.integration` and skipped by default; requires explicit env/prerequisites (e.g. `ARTCRAFT_MCP_INTEGRATION=1`, `photocraft-cli`, safe roots). Never required for default CI/local runs.
 - **Traceability**: Tests often map to specs/US1-5.
 - **Quality gates** (per constitution): Functionality, documentation, compatibility, composability, performance, security, transparency, error handling. Skills must be independently testable with clear contracts.
-- **Current state**: All tests pass (357 passed as of recent runs). Validate with `python scripts/validate_all_skills.py` before committing.
+- **Current state**: All default tests pass (`399 passed, 1 deselected` as of 006 MCP stdio functional integration). Validate with `python scripts/validate_all_skills.py` before committing (expect `12/12`, `all_valid=True`).

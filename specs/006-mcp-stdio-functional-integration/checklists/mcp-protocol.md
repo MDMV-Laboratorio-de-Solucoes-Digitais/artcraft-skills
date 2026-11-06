@@ -10,46 +10,46 @@
 
 ## Requirement Completeness
 
-- [ ] CHK001 Are requirements specified for the minimum MCP transport scope (local stdio only) and for what “supported entrypoint” means in 006? [Completeness, Spec §FR-001, §Clarifications Q1]
-- [ ] CHK002 Are capability-discovery requirements defined for the full minimum path (when discovery occurs, what counts as a supported capability, and what outcome is required when none match)? [Completeness, Spec §FR-002, §User Story 1 Scenario 2, §Edge Cases]
-- [ ] CHK003 Are operation-invocation requirements defined for exactly one supported invocation after discovery, including how the invoked capability is selected/mapped at requirement level? [Completeness, Spec §FR-002, §Clarifications Q2]
-- [ ] CHK004 Is “end-to-end value” defined with objective acceptance boundaries (primary example path, normalized success/failure contract) rather than left as an informal goal? [Completeness, Spec §FR-002, §SC-001]
-- [ ] CHK005 Are requirements defined for normalizing protocol/tool success and tool/protocol failure outcomes into the existing skill result contract? [Completeness, Spec §FR-003]
-- [ ] CHK006 Are requirements specified for protocol-message isolation (stdout reserved for protocol communication; diagnostics separated) across all MCP interaction states? [Completeness, Spec §FR-007, §Edge Cases]
-- [ ] CHK007 Are requirements defined for both explicitly requested MCP execution and automatic-selection contexts where the MCP path may be used? [Completeness, Spec §FR-005, §Edge Cases]
-- [ ] CHK008 Are requirements documented for the boundary between the generic MCP tools contract and target-specific reference mappings (e.g., PhotoCraft engine-oriented tools)? [Completeness, Spec §FR-001, §FR-002, §Clarifications Q1/Q2, §Assumptions]
+- [x] CHK001 Are requirements specified for the minimum MCP transport scope (local stdio only) and for what “supported entrypoint” means in 006? [Completeness, Spec §FR-001, §Clarifications Q1]
+- [x] CHK002 Are capability-discovery requirements defined for the full minimum path (when discovery occurs, what counts as a supported capability, and what outcome is required when none match)? [Completeness, Spec §FR-002, §User Story 1 Scenario 2, §Edge Cases]
+- [x] CHK003 Are operation-invocation requirements defined for exactly one supported invocation after discovery, including how the invoked capability is selected/mapped at requirement level? [Completeness, Spec §FR-002, §Clarifications Q2]
+- [x] CHK004 Is “end-to-end value” defined with objective acceptance boundaries (primary example path, normalized success/failure contract) rather than left as an informal goal? [Completeness, Spec §FR-002, §SC-001]
+- [x] CHK005 Are requirements defined for normalizing protocol/tool success and tool/protocol failure outcomes into the existing skill result contract? [Completeness, Spec §FR-003]
+- [x] CHK006 Are requirements specified for protocol-message isolation (stdout reserved for protocol communication; diagnostics separated) across all MCP interaction states? [Completeness, Spec §FR-007, §Edge Cases]
+- [x] CHK007 Are requirements defined for both explicitly requested MCP execution and automatic-selection contexts where the MCP path may be used? [Completeness, Spec §FR-005, §Edge Cases]
+- [x] CHK008 Are requirements documented for the boundary between the generic MCP tools contract and target-specific reference mappings (e.g., PhotoCraft engine-oriented tools)? [Completeness, Spec §FR-001, §FR-002, §Clarifications Q1/Q2, §Assumptions]
 
 ## Requirement Clarity
 
-- [ ] CHK009 Is the term “generic, standards-compliant MCP tools contract” bounded clearly enough to distinguish required protocol behavior from optional/reference target behavior? [Clarity, Spec §FR-001]
-- [ ] CHK010 Is “reference target” (PhotoCraft headless MCP) clearly scoped as documentation/optional validation rather than mandatory default product support in all environments? [Clarity, Spec §FR-001, §FR-010, §Clarifications Q1]
-- [ ] CHK011 Is the primary acceptance example (`image-edit` path) specified with enough precision to identify which existing skill path is in scope without prescribing implementation internals? [Clarity, Spec §FR-002, §Clarifications Q2]
-- [ ] CHK012 Are “structured, diagnosable outcomes” defined with minimum required information (actionable reason/error and relevant context) while remaining contract-compatible? [Clarity, Spec §FR-006, §Key Entities]
-- [ ] CHK013 Is the distinction between “capability discovery”, “capability missing/renamed/ambiguous”, and “operation failure” unambiguous in requirements language? [Clarity, Spec §FR-002, §FR-006, §Edge Cases]
-- [ ] CHK014 Are protocol/response validity expectations stated clearly enough to cover malformed, partial, unexpected, or unmappable responses? [Clarity, Spec §FR-006, §Edge Cases]
+- [x] CHK009 Is the term “generic, standards-compliant MCP tools contract” bounded clearly enough to distinguish required protocol behavior from optional/reference target behavior? [Clarity, Spec §FR-001]
+- [x] CHK010 Is “reference target” (PhotoCraft headless MCP) clearly scoped as documentation/optional validation rather than mandatory default product support in all environments? [Clarity, Spec §FR-001, §FR-010, §Clarifications Q1]
+- [x] CHK011 Is the primary acceptance example (`image-edit` path) specified with enough precision to identify which existing skill path is in scope without prescribing implementation internals? [Clarity, Spec §FR-002, §Clarifications Q2]
+- [x] CHK012 Are “structured, diagnosable outcomes” defined with minimum required information (actionable reason/error and relevant context) while remaining contract-compatible? [Clarity, Spec §FR-006, §Key Entities]
+- [x] CHK013 Is the distinction between “capability discovery”, “capability missing/renamed/ambiguous”, and “operation failure” unambiguous in requirements language? [Clarity, Spec §FR-002, §FR-006, §Edge Cases]
+- [x] CHK014 Are protocol/response validity expectations stated clearly enough to cover malformed, partial, unexpected, or unmappable responses? [Clarity, Spec §FR-006, §Edge Cases]
 
 ## Requirement Consistency
 
-- [ ] CHK015 Do FR-001/FR-002 consistently describe the same minimum scope (one reference target, discovery plus one invocation, mock-first acceptance) across spec, clarifications, and assumptions? [Consistency, Spec §FR-001, §FR-002, §Clarifications, §Assumptions]
-- [ ] CHK016 Are normalization requirements consistent between the MCP path and the existing skill result contract, with no conflicting output expectations? [Consistency, Spec §FR-003, §Key Entities, §SC-001]
-- [ ] CHK017 Do requirements consistently treat PhotoCraft/engine-oriented tool names as reference mapping rather than universal required tool identifiers? [Consistency, Spec §FR-001, §FR-002, §Dependencies]
-- [ ] CHK018 Do User Story 1 acceptance scenarios align with FR-002/FR-006/SC-001 for discovery success, missing capability, and operation failure? [Consistency, Spec §User Story 1, §FR-002, §FR-006, §SC-001]
+- [x] CHK015 Do FR-001/FR-002 consistently describe the same minimum scope (one reference target, discovery plus one invocation, mock-first acceptance) across spec, clarifications, and assumptions? [Consistency, Spec §FR-001, §FR-002, §Clarifications, §Assumptions]
+- [x] CHK016 Are normalization requirements consistent between the MCP path and the existing skill result contract, with no conflicting output expectations? [Consistency, Spec §FR-003, §Key Entities, §SC-001]
+- [x] CHK017 Do requirements consistently treat PhotoCraft/engine-oriented tool names as reference mapping rather than universal required tool identifiers? [Consistency, Spec §FR-001, §FR-002, §Dependencies]
+- [x] CHK018 Do User Story 1 acceptance scenarios align with FR-002/FR-006/SC-001 for discovery success, missing capability, and operation failure? [Consistency, Spec §User Story 1, §FR-002, §FR-006, §SC-001]
 
 ## Scenario & Edge Case Coverage
 
-- [ ] CHK019 Are primary-flow requirements complete for a supported MCP execution where discovery and invocation both succeed? [Coverage, Spec §User Story 1 Scenario 1, §FR-001, §FR-002]
-- [ ] CHK020 Are alternate-flow requirements defined when discovery succeeds but the requested/supported capability is absent, renamed, or ambiguous? [Coverage, Spec §User Story 1 Scenario 2, §Edge Cases]
-- [ ] CHK021 Are exception-flow requirements defined when the MCP entrypoint returns an operation-level failure or protocol-level invalid data? [Coverage, Spec §User Story 1 Scenario 3, §FR-006]
-- [ ] CHK022 Are requirements specified for an entrypoint that starts but never produces a usable protocol response within allowed bounds? [Coverage, Spec §Edge Cases, §FR-006, §FR-007]
-- [ ] CHK023 Are requirements specified for diagnostic output coexisting with protocol communication without corrupting normalized outcomes? [Coverage, Spec §Edge Cases, §FR-007]
-- [ ] CHK024 Are requirements defined for partial/invalid structured operation data that cannot be mapped into the existing result contract? [Coverage, Spec §Edge Cases, §FR-003, §FR-006]
+- [x] CHK019 Are primary-flow requirements complete for a supported MCP execution where discovery and invocation both succeed? [Coverage, Spec §User Story 1 Scenario 1, §FR-001, §FR-002]
+- [x] CHK020 Are alternate-flow requirements defined when discovery succeeds but the requested/supported capability is absent, renamed, or ambiguous? [Coverage, Spec §User Story 1 Scenario 2, §Edge Cases]
+- [x] CHK021 Are exception-flow requirements defined when the MCP entrypoint returns an operation-level failure or protocol-level invalid data? [Coverage, Spec §User Story 1 Scenario 3, §FR-006]
+- [x] CHK022 Are requirements specified for an entrypoint that starts but never produces a usable protocol response within allowed bounds? [Coverage, Spec §Edge Cases, §FR-006, §FR-007]
+- [x] CHK023 Are requirements specified for diagnostic output coexisting with protocol communication without corrupting normalized outcomes? [Coverage, Spec §Edge Cases, §FR-007]
+- [x] CHK024 Are requirements defined for partial/invalid structured operation data that cannot be mapped into the existing result contract? [Coverage, Spec §Edge Cases, §FR-003, §FR-006]
 
 ## Dependencies, Assumptions & Ambiguities
 
-- [ ] CHK025 Are dependencies on accurate reference-target MCP documentation/behavior explicitly bounded so unresolved target details do not silently expand 006 scope? [Dependency, Spec §Dependencies, §Assumptions]
-- [ ] CHK026 Is the assumption that deterministic mock coverage is sufficient for default CI confidence documented with its non-goal boundary (no mandatory real binary)? [Assumption, Spec §Assumptions, §FR-008, §FR-010]
-- [ ] CHK027 Are remaining planning-level ambiguities (exact launch/config fields, optional cancellation semantics, precise tool mapping hints) clearly deferred without weakening FR-001/FR-002 testability? [Ambiguity, Spec §Clarifications, §Assumptions, Gap]
-- [ ] CHK028 Is an ID/traceability scheme for mapping FRs/SCs to acceptance evidence sufficiently established for reviewers and downstream planning? [Traceability, Spec §FR-001–FR-010, §SC-001–SC-005, Gap]
+- [x] CHK025 Are dependencies on accurate reference-target MCP documentation/behavior explicitly bounded so unresolved target details do not silently expand 006 scope? [Dependency, Spec §Dependencies, §Assumptions]
+- [x] CHK026 Is the assumption that deterministic mock coverage is sufficient for default CI confidence documented with its non-goal boundary (no mandatory real binary)? [Assumption, Spec §Assumptions, §FR-008, §FR-010]
+- [x] CHK027 Are remaining planning-level ambiguities (exact launch/config fields, optional cancellation semantics, precise tool mapping hints) clearly deferred without weakening FR-001/FR-002 testability? [Ambiguity, Spec §Clarifications, §Assumptions, Gap]
+- [x] CHK028 Is an ID/traceability scheme for mapping FRs/SCs to acceptance evidence sufficiently established for reviewers and downstream planning? [Traceability, Spec §FR-001–FR-010, §SC-001–SC-005, Gap]
 
 ## Notes
 

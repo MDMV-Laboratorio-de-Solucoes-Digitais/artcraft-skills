@@ -10,49 +10,49 @@
 
 ## Requirement Completeness
 
-- [ ] CHK001 Are deterministic verification requirements defined for the full minimum MCP scope (discovery, one invocation, normalized success/failure) without external dependencies? [Completeness, Spec §FR-002, §FR-008, §SC-001, §SC-002]
-- [ ] CHK002 Are requirements specified for mock/fake MCP server or subprocess coverage as the default acceptance mechanism? [Completeness, Spec §FR-008, §User Story 3, §Assumptions]
-- [ ] CHK003 Are baseline quality-gate requirements (existing automated tests and skill validation) included as acceptance constraints for this feature? [Completeness, Spec §SC-003, §User Story 2 Scenario 3]
-- [ ] CHK004 Are requirements defined for documenting supported initial reference target, supported operation(s), selection policy, failure reasons, and out-of-scope boundaries? [Completeness, Spec §FR-009, §SC-005, §User Story 3 Scenario 2]
-- [ ] CHK005 Are requirements specified for optional real-environment validation as clearly separated and non-mandatory for standard CI? [Completeness, Spec §FR-010, §SC-004, §Assumptions]
-- [ ] CHK006 Are acceptance requirements defined for the primary `image-edit` example path and how its normalized `SkillResult` outcome demonstrates end-to-end value? [Completeness, Spec §FR-002, §Clarifications Q2, §SC-001]
+- [x] CHK001 Are deterministic verification requirements defined for the full minimum MCP scope (discovery, one invocation, normalized success/failure) without external dependencies? [Completeness, Spec §FR-002, §FR-008, §SC-001, §SC-002]
+- [x] CHK002 Are requirements specified for mock/fake MCP server or subprocess coverage as the default acceptance mechanism? [Completeness, Spec §FR-008, §User Story 3, §Assumptions]
+- [x] CHK003 Are baseline quality-gate requirements (existing automated tests and skill validation) included as acceptance constraints for this feature? [Completeness, Spec §SC-003, §User Story 2 Scenario 3]
+- [x] CHK004 Are requirements defined for documenting supported initial reference target, supported operation(s), selection policy, failure reasons, and out-of-scope boundaries? [Completeness, Spec §FR-009, §SC-005, §User Story 3 Scenario 2]
+- [x] CHK005 Are requirements specified for optional real-environment validation as clearly separated and non-mandatory for standard CI? [Completeness, Spec §FR-010, §SC-004, §Assumptions]
+- [x] CHK006 Are acceptance requirements defined for the primary `image-edit` example path and how its normalized `SkillResult` outcome demonstrates end-to-end value? [Completeness, Spec §FR-002, §Clarifications Q2, §SC-001]
 
 ## Requirement Clarity
 
-- [ ] CHK007 Is “deterministic automated verification” defined with explicit exclusions (no real credentials, paid services, network access, mandatory real binaries) and no ambiguous exceptions? [Clarity, Spec §FR-008, §SC-004]
-- [ ] CHK008 Is “minimum-scope scenario” coverage clear enough to identify required success and failure cases for reviewers? [Clarity, Spec §FR-006, §FR-008, §SC-001, §SC-002]
-- [ ] CHK009 Is the “end-to-end value” acceptance definition measurable and traceable to a normalized contract outcome rather than subjective behavior? [Clarity, Spec §FR-002, §SC-001, §Clarifications Q2]
-- [ ] CHK010 Are documentation requirements in FR-009/SC-005 specific enough that a reviewer can judge completeness (target, operations, selection, reasons, limits) objectively? [Clarity, Spec §FR-009, §SC-005]
-- [ ] CHK011 Is the boundary between required default evidence and optional real PhotoCraft validation described without conflating them? [Clarity, Spec §FR-010, §Clarifications Q1, §SC-004]
+- [x] CHK007 Is “deterministic automated verification” defined with explicit exclusions (no real credentials, paid services, network access, mandatory real binaries) and no ambiguous exceptions? [Clarity, Spec §FR-008, §SC-004]
+- [x] CHK008 Is “minimum-scope scenario” coverage clear enough to identify required success and failure cases for reviewers? [Clarity, Spec §FR-006, §FR-008, §SC-001, §SC-002]
+- [x] CHK009 Is the “end-to-end value” acceptance definition measurable and traceable to a normalized contract outcome rather than subjective behavior? [Clarity, Spec §FR-002, §SC-001, §Clarifications Q2]
+- [x] CHK010 Are documentation requirements in FR-009/SC-005 specific enough that a reviewer can judge completeness (target, operations, selection, reasons, limits) objectively? [Clarity, Spec §FR-009, §SC-005]
+- [x] CHK011 Is the boundary between required default evidence and optional real PhotoCraft validation described without conflating them? [Clarity, Spec §FR-010, §Clarifications Q1, §SC-004]
 
 ## Requirement Consistency
 
-- [ ] CHK012 Do FR-008, FR-010, SC-001, SC-002, and SC-004 consistently describe the same mock-first, deterministic, non-mandatory-real-target strategy? [Consistency, Spec §FR-008, §FR-010, §SC-001, §SC-002, §SC-004]
-- [ ] CHK013 Do acceptance requirements for selection/fallback behavior align with FR-005’s back-compatible default and explicit-mode rules? [Consistency, Spec §FR-005, §Clarifications Q3, §User Story 2, §SC-003]
-- [ ] CHK014 Do documentation/traceability expectations align across spec dependencies, clarifications, and measurable outcomes? [Consistency, Spec §Dependencies, §Clarifications, §FR-009, §SC-005]
-- [ ] CHK015 Are normalized success/failure evidence requirements consistent with FR-003’s no-public-schema-break contract? [Consistency, Spec §FR-003, §SC-001, §SC-002]
+- [x] CHK012 Do FR-008, FR-010, SC-001, SC-002, and SC-004 consistently describe the same mock-first, deterministic, non-mandatory-real-target strategy? [Consistency, Spec §FR-008, §FR-010, §SC-001, §SC-002, §SC-004]
+- [x] CHK013 Do acceptance requirements for selection/fallback behavior align with FR-005’s back-compatible default and explicit-mode rules? [Consistency, Spec §FR-005, §Clarifications Q3, §User Story 2, §SC-003]
+- [x] CHK014 Do documentation/traceability expectations align across spec dependencies, clarifications, and measurable outcomes? [Consistency, Spec §Dependencies, §Clarifications, §FR-009, §SC-005]
+- [x] CHK015 Are normalized success/failure evidence requirements consistent with FR-003’s no-public-schema-break contract? [Consistency, Spec §FR-003, §SC-001, §SC-002]
 
 ## Acceptance Criteria Quality
 
-- [ ] CHK016 Can SC-001 be objectively evaluated (which scenarios, which operation, which contract fields/outcomes indicate normalized success)? [Acceptance Criteria, Spec §SC-001, §FR-002, §FR-003]
-- [ ] CHK017 Can SC-002 be objectively evaluated for each required failure class with diagnosable, contract-compatible outcomes? [Acceptance Criteria, Spec §SC-002, §FR-006, §Edge Cases]
-- [ ] CHK018 Can SC-003 be objectively evaluated with clear attribution boundaries for regressions introduced by 006? [Acceptance Criteria, Spec §SC-003, §FR-004, §User Story 2 Scenario 3]
-- [ ] CHK019 Can SC-004 be objectively evaluated in default CI/local conditions, including explicit pass criteria for “no external dependency required”? [Acceptance Criteria, Spec §SC-004, §FR-008]
-- [ ] CHK020 Can SC-005 be objectively evaluated (specific documentation locations/content elements and the under-5-minute review criterion)? [Acceptance Criteria, Spec §SC-005, §FR-009, Ambiguity]
+- [x] CHK016 Can SC-001 be objectively evaluated (which scenarios, which operation, which contract fields/outcomes indicate normalized success)? [Acceptance Criteria, Spec §SC-001, §FR-002, §FR-003]
+- [x] CHK017 Can SC-002 be objectively evaluated for each required failure class with diagnosable, contract-compatible outcomes? [Acceptance Criteria, Spec §SC-002, §FR-006, §Edge Cases]
+- [x] CHK018 Can SC-003 be objectively evaluated with clear attribution boundaries for regressions introduced by 006? [Acceptance Criteria, Spec §SC-003, §FR-004, §User Story 2 Scenario 3]
+- [x] CHK019 Can SC-004 be objectively evaluated in default CI/local conditions, including explicit pass criteria for “no external dependency required”? [Acceptance Criteria, Spec §SC-004, §FR-008]
+- [x] CHK020 Can SC-005 be objectively evaluated (specific documentation locations/content elements and the under-5-minute review criterion)? [Acceptance Criteria, Spec §SC-005, §FR-009, Ambiguity]
 
 ## Scenario & Coverage Gaps
 
-- [ ] CHK021 Are requirements present for both positive and negative deterministic scenarios, including missing capability, invalid response, timeout, and unavailable entrypoint? [Coverage, Spec §FR-006, §SC-002, §Edge Cases]
-- [ ] CHK022 Are requirements present for selection-policy verification cases (explicit `cli`, explicit `mcp`, default `auto` back-compatible behavior)? [Coverage, Spec §FR-005, §Clarifications Q3, §User Story 2]
-- [ ] CHK023 Are requirements specified for evidence that `mcp_config`/caller inputs are not corrupted by MCP handling, consistent with adapter safety expectations? [Coverage, Spec §FR-003, §FR-007, Gap]
-- [ ] CHK024 Are requirements defined for how optional integration evidence is reported or distinguished from mandatory default evidence? [Coverage, Spec §FR-010, §SC-004, Gap]
-- [ ] CHK025 Are requirements/assumptions clear about outlier skill coverage (`CreativeSkill` shared path vs `image-generate` BaseSkill duplication) so acceptance scope is reviewable? [Coverage, Assumption, Spec §FR-002, §Dependencies, Gap]
+- [x] CHK021 Are requirements present for both positive and negative deterministic scenarios, including missing capability, invalid response, timeout, and unavailable entrypoint? [Coverage, Spec §FR-006, §SC-002, §Edge Cases]
+- [x] CHK022 Are requirements present for selection-policy verification cases (explicit `cli`, explicit `mcp`, default `auto` back-compatible behavior)? [Coverage, Spec §FR-005, §Clarifications Q3, §User Story 2]
+- [x] CHK023 Are requirements specified for evidence that `mcp_config`/caller inputs are not corrupted by MCP handling, consistent with adapter safety expectations? [Coverage, Spec §FR-003, §FR-007, Gap]
+- [x] CHK024 Are requirements defined for how optional integration evidence is reported or distinguished from mandatory default evidence? [Coverage, Spec §FR-010, §SC-004, Gap]
+- [x] CHK025 Are requirements/assumptions clear about outlier skill coverage (`CreativeSkill` shared path vs `image-generate` BaseSkill duplication) so acceptance scope is reviewable? [Coverage, Assumption, Spec §FR-002, §Dependencies, Gap]
 
 ## Dependencies & Assumptions
 
-- [ ] CHK026 Are dependencies on assessment artifacts and reference-target documentation identified without making mandatory default acceptance depend on unavailable external systems? [Dependency, Spec §Dependencies, §FR-008, §FR-010]
-- [ ] CHK027 Is the assumption that one primary example path (`image-edit`) sufficiently demonstrates minimum MCP value documented and bounded? [Assumption, Spec §FR-002, §Clarifications Q2, §Assumptions]
-- [ ] CHK028 Are planning-level test design choices (SDK vs minimal client, exact fixture shape, integration marker mechanics) appropriately deferred so the spec remains implementation-agnostic but testable? [Assumption, Gap, Spec §FR-008, §Assumptions]
+- [x] CHK026 Are dependencies on assessment artifacts and reference-target documentation identified without making mandatory default acceptance depend on unavailable external systems? [Dependency, Spec §Dependencies, §FR-008, §FR-010]
+- [x] CHK027 Is the assumption that one primary example path (`image-edit`) sufficiently demonstrates minimum MCP value documented and bounded? [Assumption, Spec §FR-002, §Clarifications Q2, §Assumptions]
+- [x] CHK028 Are planning-level test design choices (SDK vs minimal client, exact fixture shape, integration marker mechanics) appropriately deferred so the spec remains implementation-agnostic but testable? [Assumption, Gap, Spec §FR-008, §Assumptions]
 
 ## Notes
 

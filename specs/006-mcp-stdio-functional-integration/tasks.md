@@ -65,18 +65,18 @@ description: "Task list for 006-mcp-stdio-functional-integration (MCP stdio func
 ### Test infrastructure (needed by tests)
 
 - [ ] T010 Implement fake stdio MCP subprocess fixture/helper behaviors in `tests/_helpers/fake_mcp_stdio_server.py`: deterministic `tools/list` response, `tools/call` success payload for `image-edit` primary example mapping, missing capability, tool `isError`/operation error, invalid JSON/protocol response, timeout/hang, launch/misconfigured command simulation, and stderr-diagnostic-with-clean-stdout behavior.
-- [ ] T011 [P] Add shared MCP test config builders/assertion helpers (minimal, non-production) in `tests/_helpers/fake_mcp_stdio_server.py` or `tests/_helpers/mcp_stdio_test_utils.py` (choose one disjoint file; if splitting, keep helpers file ownership clear).
+- [ ] T011 [P] Add shared MCP test config builders/assertion helpers (minimal, non-production) in `tests/_helpers/fake_mcp_stdio_server.py` (single owned helper file for 006; do not split unless a follow-up task claims a disjoint path).
 
 ### US1 tests (P1 e2e MCP path)
 
 - [ ] T012 [P] [US1] Write failing unit tests for minimal stdio transport/client behavior in `tests/unit/test_mcp_stdio_transport.py`: subprocess launch from `mcp_config` (`command/args/env/cwd/timeout`), newline-delimited JSON-RPC `tools/list` + `tools/call`, stdout protocol-only handling with stderr diagnostics captured separately, bounded timeout cleanup (no leaked process contract), invalid JSON/protocol/missing capability/tool error normalization hooks.
-- [ ] T013 [P] [US1] Write failing contract tests for MCP adapter/`CreativeSkill` hook behavior in `tests/contract/test_mcp_stdio_contract.py`: `_mcp_available`, `_mcp_command_list`, `_mcp_command_run`, `_execute_mcp`/`execute` normalize to `SkillResult` (`success,data,error,metadata`) with `interface=mcp`/tool metadata; `image-edit` primary example returns normalized success via deterministic fake MCP path.
-- [ ] T014 [P] [US1] Write failing integration-style deterministic tests (mock subprocess, no network) for US1 acceptance scenarios in `tests/unit/test_creative_skill_mcp_stdio.py`: supported MCP path discovery+one invocation success; missing supported capability returns structured failure; operation-level/tool failure returns structured actionable failure.
+- [ ] T013 [P] [US1] Write failing contract tests for MCP adapter/`CreativeSkill` hook behavior in `tests/contract/test_mcp_stdio_contract.py`: `_mcp_available`, `_mcp_command_list`, `_mcp_command_run`, `_execute_mcp`/`execute` normalize to `SkillResult` (`success,data,error,metadata`) with `interface=mcp`/tool metadata; `image-edit` primary example returns normalized success via deterministic fake MCP path. Assert FR-006/contract §8 minimum additive failure metadata where applicable: actionable `error`, `metadata.mode`, stable `metadata.reason` (006 taxonomy), `metadata.interface`/`metadata.tool` when MCP path attempted, and `metadata.error_stage` where available; no secret/PII leakage.
+- [ ] T014 [P] [US1] Write failing integration-style deterministic tests (mock subprocess, no network) for US1 acceptance scenarios in `tests/unit/test_creative_skill_mcp_stdio.py`: supported MCP path discovery+one invocation success; missing supported capability returns structured failure (`metadata.reason=mcp_missing_capability`, `error_stage` discovery/selection as applicable); operation-level/tool failure returns structured actionable failure (`metadata.reason=mcp_tool_error` or compatible, `interface/tool` context, no secret/PII).
 
 ### US2 tests (P2 back-compat, selection, graceful degradation)
 
-- [ ] T015 [P] [US2] Write failing unit tests for selection/policy preservation in `tests/unit/test_creative_skill_mcp_stdio.py` or `tests/unit/test_creative_skill_mcp_selection.py` (use a disjoint file if parallelized): explicit `mode=cli` unchanged/missing CLI reason preserved; explicit `mode=mcp` attempts MCP and returns structured MCP failure (no silent CLI reroute); default `auto` remains CLI-first when CLI available even if MCP configured; `auto` may use MCP when CLI unavailable and MCP available/configured; no CLI/no MCP returns structured `neither_available`/compatible degradation.
-- [ ] T016 [P] [US2] Write failing property-based tests in `tests/property/test_mcp_stdio_props.py`: `normalize_mcp_config`/`mcp_config` non-mutation invariant; selection invariants for explicit modes and back-compatible default `auto` (CLI>MCP when CLI available); normalized failure outcomes always produce `SkillResult`-compatible structured failures for MCP error classes (timeout/invalid response/missing capability/tool error/unavailable); avoid fixed sleep/flaky timing.
+- [ ] T015 [P] [US2] Write failing unit tests for selection/policy preservation in disjoint file `tests/unit/test_creative_skill_mcp_selection.py` (owned by US2 selection wave; keep US1 acceptance tests in `tests/unit/test_creative_skill_mcp_stdio.py`): explicit `mode=cli` unchanged/missing CLI reason preserved; explicit `mode=mcp` attempts MCP and returns structured MCP failure (no silent CLI reroute) with FR-006 minimum metadata (`error`, `metadata.mode=mcp` context, stable `metadata.reason`, `metadata.interface/tool` when attempted, `error_stage` where available); default `auto` remains CLI-first when CLI available even if MCP configured; `auto` may use MCP when CLI unavailable and MCP available/configured; no CLI/no MCP returns structured `neither_available`/compatible degradation.
+- [ ] T016 [P] [US2] Write failing property-based tests in `tests/property/test_mcp_stdio_props.py`: `normalize_mcp_config`/`mcp_config` non-mutation invariant; selection invariants for explicit modes and back-compatible default `auto` (CLI>MCP when CLI available); normalized failure outcomes always produce `SkillResult`-compatible structured failures for MCP error classes (timeout/invalid response/missing capability/tool error/unavailable/misconfigured/launch where modeled) with stable `metadata.reason` classification and additive metadata compatibility; no fixed sleeps/flaky timing; keep deterministic generation.
 
 ### US3 tests (P3 deterministic verification/optional real integration)
 
@@ -84,7 +84,7 @@ description: "Task list for 006-mcp-stdio-functional-integration (MCP stdio func
 
 ### RED gate
 
-- [ ] T018 Run 006 test modules to confirm **RED phase** for missing MCP behavior (expected failures) while preserving existing baseline intent; fix only test scaffolding/syntax/import issues in test/helper files (not production feature behavior): `PYTHONPATH=. python -m pytest -q tests/unit/test_mcp_stdio_transport.py tests/unit/test_creative_skill_mcp_stdio.py tests/contract/test_mcp_stdio_contract.py tests/property/test_mcp_stdio_props.py tests/integration/test_mcp_stdio_photocraft_optional.py` and document RED summary in commit message.
+- [ ] T018 Run 006 test modules to confirm **RED phase** for missing MCP behavior (expected failures) while preserving existing baseline intent; fix only test scaffolding/syntax/import issues in test/helper files (not production feature behavior): `PYTHONPATH=. python -m pytest -q tests/unit/test_mcp_stdio_transport.py tests/unit/test_creative_skill_mcp_stdio.py tests/unit/test_creative_skill_mcp_selection.py tests/contract/test_mcp_stdio_contract.py tests/property/test_mcp_stdio_props.py tests/integration/test_mcp_stdio_photocraft_optional.py` and document RED summary in commit message.
 - [ ] T019 Create atomic conventional commit for RED gate: `test(006): add failing MCP stdio tests (tools/list+tools/call, selection, invariants)` including detailed RED summary.
 
 **Checkpoint (RED GATE)**: All 006 tests exist and fail for expected missing behavior. Implementation may begin (Phases 3–5).
@@ -119,7 +119,7 @@ description: "Task list for 006-mcp-stdio-functional-integration (MCP stdio func
 
 - [ ] T025 [US2] Adjust `CreativeSkill.execute()` / `skills/core/artcraft_app_client.py` selection or MCP-availability integration only as needed to satisfy FR-005/FR-006: explicit `mode=mcp` returns structured MCP result (no silent CLI reroute); default `auto` keeps CLI-first preference when CLI available; when CLI unavailable and MCP available/configured, MCP path can be selected; structured `neither_available`/compatible degradation preserved. Keep public schemas and reason compatibility.
 - [ ] T026 [US2] Implement/normalize structured failure reasons and metadata for MCP unavailable/misconfigured, timeout, invalid response/protocol, missing capability, and operation failure in `skills/core/artcraft_app_client.py` and/or `skills/core/creative_skill.py` (same wave/subagent as T025), ensuring no secret/PII leakage and no stdout protocol pollution.
-- [ ] T027 [US2] Re-run US2/property/back-compat tests to GREEN: `PYTHONPATH=. python -m pytest -q tests/property/test_mcp_stdio_props.py tests/unit/test_creative_skill_mcp_stdio.py tests/property/test_creative_skills_props.py tests/property/test_artcraft_app_client_props.py` and fix only necessary regressions.
+- [ ] T027 [US2] Re-run US2/property/back-compat tests to GREEN: `PYTHONPATH=. python -m pytest -q tests/property/test_mcp_stdio_props.py tests/unit/test_creative_skill_mcp_stdio.py tests/unit/test_creative_skill_mcp_selection.py tests/property/test_creative_skills_props.py tests/property/test_artcraft_app_client_props.py` and fix only necessary regressions.
 - [ ] T028 [US2] Create atomic conventional commit for US2: `fix(006): preserve CLI-first auto selection and structured MCP degradation (US2)` with detailed summary.
 
 **Checkpoint**: US1+US2 work independently; existing CLI/fallback expectations preserved.
@@ -150,7 +150,7 @@ description: "Task list for 006-mcp-stdio-functional-integration (MCP stdio func
 
 - [ ] T034 Run full default test suite and capture pass/fail evidence: `cd /home/luis/development/artcraft-skills && PYTHONPATH=. python -m pytest -q` (expected: >= 373 baseline plus 006 tests green, no regressions).
 - [ ] T035 Run skill validation and capture evidence: `cd /home/luis/development/artcraft-skills && python scripts/validate_all_skills.py` (expected: 12/12 valid, `all_valid=True`).
-- [ ] T036 Run targeted 006 verification matrix and capture evidence: `PYTHONPATH=. python -m pytest -q tests/unit/test_mcp_stdio_transport.py tests/unit/test_creative_skill_mcp_stdio.py tests/contract/test_mcp_stdio_contract.py tests/property/test_mcp_stdio_props.py tests/integration/test_mcp_stdio_photocraft_optional.py tests/property/test_creative_skills_props.py tests/property/test_artcraft_app_client_props.py`.
+- [ ] T036 Run targeted 006 verification matrix and capture evidence: `PYTHONPATH=. python -m pytest -q tests/unit/test_mcp_stdio_transport.py tests/unit/test_creative_skill_mcp_stdio.py tests/unit/test_creative_skill_mcp_selection.py tests/contract/test_mcp_stdio_contract.py tests/property/test_mcp_stdio_props.py tests/integration/test_mcp_stdio_photocraft_optional.py tests/property/test_creative_skills_props.py tests/property/test_artcraft_app_client_props.py`. Explicitly confirm `skills/creative/image-generate/skill.py` (BaseSkill outlier, duplicated MCP/CLI flow) remains back-compatible/no unintended behavior change in 006 scope; record result or follow-up issue in verification evidence (no schema/API change in 006).
 - [ ] T037 Review `specs/006-mcp-stdio-functional-integration/checklists/*.md` against delivered behavior/evidence (do not alter reviewer `[x]` semantics except explicit reviewer action; note any remaining requirement-quality gaps in PR/commit message).
 - [ ] T038 Create final atomic conventional commit for verification evidence/docs touch-ups only (if any): `test(006): record verification evidence for MCP stdio minimum scope` including command summaries/results.
 
@@ -184,7 +184,7 @@ description: "Task list for 006-mcp-stdio-functional-integration (MCP stdio func
 
 ```text
 Setup wave (disjoint):      T002, T003, T004, T005, T006, T007
-RED test wave (disjoint):   T012, T013, T014, T015, T016, T017  (after T010/T011 helpers ready)
+RED test wave (disjoint):   T012, T013, T014, T015, T016, T017  (after T010/T011 helpers ready; T014/T015 use pinned disjoint files)
 US3 docs wave (disjoint):   T029, T030
 Core implementation waves:  T020 -> T021 -> T025/T026 use SAME subagent/context (shared files)
 Verification:               T034, T035, T036 run sequentially if they contend on environment/caches; treat as queued verification steps
@@ -203,7 +203,7 @@ Task: "T014 [US1] failing deterministic acceptance tests in tests/unit/test_crea
 
 ```bash
 # Disjoint RED policy/invariant tests:
-Task: "T015 [US2] failing selection/back-compat tests in tests/unit/test_creative_skill_mcp_selection.py (or assigned disjoint file)"
+Task: "T015 [US2] failing selection/back-compat tests in tests/unit/test_creative_skill_mcp_selection.py (disjoint, owned file)"
 Task: "T016 [US2] failing property-based invariants in tests/property/test_mcp_stdio_props.py"
 ```
 
@@ -238,7 +238,7 @@ Task: "T016 [US2] failing property-based invariants in tests/property/test_mcp_s
 
 ## Summary
 
-- **Total tasks**: 38
+- **Total tasks**: 38 (analyze remediation applied: A1/U1/G1/G2/I1 cross-artifact)
 - **Tasks per user story/phase**: Setup 9 (T001–T009); Foundational RED 10 (T010–T019); US1 5 (T020–T024); US2 4 (T025–T028); US3 5 (T029–T033); Verification 5 (T034–T038)
 - **Parallel opportunities**: T002–T007; T012–T017 (disjoint test files, after helpers); T029–T030; verification queued as needed
 - **Independent test criteria**: US1 deterministic fake stdio `tools/list`+`tools/call` → normalized `SkillResult` (`image-edit` example); US2 explicit/auto selection + structured degradation with back-compat preserved; US3 default deterministic verification no real deps + optional integration skipped/opt-in + limits documented
@@ -248,6 +248,6 @@ Task: "T016 [US2] failing property-based invariants in tests/property/test_mcp_s
 
 - `[P]` = disjoint files, safe parallel wave.
 - `skills/core/artcraft_app_client.py` and `skills/core/creative_skill.py` are shared; avoid parallel edits.
-- `tests/unit/test_creative_skill_mcp_stdio.py` appears in US1/US2 planning: if split for parallelism, use `tests/unit/test_creative_skill_mcp_selection.py` for US2 (T015) and keep ownership clear; otherwise run US2 additions after US1 test wave on the same file/subagent.
+- `tests/unit/test_creative_skill_mcp_selection.py` is the pinned disjoint US2 selection test file (T015, A1 remediation); `tests/unit/test_creative_skill_mcp_stdio.py` remains the US1 acceptance file (T014). T011 helper ownership is pinned to `tests/_helpers/fake_mcp_stdio_server.py`. Property tests (T016) must remain deterministic (no sleeps/flaky timing) and assert stable FR-006 reason classification where modeled (G2).
 - Keep PhotoCraft as reference/optional validation only. No public schema breaks. No stdout protocol pollution.
 - **Only Phase 6 verification tasks attest success/completeness.**

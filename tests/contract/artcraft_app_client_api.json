@@ -279,7 +279,12 @@
           "name": "color",
           "kind": "POSITIONAL_OR_KEYWORD",
           "annotation": "tuple",
-          "default": "(101, 67, 33, 255)"
+          "default": [
+            101,
+            67,
+            33,
+            255
+          ]
         },
         {
           "name": "timeout",

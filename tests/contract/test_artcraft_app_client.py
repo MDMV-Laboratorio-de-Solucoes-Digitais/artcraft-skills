@@ -24,6 +24,7 @@ EXPECTED_FUNCTIONS = [
     "run_cli_generation",
     "select_mode",
     "standardize_error",
+    "generate_via_editing_commands",
     # 006 MCP stdio additive API
     "mcp_tools_list",
     "mcp_tools_call",
@@ -122,7 +123,14 @@ def test_concrete_defaults_match_snapshot():
             if expected_default is None:
                 continue
             actual_default = sig.parameters[pname].default
-            assert actual_default == expected_default, (
+            # JSON snapshot cannot represent tuples; accept tuple/list equivalence.
+            if isinstance(actual_default, tuple) and isinstance(expected_default, list):
+                actual_cmp, expected_cmp = list(actual_default), expected_default
+            elif isinstance(actual_default, tuple) and isinstance(expected_default, str):
+                actual_cmp, expected_cmp = repr(actual_default), expected_default
+            else:
+                actual_cmp, expected_cmp = actual_default, expected_default
+            assert actual_cmp == expected_cmp, (
                 f"{name}.{pname}: default {actual_default!r} != {expected_default!r}"
             )
 

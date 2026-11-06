@@ -224,3 +224,71 @@ PYTHONPATH=. python -m pytest -q -m integration tests/integration/test_mcp_stdio
 **Summary**: `22 passed, 1 skipped in 0.35s` (opt-in coherence skip path exercised as expected under harness semantics; all deterministic fake/monkeypatched US1/US2 cases passed). No real PhotoCraft server required.
 
 **Commits (007 slice)**: `5408f57` harness US1/US2 implementation, `c1d1468` cleanup-state fix, `d4b538b` tasks T012-T014 status.
+
+
+## 007 Verification Attestation Evidence (T018–T021, 2026-11-06) — ONLY ATTESTATION
+
+**Attestation scope**: Per 007 workflow, **only Phase 6 verification tasks (T018–T021) attest success/completeness**. This section records executed gates and explicit limits. No public schema/CLI/fallback/FR-005/FR-006 contract changes were made in `skills/core/*`.
+
+### T018 — Default regression gates (mock-first preserved, independent of real PhotoCraft)
+Commands:
+```bash
+cd /home/luis/development/artcraft-skills
+PYTHONPATH=. python -m pytest -q
+python scripts/validate_all_skills.py
+```
+Results:
+- `412 passed, 23 deselected in 22.40s` (default `pytest.ini -m "not integration"` excludes optional integration; 007 adds 13 executed default tests across 007 property coverage and 22 deselected integration cases by marker selection context reported above — baseline quality gates remain green; no unrelated regressions observed).
+- `Validated 12 skills, all_valid=True`.
+
+### T019 — Targeted 007/006 MCP matrix
+Command:
+```bash
+PYTHONPATH=. python -m pytest -q \
+  tests/property/test_photocraft_mcp_smoke_props.py \
+  tests/property/test_mcp_stdio_props.py \
+  tests/contract/test_mcp_stdio_contract.py \
+  tests/unit/test_creative_skill_mcp_selection.py \
+  tests/unit/test_creative_skill_mcp_stdio.py \
+  tests/unit/test_mcp_stdio_transport.py \
+  tests/integration/test_mcp_stdio_photocraft_optional.py
+```
+Result: `39 passed, 23 deselected in 5.48s`. Confirms 006 MCP contract/unit/property/selection behavior preserved, FR-005/FR-006 compatibility preserved, 007 property invariants satisfied, and 007 optional integration remains excluded by default marker.
+
+### T020 — Opt-in local real PhotoCraft smoke (authorized local only)
+Environment note: `photocraft-cli` was found on PATH in this environment (`/usr/bin/photocraft-cli`), but **no explicit user authorization was provided in this conversation to execute the real local MCP server smoke**. Per 007 safety/opt-in controls, the real smoke was **not executed**.
+
+**Status (honest)**: `opt-in run not executed; explicit authorization/prerequisite confirmation unavailable in this conversation` — **SC-001 not exercised in this environment** (documentation/runbook + deterministic harness evidence only; not a claim of real-server success).
+
+Full runbook/template/limits are documented above and in `contracts/photocraft-mcp-smoke-contract.md`. Safe execution, if explicitly authorized:
+```bash
+cd /home/luis/development/artcraft-skills
+PYTHONPATH=. ARTCRAFT_MCP_INTEGRATION=1 python -m pytest -q -m integration tests/integration/test_mcp_stdio_photocraft_optional.py
+```
+Optional binary override (preferred when explicit): `ARTCRAFT_MCP_PHOTOCRAFT_BIN=/absolute/path/to/photocraft-cli`. Default roots: auto-created isolated temp absolute read/write roots with harness cleanup. Explicit authorized overrides: absolute `ARTCRAFT_MCP_READ_ROOT`/`ARTCRAFT_MCP_WRITE_ROOT` are maintainer-managed and never auto-deleted. Bounded timeout required. Evidence must record: date/env/commit, opt-in, resolved binary/version, roots policy/cleanup, command shape, timeout, capability presence summary (`command_list`, version-tolerant), `command_list` result-shape summary (defensive/non-error/normalizable), reason/error_stage if skipped/failed, **stateless per-call boundary (no session reuse, no artifact cycle)**, and **engine/editor automation only — no AI generation/provider/model claim**.
+
+### T021 — FR/SC traceability (lightweight)
+| ID | Attestation / evidence |
+|---|---|
+| FR-001 | Opt-in gate preserved (`ARTCRAFT_MCP_INTEGRATION=1`); default `-m "not integration"` excludes optional integration (T018/T019). |
+| FR-002 | Harness performs stateless `artcraft_app_client.mcp_tools_list` then `mcp_tools_call(...,"command_list",...)` with bounded timeout; deterministic integration-selected tests pass (22 passed, 1 skipped). Real authorized server execution not exercised (SC-001). |
+| FR-003 | `command_list` is safe deterministic engine/editor discovery target; minimal args `{}`; no AI-generation/provider/model claim asserted by harness/tests/docs. |
+| FR-004 | Binary override preferred + opt-in-only PATH resolved absolute; temp auto roots cleaned, explicit absolute overrides maintainer-managed; bounded timeout; no unsafe state leakage represented by harness/cleanup tests. |
+| FR-005 | No silent MCP→CLI reroute; 006 selection/explicit-MCP behavior preserved by T019 targeted matrix and no `skills/core/*` production changes. |
+| FR-006 | Classifier/skip/failure paths map to `mcp_unavailable|mcp_misconfigured|mcp_startup_timeout|mcp_call_timeout|mcp_invalid_response|mcp_missing_capability|mcp_tool_error` with actionable `error_stage` where applicable; taxonomy preserved/additive-compatible. |
+| FR-007 | Runbook + evidence template in this quickstart; T018–T021/T014/T008 evidence recorded. |
+| FR-008 | Stateless per-call adapter boundary documented/enforced in harness/tests; no cross-call artifact cycle; limits explicit. |
+| FR-009 | No new public AI capability/workflow/stateful session API; adapter reuse only. |
+| SC-001 | **Not exercised** in this environment (no explicit authorization for real local opt-in smoke). Deterministic harness/runbook/evidence path implemented; real proof requires authorized local run. |
+| SC-002 | Default mock-first gates green: `412 passed, 23 deselected`, `12/12 all_valid=True`. |
+| SC-003 | FR-006-aligned actionable outcomes + bounded timeout/cleanup covered by deterministic tests/matrix. |
+| SC-004 | Quickstart/runbook/evidence template states stateless non-AI limits and command shape; discoverable in spec-local artifact. |
+| SC-005 | 006 MCP contract/unit/property/selection suites preserved (T019); no public schema/CLI/fallback/FR-005/FR-006 contract changes. |
+
+**Checklists (reviewer-owned, coverage awareness only; markers not toggled)**:
+- `specs/007-photocraft-mcp-smoke/checklists/requirements.md` (PASS)
+- `specs/007-photocraft-mcp-smoke/checklists/contracts-fr006-normalization.md` (reviewed `[x]`, PASS; commit f24bbf0)
+- `specs/007-photocraft-mcp-smoke/checklists/mcp-protocol-capability.md` (reviewed `[x]`, PASS; commit 593d3a3)
+- `specs/007-photocraft-mcp-smoke/checklists/safety-opt-in-isolation.md` (reviewed `[x]`, PASS; commits 593d3a3,fca9305)
+
+**Honest status**: implementation/harness/tests/docs and default/targeted regression gates are green. **Real opt-in PhotoCraft MCP smoke (SC-001) not exercised** because explicit local authorization was not provided here; 007 must not be reported as fully end-to-end verified against a real server in this environment.

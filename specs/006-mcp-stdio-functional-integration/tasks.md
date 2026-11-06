@@ -85,7 +85,7 @@ description: "Task list for 006-mcp-stdio-functional-integration (MCP stdio func
 ### RED gate
 
 - [x] T018 Run 006 test modules to confirm **RED phase** for missing MCP behavior (expected failures) while preserving existing baseline intent; fix only test scaffolding/syntax/import issues in test/helper files (not production feature behavior): `PYTHONPATH=. python -m pytest -q tests/unit/test_mcp_stdio_transport.py tests/unit/test_creative_skill_mcp_stdio.py tests/unit/test_creative_skill_mcp_selection.py tests/contract/test_mcp_stdio_contract.py tests/property/test_mcp_stdio_props.py tests/integration/test_mcp_stdio_photocraft_optional.py` and document RED summary in commit message.
-- [ ] T019 Create atomic conventional commit for RED gate: `test(006): add failing MCP stdio tests (tools/list+tools/call, selection, invariants)` including detailed RED summary.
+- [x] T019 Create atomic conventional commit for RED gate: `test(006): add failing MCP stdio tests (tools/list+tools/call, selection, invariants)` including detailed RED summary.
 
 **Checkpoint (RED GATE)**: All 006 tests exist and fail for expected missing behavior. Implementation may begin (Phases 3–5).
 

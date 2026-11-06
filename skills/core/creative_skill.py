@@ -35,17 +35,58 @@ class CreativeSkill(BaseSkill):
         return artcraft_app_client.normalize_mcp_config(cfg)
 
     def _mcp_available(self, cfg: Dict[str, Any]) -> bool:
-        cfg = self._normalize_mcp_config(cfg)
-        return False
+        """006: stdio MCP considered configured/available when command is present."""
+        try:
+            cfg_n = self._normalize_mcp_config(cfg or {})
+            if cfg_n.get("transport") not in (None, "stdio"):
+                return bool(cfg_n.get("command") or cfg_n.get("server"))
+            cmd = cfg_n.get("command")
+            if isinstance(cmd, str) and cmd.strip():
+                return True
+            server = cfg_n.get("server")
+            if isinstance(server, dict) and server.get("command"):
+                return True
+            return False
+        except Exception:
+            return False
 
     def _mcp_command_list(self, cfg: Dict[str, Any]):
-        return []
+        try:
+            return artcraft_app_client.mcp_tools_list(cfg)
+        except Exception as e:
+            return artcraft_app_client._mcp_failure(
+                artcraft_app_client.REASON_MCP_UNAVAILABLE,
+                f"MCP tools/list failed: {e}",
+                error_stage="discovery",
+            )
 
     def _mcp_command_run(self, cfg: Dict[str, Any], tool_id: str, params: Dict[str, Any], timeout: int):
-        return {"is_error": True, "error": "not implemented"}
+        try:
+            return artcraft_app_client.mcp_tools_call(cfg, tool_id, params, timeout=timeout)
+        except Exception as e:
+            return artcraft_app_client._mcp_failure(
+                artcraft_app_client.REASON_MCP_TOOL_ERROR,
+                f"MCP tools/call failed: {e}",
+                error_stage="invocation",
+                tool=tool_id,
+            )
+
+    def _result_from_mcp_error(self, payload: Dict[str, Any], mode: str, tool: Optional[str] = None) -> SkillResult:
+        md = payload.get("metadata") if isinstance(payload.get("metadata"), dict) else {}
+        md = dict(md)
+        md.setdefault("mode", mode)
+        md.setdefault("interface", "mcp")
+        if tool and not md.get("tool"):
+            md["tool"] = tool
+        md.setdefault("reason", payload.get("reason") or artcraft_app_client.REASON_MCP_UNAVAILABLE)
+        return SkillResult(
+            success=False,
+            error=payload.get("error") or "MCP operation failed",
+            metadata=md,
+        )
 
     def _build_cli_params(self, inputs: Dict[str, Any]) -> Dict[str, Any]:
-        """Build params dict for CLI call. Override in subclasses."""
+        """Build params dict for CLI/MCP call. Override in subclasses."""
         params: Dict[str, Any] = {}
         if inputs.get("prompt"):
             params["prompt"] = inputs["prompt"]
@@ -136,27 +177,48 @@ class CreativeSkill(BaseSkill):
 
     def _execute_mcp(self, inputs: Dict[str, Any], mode: str) -> SkillResult:
         cfg = inputs.get("mcp_config") or {}
-        cfg = self._normalize_mcp_config(cfg)
-        if not getattr(self, "_mcp_available", None) or not self._mcp_available(cfg):
-            return SkillResult(success=False, error="MCP server unavailable", metadata={"mode": mode, "reason": artcraft_app_client.REASON_MCP_UNAVAILABLE})
+        cfg_n = self._normalize_mcp_config(cfg)
+        timeout = inputs.get("timeout") or int(cfg_n.get("timeout") or 300)
+        if not self._mcp_available(cfg_n):
+            return SkillResult(
+                success=False,
+                error="MCP server unavailable or misconfigured: provide valid stdio mcp_config.command",
+                metadata={"mode": mode, "reason": artcraft_app_client.REASON_MCP_UNAVAILABLE, "interface": "mcp", "error_stage": "launch"},
+            )
         try:
             keywords = inputs.get("command_keywords") or self._command_keywords
             override = inputs.get("generation_command")
-            timeout = inputs.get("timeout") or 300
-            cmds = self._mcp_command_list(cfg) if hasattr(self, "_mcp_command_list") else []
-            gen_cmd = self._discover_generation_command(cmds, keywords, override)
+            cmds_res = self._mcp_command_list(cfg_n)
+            if isinstance(cmds_res, dict) and (cmds_res.get("is_error") or cmds_res.get("success") is False):
+                return self._result_from_mcp_error(cmds_res, mode)
+            gen_cmd = self._discover_generation_command(cmds_res, keywords, override)
             if not gen_cmd:
-                return SkillResult(success=False, error="No image-generation capability found in app version", metadata={"mode": mode})
+                return SkillResult(
+                    success=False,
+                    error="No supported MCP capability found for requested operation",
+                    metadata={
+                        "mode": mode,
+                        "reason": artcraft_app_client.REASON_MCP_MISSING_CAPABILITY,
+                        "interface": "mcp",
+                        "error_stage": "discovery",
+                    },
+                )
             params = self._build_cli_params(inputs)
-            res = self._mcp_command_run(cfg, gen_cmd, params, timeout)
-            if isinstance(res, dict) and res.get("is_error"):
-                return SkillResult(success=False, error=res.get("error") or "MCP tool error", metadata={"mode": mode, "is_error": True})
-            if isinstance(res, dict) and res.get("success") is False:
-                return SkillResult(success=False, error=res.get("error") or "MCP tool error", metadata={"mode": mode, "is_error": True})
+            res = self._mcp_command_run(cfg_n, gen_cmd, params, timeout)
+            if isinstance(res, dict) and (res.get("is_error") or res.get("success") is False):
+                return self._result_from_mcp_error(res, mode, tool=gen_cmd)
             data = self._normalize_output(res if isinstance(res, dict) else {})
-            return SkillResult(success=True, data=data, metadata={"mode": mode, "interface": "mcp", "tool": gen_cmd})
+            return SkillResult(
+                success=True,
+                data=data,
+                metadata={"mode": mode, "interface": "mcp", "tool": gen_cmd},
+            )
         except Exception as e:
-            return SkillResult(success=False, error=str(e), metadata={"mode": mode})
+            return SkillResult(
+                success=False,
+                error=f"MCP execution failed: {e}",
+                metadata={"mode": mode, "reason": artcraft_app_client.REASON_MCP_TOOL_ERROR, "interface": "mcp", "error_stage": "invocation"},
+            )
 
     def execute(self, inputs: Dict[str, Any]) -> SkillResult:
         if not self.validate_inputs(inputs):
@@ -181,18 +243,20 @@ class CreativeSkill(BaseSkill):
                 return SkillResult(success=False, error="CLI not found: photocraft-cli", metadata={"mode": mode, "reason": artcraft_app_client.REASON_CLI_NOT_FOUND})
             return self._execute_cli(inputs, cli_path, mode)
         elif mode == "mcp":
+            # FR-005: explicit mode wins, no silent CLI/fallback reroute
             return self._execute_mcp(inputs, mode)
-        else:  # auto
+        else:  # auto - back-compatible: CLI first, then MCP when CLI unavailable and MCP configured
             cli_path = self._discover_cli(inputs.get("cli_path"))
-            mcp_available = bool(getattr(self, "_mcp_available", None) and self._mcp_available(inputs.get("mcp_config") or {}))
-            selected = artcraft_app_client.select_mode("auto", bool(cli_path), mcp_available)
-            if selected == "cli" and cli_path:
+            if cli_path:
                 return self._execute_cli(inputs, cli_path, mode)
-            if selected == "mcp":
-                res = self._execute_mcp(inputs, mode)
-                if res.success:
-                    return res
-            return SkillResult(success=False, error="No ArtCraft interface available (CLI or MCP)", metadata={"mode": mode, "reason": artcraft_app_client.REASON_NEITHER_AVAILABLE})
+            mcp_cfg = inputs.get("mcp_config") or {}
+            if self._mcp_available(mcp_cfg):
+                return self._execute_mcp(inputs, mode)
+            return SkillResult(
+                success=False,
+                error="No ArtCraft interface available (CLI or MCP)",
+                metadata={"mode": mode, "reason": artcraft_app_client.REASON_NEITHER_AVAILABLE},
+            )
 
 
 __all__ = ["CreativeSkill"]

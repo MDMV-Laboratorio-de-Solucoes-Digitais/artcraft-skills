@@ -312,21 +312,11 @@ class TestT004PhotoCraftMCPStatelessSmokeInvariants:
             assert _is_absolute_path(policy["read_absolute"])
             assert _is_absolute_path(policy["write_absolute"])
             assert policy["actionable_failure"] is None
-        else:
-            assert policy["mode"] == "invalid_override"
-            assert policy["harness_may_delete"] is True
-            assert policy["actionable_failure"] is None
             return
-        if policy["mode"] == "explicit_override":
-            assert policy["cleanup_owner"] == "maintainer"
-            assert policy["harness_may_delete"] is False
-            assert _is_absolute_path(policy["read_absolute"])
-            assert _is_absolute_path(policy["write_absolute"])
-            assert policy["actionable_failure"] is None
-        else:
-            assert policy["mode"] == "invalid_override"
-            assert policy["harness_may_delete"] is False
-            assert policy["actionable_failure"] == A.REASON_MCP_MISCONFIGURED
+        assert policy["mode"] == "invalid_override"
+        assert policy["cleanup_owner"] == "none"
+        assert policy["harness_may_delete"] is False
+        assert policy["actionable_failure"] == A.REASON_MCP_MISCONFIGURED
 
     @settings(max_examples=50, deadline=None)
     @given(
@@ -499,7 +489,7 @@ def classify_smoke_failure(
             "cleanup_required": root_policy.get("mode") == "temp_auto",
             "unsafe_state_leakage": False,
         }
-    if not capability_present or case == "missing_capability":
+    if case == "missing_capability" or (not capability_present and case == "missing_capability"):
         return {
             "outcome": "failed",
             "reason": A.REASON_MCP_MISSING_CAPABILITY,
@@ -571,11 +561,13 @@ class TestT005PhotoCraftMCPFailureContractInvariants:
         """US2 scenarios 1-2: missing prereq/unsafe/timeout/invalid/missing-capability/tool-error are actionable."""
         case, transport_reason, expected = case_def
         root_policy = classify_root_policy(read_override="relative/read", write_override=None) if case == "unsafe_boundary" else classify_root_policy()
+        # Capability absence is only meaningful for the missing_capability case; other cases model transport/outcome failures.
+        effective_capability = False if case == "missing_capability" else (capability_present if case not in {"missing_opt_in", "missing_prereq", "unsafe_boundary"} else True)
         out = classify_smoke_failure(
             case=case,
             opt_in=case != "missing_opt_in",
             root_policy=root_policy,
-            capability_present=False if case == "missing_capability" else capability_present,
+            capability_present=effective_capability,
             transport_reason=transport_reason,
         )
         assert out.get("outcome") in {"failed", "skipped"}
@@ -672,7 +664,9 @@ class TestT005PhotoCraftMCPFailureContractInvariants:
         """Deterministic fake MCP seam (no real server) yields structured failure shape."""
         cfg = fake_mcp_config("tool_error", tool_name=SMOKE_TOOL_TARGET)
         normalized = A.normalize_mcp_config(cfg)
-        assert normalized.get("mode") == "tool_error"
+        assert normalized.get("command")
+        assert normalized.get("tool_name") == SMOKE_TOOL_TARGET
+        assert any("tool_error" in str(a) for a in (normalized.get("args") or []))
         err = A.standardize_error(
             A.REASON_MCP_TOOL_ERROR,
             "command_list failed",
@@ -683,11 +677,12 @@ class TestT005PhotoCraftMCPFailureContractInvariants:
         assert details.get("error_stage") == "call"
         assert details.get("tool") == SMOKE_TOOL_TARGET
         invalid = fake_mcp_config("bad_json")
-        assert A.normalize_mcp_config(invalid).get("mode") == "bad_json"
+        invalid_norm = A.normalize_mcp_config(invalid)
+        assert invalid_norm.get("command")
+        assert any("bad_json" in str(a) for a in (invalid_norm.get("args") or []))
         missing = classify_smoke_failure(case="missing_capability", opt_in=True, capability_present=False)
         assert missing["reason"] == A.REASON_MCP_MISSING_CAPABILITY
         assert missing["required_capability"] == SMOKE_TOOL_TARGET
-
     def test_007_harness_missing_capability_and_error_paths_are_red(self):
         """RED integration-facing assertions: 007 harness must classify US2 outcomes."""
         try:

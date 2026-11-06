@@ -125,6 +125,21 @@ def run_photocraft_mcp_smoke(
     )
 
 
+def classify_photocraft_mcp_smoke_outcome(*args: Any, **kwargs: Any) -> Dict[str, Any]:
+    """007 RED stub: deterministic US2 outcome classification hook.
+
+    Intended: map missing opt-in/prereq/unsafe boundaries/timeouts/invalid
+    responses/missing capability/tool errors to FR-006-aligned actionable
+    outcomes or skips with safe cleanup semantics.
+    """
+    # Incomplete on purpose (RED): T005 expects FR-006 reason/error_stage mapping.
+    return {"outcome": "red", "implemented": False, "args_seen": bool(args or kwargs)}
+
+
+def map_photocraft_mcp_smoke_error(*args: Any, **kwargs: Any) -> Dict[str, Any]:
+    """007 RED stub alias for US2 outcome/error mapping hook."""
+    return classify_photocraft_mcp_smoke_outcome(*args, **kwargs)
+
 def _fake_command_list_mcp_config(timeout: int = 5) -> Dict[str, Any]:
     """Deterministic fake MCP config exposing `command_list` (no real server)."""
     return {

@@ -89,8 +89,8 @@ PYTHONPATH=. ARTCRAFT_MCP_INTEGRATION=1 python -m pytest -q -m integration tests
 
 Notes:
 - `pytest.ini` sets default `addopts = ... -m "not integration"`; the `-m integration` override is required to select this path.
-- The existing file is currently a placeholder/minimal environment check (006-era); 007 implementation may expand it into real stateless smoke while preserving opt-in/exclusion. If implementation changes command shape/test name, keep the opt-in and exclusion contract identical and update this guide in the same change.
-- Current placeholder also requires `ARTCRAFT_MCP_READ_ROOT`/`ARTCRAFT_MCP_WRITE_ROOT` and `photocraft-cli` on PATH; 007 target behavior prefers temp auto-roots and explicit binary resolution — verify actual harness behavior before recording evidence.
+- **007 implemented harness behavior** (`tests/integration/test_mcp_stdio_photocraft_optional.py`): opt-in gate preserved (`ARTCRAFT_MCP_INTEGRATION=1`); binary override env `ARTCRAFT_MCP_PHOTOCRAFT_BIN` preferred (absolute existing path required), else opt-in-only PATH fallback resolving absolute `photocraft-cli` with path/version capture when available; default temp auto-created absolute read/write roots with harness cleanup; explicit authorized absolute root overrides accepted only as maintainer-managed (`ARTCRAFT_MCP_READ_ROOT`/`ARTCRAFT_MCP_WRITE_ROOT` or harness args) and **never auto-deleted**; bounded timeout passed to existing 006 adapter calls; stateless sequence `artcraft_app_client.mcp_tools_list` then `mcp_tools_call(..., "command_list", {})` (full session per call, no reuse/artifact cycle); version-tolerant capability presence (`command_list`) and defensive/non-error parseable-normalizable result parsing; no AI-generation claim.
+- Current implementation uses fake/monkeypatched seams for deterministic 007 tests; a real local PhotoCraft server is exercised only when a caller supplies an authorized real `mcp_config`/binary context in an explicitly opted-in environment. Do not run real smoke in default CI.
 
 ## Manual Adapter Smoke Shape (Stateless)
 
@@ -203,3 +203,24 @@ PYTHONPATH=. python -m pytest -q tests/property/test_photocraft_mcp_smoke_props.
 - **Commits**: T004–T005 RED property invariants `e8ec422` (+ helper stabilization `954f7ce`); T006–T007 RED integration tests/stubs `34442de` (+ US2 classifier stub shape `433d9ec`).
 
 **Implementation gate**: Phases 3–5 may proceed (T008 satisfied). Verification-only attestation remains T018–T021.
+
+## 007 Implementation & Focused Regression Evidence (T009-T014, 2026-11-06)
+
+**Implemented (test-only harness, no public contract changes)**:
+- `tests/integration/test_mcp_stdio_photocraft_optional.py`: explicit opt-in (`ARTCRAFT_MCP_INTEGRATION=1`) preserved; binary override `ARTCRAFT_MCP_PHOTOCRAFT_BIN` preferred, opt-in-only PATH fallback resolves absolute `photocraft-cli` and captures path/version context when available; temp auto-created isolated absolute read/write roots cleaned on completion/failure; explicit authorized absolute root overrides maintainer-managed and never auto-deleted; bounded timeout; stateless `mcp_tools_list` then `mcp_tools_call(..., "command_list", {})` via 006 adapter; defensive/version-tolerant parsing and capability presence (`command_list`, no exact count/catalog/order); FR-006-aligned skip/failure classifier (`mcp_unavailable|mcp_misconfigured|mcp_startup_timeout|mcp_call_timeout|mcp_invalid_response|mcp_missing_capability|mcp_tool_error`), no silent MCP→CLI reroute, no session reuse/artifact cycle, no AI-generation claim.
+- `skills/core/artcraft_app_client.py` and `skills/core/creative_skill.py`: **no changes** (contracts preserved).
+
+**Focused regression matrix (T014)**:
+```bash
+cd /home/luis/development/artcraft-skills
+PYTHONPATH=. python -m pytest -q tests/contract/test_mcp_stdio_contract.py tests/unit/test_creative_skill_mcp_selection.py tests/unit/test_creative_skill_mcp_stdio.py tests/property/test_mcp_stdio_props.py tests/property/test_photocraft_mcp_smoke_props.py tests/integration/test_mcp_stdio_photocraft_optional.py
+```
+**Summary**: `32 passed, 23 deselected in 3.53s` (007 integration deselected by default marker; 006 MCP contract/unit/property preserved; 007 property tests green).
+
+**Integration-selected deterministic 007 tests**:
+```bash
+PYTHONPATH=. python -m pytest -q -m integration tests/integration/test_mcp_stdio_photocraft_optional.py
+```
+**Summary**: `22 passed, 1 skipped in 0.35s` (opt-in coherence skip path exercised as expected under harness semantics; all deterministic fake/monkeypatched US1/US2 cases passed). No real PhotoCraft server required.
+
+**Commits (007 slice)**: `5408f57` harness US1/US2 implementation, `c1d1468` cleanup-state fix, `d4b538b` tasks T012-T014 status.

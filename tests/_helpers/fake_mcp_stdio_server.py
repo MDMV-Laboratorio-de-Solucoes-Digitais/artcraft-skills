@@ -140,7 +140,7 @@ def main(argv: Optional[List[str]] = None) -> int:
                 invalid_sent = True
                 continue
             if scenario == "missing_capability":
-                _write({"jsonrpc": "2.0", "id": req_id, "result": {"tools": [{"name": "other.tool", "description": "no image/edit", "inputSchema": {"type": "object"}}]}})
+                _write({"jsonrpc": "2.0", "id": req_id, "result": {"tools": [{"name": "other.tool", "description": "unrelated capability", "inputSchema": {"type": "object"}}]}})
             else:
                 _write({"jsonrpc": "2.0", "id": req_id, "result": {"tools": _tool_list(tool_name)}})
             continue

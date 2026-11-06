@@ -98,6 +98,8 @@ python scripts/validate_all_skills.py
 
 **Goal**: manual confidence against the reference target when available.
 
+**007 verified local smoke (stateless, opt-in, engine/editor automation only)**: For the implemented 007 runbook/evidence path (explicit opt-in, safe temp/explicit roots, bounded timeout, resolved binary identity, `tools/list` + `tools/call name=command_list` only, no session reuse/artifact cycle, no AI-generation/provider/model claim, mock-first/default-CI exclusion preserved), see [`../007-photocraft-mcp-smoke/quickstart.md`](../007-photocraft-mcp-smoke/quickstart.md). This 006 scenario remains optional/reference; 007 does not change 006 public schemas, CLI/fallback, FR-005 selection, or FR-006 taxonomy.
+
 **Prerequisites (all optional)**:
 - `photocraft-cli` installed and accessible.
 - Safe automation roots configured (dedicated folders recommended).

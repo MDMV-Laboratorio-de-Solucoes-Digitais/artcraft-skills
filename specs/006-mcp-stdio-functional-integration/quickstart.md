@@ -123,3 +123,14 @@ Result summary: **14 failed, 12 passed, 1 deselected** in 4.65s.
 - RED failures are for missing 006 MCP stdio behavior (e.g. `artcraft_app_client.mcp_tools_list/mcp_tools_call` missing; `CreativeSkill` MCP path returns `mcp_unavailable` instead of discovery+invocation/FR-006 scenario-specific reasons like `mcp_missing_capability`, `mcp_tool_error`, `mcp_invalid_response`).
 - Passing tests are back-compatible selection/property cases already satisfied by current behavior; integration test deselected by default marker (`-m "not integration"`).
 - Baseline before edits remained green in this session context: 373 passed, 12/12 skills valid (`bg_59` / `scripts/validate_all_skills.py`).
+
+## 006 GREEN Evidence (post T020-T028, 2026-11-05)
+Targeted 006/back-compat matrix result: **42 passed, 1 deselected** in ~16.4s (integration deselected by default). Command:
+`cd /home/luis/development/artcraft-skills && PYTHONPATH=. python -m pytest -q tests/property/test_creative_skills_props.py tests/property/test_artcraft_app_client_props.py tests/unit/test_mcp_stdio_transport.py tests/unit/test_creative_skill_mcp_stdio.py tests/unit/test_creative_skill_mcp_selection.py tests/contract/test_mcp_stdio_contract.py tests/property/test_mcp_stdio_props.py tests/integration/test_mcp_stdio_photocraft_optional.py`
+
+## Phase 6 Verification Evidence (ONLY ATTESTATION, 2026-11-05)
+- **T034 (full default suite)**: `cd /home/luis/development/artcraft-skills && PYTHONPATH=. python -m pytest -q` → **399 passed, 1 deselected** in 34.39s. Baseline was 373 passed; 006 added passing tests with no regressions; integration marker excluded by default.
+- **T035 (skill validation)**: `cd /home/luis/development/artcraft-skills && python scripts/validate_all_skills.py` → **Validated 12 skills, all_valid=True**.
+- **T036 (targeted matrix + image-generate outlier check)**: targeted command above → **42 passed, 1 deselected**. `skills/creative/image-generate/skill.py` (BaseSkill outlier, duplicated MCP/CLI flow) was **not modified** in 006; full default suite (399 passed) includes existing image-generate/creative-skill coverage and shows **no unintended behavior change** in 006 scope. No schema/API change.
+- **T037 (checklists review)**: `specs/006-mcp-stdio-functional-integration/checklists/*.md` are reviewer-owned requirements-quality artifacts; `[x]` semantics were not altered. Functional/contract evidence is recorded above; remaining requirement-quality gaps, if any, are reviewer decisions.
+- **T038**: this section + tasks.md completion are evidence records only; **Phase 6 verification tasks are the only attestation of success/completeness**.

@@ -136,3 +136,9 @@ Targeted 006/back-compat matrix result: **42 passed, 1 deselected** in ~16.4s (i
 - **T036 (targeted matrix + image-generate outlier check)**: targeted command above → **42 passed, 1 deselected**. `skills/creative/image-generate/skill.py` (BaseSkill outlier, duplicated MCP/CLI flow) was **not modified** in 006; full default suite (399 passed) includes existing image-generate/creative-skill coverage and shows **no unintended behavior change** in 006 scope. No schema/API change.
 - **T037 (checklists review)**: `specs/006-mcp-stdio-functional-integration/checklists/*.md` are reviewer-owned requirements-quality artifacts; `[x]` semantics were not altered. Functional/contract evidence is recorded above; remaining requirement-quality gaps, if any, are reviewer decisions.
 - **T038**: this section + tasks.md completion are evidence records only; **Phase 6 verification tasks are the only attestation of success/completeness**.
+
+## Referências e versões de protocolo
+
+- MCP specification: revisão 2026-07-28 (latest); transporte stdio implementado compatível com 2025-11-25 e alinhado com 2026-07-28 (_meta obrigatório, server/discover, sem handshake/sessão na nova revisão). Fontes: https://modelcontextprotocol.io/specification/2026-07-28/server/tools.md, https://modelcontextprotocol.io/specification/2026-07-28/basic/transports.md.
+- MCP Python SDK: `modelcontextprotocol/python-sdk` v2.3.0 (v2.0.0 estável desde 2026-07-28); cliente mínimo atual preservado por back-compat/mock-first. Fonte: https://py.sdk.modelcontextprotocol.io/v2/whats-new/.
+- PhotoCraft MCP: `docs/mcp.md` (main branch, storytold/photocraft) — `command_list`, `command_run`, `command_batch`, `doc_inspect`, `render_preview`, raízes de automação, progresso via `_meta.progressToken`. Fonte: https://raw.githubusercontent.com/storytold/photocraft/main/docs/mcp.md.

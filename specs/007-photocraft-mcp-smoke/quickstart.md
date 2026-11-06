@@ -315,3 +315,15 @@ Optional explicit authorized roots: absolute `ARTCRAFT_MCP_READ_ROOT`/`ARTCRAFT_
 - `specs/007-photocraft-mcp-smoke/checklists/safety-opt-in-isolation.md` (reviewed `[x]`, PASS; commits 593d3a3,fca9305)
 
 **Honest status (T023 attestation update)**: implementation/harness/tests/docs and default/targeted regression gates remain green. **SC-001 was exercised in this local environment under explicit user authorization (T022)** with safe temp roots, bounded timeout, stateless `tools/list` + `command_list` discovery/invocation evidence, and temp-root cleanup observed. Evidence is **scoped only** to deterministic engine/editor MCP smoke against `photocraft-cli 0.20.1`; **no prompt-based AI generation/provider/model behavior is claimed or supported by this slice**. Phase 6/Phase 7 verification tasks attest completeness only from recorded evidence.
+
+## Referências e versões de protocolo
+
+- MCP specification: revisão 2026-07-28 (latest); transporte stdio implementado compatível com 2025-11-25 e alinhado com 2026-07-28 (_meta obrigatório, server/discover, sem handshake/sessão na nova revisão). Fontes: https://modelcontextprotocol.io/specification/2026-07-28/server/tools.md, https://modelcontextprotocol.io/specification/2026-07-28/basic/transports.md.
+- MCP Python SDK: `modelcontextprotocol/python-sdk` v2.3.0 (v2.0.0 estável desde 2026-07-28); cliente mínimo atual preservado por back-compat/mock-first. Fonte: https://py.sdk.modelcontextprotocol.io/v2/whats-new/.
+- PhotoCraft MCP: `docs/mcp.md` (main branch, storytold/photocraft) — `command_list`, `command_run`, `command_batch`, `doc_inspect`, `render_preview`, raízes de automação, progresso via `_meta.progressToken`. Fonte: https://raw.githubusercontent.com/storytold/photocraft/main/docs/mcp.md.
+
+## Nota sobre sessão stateless (adapter 006)
+
+O adapter atual é stateless por chamada (006): cada `mcp_tools_list`/`mcp_tools_call` executa uma sessão stdio completa por chamada, sem reuso de sessão. Não há ciclo stateful de artefato (`doc_new → command → doc_export`) neste slice.
+
+MCP 2026-07-28 remove handshake e sessão server-side; uma sessão stateful (007 Option B) deve reter estado client-side ou usar multi-round-trip (InputRequiredResult), não depender de sessão server-side.

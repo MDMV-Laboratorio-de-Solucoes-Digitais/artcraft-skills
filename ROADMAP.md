@@ -8,16 +8,18 @@ Skills are consumed by agents that drive real ArtCraft creative apps (PhotoCraft
 
 ## Current State (Verificado — 2026-11-06)
 
-- **Branch:** `dev` @ `d62e5e0` (synced with `origin/dev`), PR stack 007 #131–#135 integrated; only `dev`/`main` local+remote; **no open PRs**.
+- **Branch:** `dev` @ `44b9667` (synced with `origin/dev`), PR stack 007 #131–#135 integrated; only `dev`/`main` local+remote; **no open PRs**. Working tree reviewed for docs consolidation (MDMV flow 2026-11-06).
 - **Quality gates (default):** **412 passed, 23 deselected** (`PYTHONPATH=. python -m pytest -q`); **12/12 skills validated** (`python scripts/validate_all_skills.py`). Integration tests are opt-in (`-m "not integration"` excluded by default).
 - **Converged specs (defined scope):** `001`, `003`, `004`, `005-resiliencia-creativeskill` (evidence recorded), `006-mcp-stdio-functional-integration`, `007-photocraft-mcp-smoke` (Option A stateless, T001–T023 complete; SC-001 exercised locally under explicit authorization — engine/editor only, no AI/provider/model claim).
 - **Core:** schema/validation/loader/registry, `BaseSkill/SkillResult`, `CreativeSkill`, shared `artcraft_app_client` (CLI + MCP stdio minimum viable, FR-005/FR-006 preserved), resilience (retry 3 + exponential backoff + jitter + `BoundedSemaphore(3)`), `SkillComposer`, `DAGOrchestrator`.
 - **Creative skills (Python, current scope):** `image-generate`, `image-edit`, `background-remove`, `image-upscale`, `mesh-generate`; `scene-composition` executable; generalizable workflows present.
-- **Research (primary-source based):** `docs/research/2026-11-06-ecosystem-roadmap-status.md` (agentskills.io spec; MCP stdio 2025-11-25; `storytold/photocraft` MCP docs; local evidence/gaps). Prior: `docs/research/2026-11-05-ecosystem-and-status.md`.
-
+- Conformidade agentskills.io: 12/12 skills validadas (`SKILL.md` YAML frontmatter, name kebab-case, description 1–1024 chars, progressive disclosure).
+- MCP stdio mínimo viável (006) implementado e alinhado com MCP 2025-11-25 e revisão 2026-07-28 (_meta obrigatório, server/discover, sem handshake/sessão na nova revisão, tools/list com paginação/caching, tools/call com input_required).
+- MCP Python SDK v2.3.0 (`modelcontextprotocol/python-sdk`) avaliado como candidato; cliente mínimo atual preservado por back-compat/mock-first.
+- PhotoCraft `photocraft-cli 0.20.1` (2026-11-03) observado localmente: 26 MCP tools via `tools/list`, `command_list` com engine command metadata, `doc_inspect` com sessão não-persistente entre chamadas separadas do adapter.
 ## Progress Summary
 
-**Overall:** **~95% of foundational scope + minimum viable MCP stdio integration + authorized local real-path smoke (PhotoCraft, stateless)**. Not 100% of product: multi-app/environment operational validation, stateful MCP (Option B), deep per-app capability mapping, domain expansion (Phases 3–5), and product adoption docs remain.
+**Overall:** **~95% of foundational scope + minimum viable MCP stdio integration + authorized local real-path smoke (PhotoCraft, stateless)**. Conformity with agentskills.io (12/12 skills validated) and alignment with MCP 2026-07-28 (_meta, server/discover, stateless-by-design). Not 100% of product: multi-app/environment operational validation, stateful MCP (Option B), deep per-app capability mapping, domain expansion (Phases 3–5), and product adoption docs remain.
 
 **Completed (✓):**
 - **Phase 0 Foundation**: schema/validation/loader/registry, core abstractions, composer/DAG, docs, deterministic test infrastructure.
@@ -28,7 +30,7 @@ Skills are consumed by agents that drive real ArtCraft creative apps (PhotoCraft
 
 **Backlog / caveats:**
 - `specs/005-resiliencia-creativeskill/tasks.md`: implementation checkboxes partially marked while convergence evidence exists — **reconcile checkboxes/evidence** (doc hygiene).
-- `specs/006-integracao-geracao-assets` (0/11) vs `006-mcp-stdio-functional-integration` — **historical `006-*` numbering ambiguity**; normalize future references without rewriting history.
+- `specs/006-integracao-geracao-assets` (0/11) vs `006-mcp-stdio-functional-integration` — **historical `006-*` numbering ambiguity**; normalize references in specs 006/007 and quickstarts to avoid numbering confusion, without rewriting history.
 - `README.md` (root) not present — adoption/onboarding gap.
 
 ## Roadmap Phases
@@ -42,6 +44,7 @@ Skills are consumed by agents that drive real ArtCraft creative apps (PhotoCraft
 - [x] `image-generate`, `image-edit`, `background-remove`, `image-upscale`
 - [ ] Vector & Illustration (future)
 - [ ] Style Transfer & Consistency (future)
+- [ ] Avaliar decisão de dependência MCP SDK v2 vs cliente mínimo (manter mock-first/back-compat).
 
 ### Phase 2: 3D, Spatial & Environment — **~60%**
 - [x] Scene composition + `mesh-generate`
@@ -64,13 +67,15 @@ Skills are consumed by agents that drive real ArtCraft creative apps (PhotoCraft
 - [ ] Per-capability MCP mapping for Crafting Apps (tools/roots/progress/cancel/format constraints)
 - [ ] Controlled optional CI/manual job for real MCP smoke (never default), secure evidence handling
 - [ ] Batch processing, project templates, deep app integrations
+- [ ] Alinhar adapter com revisão MCP 2026-07-28 (_meta, server/discover, sem handshake na nova revisão).
 
-## Immediate Next Steps (prioritized)
-1. **Reconcile Speckit doc hygiene** (low risk): 005 checkbox/evidence alignment; clarify `006-*` numbering in docs; keep history intact.
-2. **Spec/decide 007 Option B** (stateful MCP session, narrow) if stateful artifact workflows become priority; preserve public contracts and mock-first defaults.
-3. **Deepen real capability mapping** (PhotoCraft first): engine-oriented `command_*`/`doc_*`/preview/resource tools, roots/progress/cancellation/error semantics; no AI-generation overclaim.
-4. **MCP dependency decision (only if needed):** evaluate official Python SDK (`modelcontextprotocol/python-sdk`, observed v2.x line) vs current minimal client for advanced lifecycle/auth/Streamable HTTP; maintain deterministic tests/back-compat.
-5. **Product adoption:** add root `README.md`, onboarding, and compatibility matrix (Crafting Apps/MCP/protocol versions). Expand Phases 3–5 after stable mappings.
+1. **80/20 (MDMV 2026-11-06): spec `008-photocraft-capability-mapping`** — PhotoCraft MCP capability mapping (tools `command_*`/`doc_*`/preview/resources, roots, progress `_meta.progressToken`, cancellation `notifications/cancelled`, error semantics, protocol/version limits). Spec/docs only in this slice; **no runtime code, no AI-generation claim, no stateful session** (007 Option B deferred). Mock-first; optional real validation opt-in. Contingency: if maintainer prioritizes stateful MCP, replace with 007 Option B spec/decide.
+2. **Reconcile Speckit doc hygiene** (low risk): 005 checkbox/evidence alignment; clarify `006-*` numbering in docs; keep history intact.
+3. **Spec/decide 007 Option B** (stateful MCP session, narrow) if stateful artifact workflows become priority; preserve public contracts and mock-first defaults; consider MCP 2026-07-28 (no handshake/session server-side; multi-round-trip client-side).
+4. **Deepen real capability mapping implementation follow-ups** (PhotoCraft first, post-008): engine-oriented `command_*`/`doc_*`/preview/resource tools, roots/progress/cancellation/error semantics; no AI-generation overclaim.
+5. **MCP dependency decision (only if needed):** evaluate official Python SDK (`modelcontextprotocol/python-sdk` v2.3.0) vs current minimal client for advanced lifecycle/auth/Streamable HTTP; maintain deterministic tests/back-compat.
+6. **Product adoption:** compatibility matrix (Crafting Apps/MCP/protocol versions), examples/onboarding; expand Phases 3–5 after stable mappings.
+
 
 ## What this project does NOT do
 - No model/provider/backend reimplementation; no replacement of ArtCraft apps.
@@ -86,3 +91,7 @@ Skills are consumed by agents that drive real ArtCraft creative apps (PhotoCraft
 - **MCP minimum viable (stdio, mock-first):** ✓
 - **Authorized local real MCP smoke (PhotoCraft, stateless, scoped):** ✓
 - **Stateful MCP artifact cycle (Option B):** pending
+- ✅ Conformidade agentskills.io: 12/12 skills validadas
+- ✅ MCP stdio mínimo viável alinhado com MCP 2025-11-25 e 2026-07-28
+- ⏳ Avaliação MCP SDK v2 — pendente
+- ⏳ 007 Option B stateful — pendente

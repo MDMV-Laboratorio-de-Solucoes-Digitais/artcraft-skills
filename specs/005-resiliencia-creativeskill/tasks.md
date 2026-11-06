@@ -15,11 +15,15 @@
 - **Core**: `skills/core/creative_skill.py`
 - **Tests**: `tests/`
 
+## Reconciliation Note (2026-11-06, doc hygiene — evidence-based)
+
+T001–T015 were historically left as `- [ ] ... [X]` placeholders; **implementation and FR/SC satisfaction are evidenced by the 2026-11-05 convergence closure (T016–T018)** and by current repository state. Markers below are reconciled to `[x]` **only on that recorded evidence** (not a new implementation pass): `skills/core/creative_skill.py` contains bounded semaphore/retry+backoff+jitter in CLI execution path; resilience tests and full gates have passing evidence (`373 passed, 12/12` at closure; default gates re-verified 2026-11-06 as `412 passed, 23 deselected, 12/12 valid`). History preserved; no code/contracts changed by this note.
+
 ---
 
 ## Phase 1: Setup
 **Purpose**: Project preparation
-- [ ] T001 [X] Review current `skills/core/creative_skill.py` implementation and existing tests
+- [x] T001 Review current `skills/core/creative_skill.py` implementation and existing tests *(reconciled 2026-11-06 with T016–T018 convergence evidence)*
 
 ---
 
@@ -33,17 +37,17 @@
 **Independent Test**: Skills retry on transient CLI failures and respect concurrency limits
 
 ### Tests for User Story 1 (TDD - Write FIRST, RED phase)
-- [ ] T002 [X] [P] [US1] Add property test for retry behavior in `tests/property/test_creative_skills_resilience_props.py` (RED)
-- [ ] T003 [X] [P] [US1] Add characterization tests for retry/backoff/semaphore in `tests/characterization/test_creative_skills_resilience_behavior.py` (RED)
+- [x] T002 [P] [US1] Add property test for retry behavior in `tests/property/test_creative_skills_resilience_props.py` (RED) *(reconciled 2026-11-06; evidence: resilience tests pass, convergence T016–T018)*
+- [x] T003 [P] [US1] Add characterization tests for retry/backoff/semaphore in `tests/characterization/test_creative_skills_resilience_behavior.py` (RED) *(reconciled 2026-11-06; evidence: resilience tests pass, convergence T016–T018)*
 
 ### Implementation for User Story 1
-- [ ] T004 [X] [US1] Add imports (`threading`, `time`, `random`) to `skills/core/creative_skill.py`
-- [ ] T005 [X] [US1] Add semaphore (`threading.BoundedSemaphore(3)`) as instance attribute in `CreativeSkill.__init__`
-- [ ] T006 [X] [US1] Implement retry logic with exponential backoff + jitter (max 3 attempts) in `CreativeSkill._execute_cli`
-- [ ] T007 [X] [US1] Wrap CLI execution with semaphore in `CreativeSkill._execute_cli`
-- [ ] T008 [X] [US1] Ensure TimeoutExpired and appropriate errors are retried, preserving metadata on final failure
+- [x] T004 [US1] Add imports (`threading`, `time`, `random`) to `skills/core/creative_skill.py` *(reconciled 2026-11-06; implementation present, T016–T018)*
+- [x] T005 [US1] Add semaphore (`threading.BoundedSemaphore(3)`) as instance attribute in `CreativeSkill.__init__` *(reconciled 2026-11-06; implementation present, T016–T018)*
+- [x] T006 [US1] Implement retry logic with exponential backoff + jitter (max 3 attempts) in `CreativeSkill._execute_cli` *(reconciled 2026-11-06; implementation present in CLI fallback execution path, T016–T018)*
+- [x] T007 [US1] Wrap CLI execution with semaphore in `CreativeSkill._execute_cli` *(reconciled 2026-11-06; implementation present, T016–T018)*
+- [x] T008 [US1] Ensure TimeoutExpired and appropriate errors are retried, preserving metadata on final failure *(reconciled 2026-11-06; evidence T016–T018 FR-003)*
 
-**Checkpoint**: User Story 1 should be functional and testable independently
+**Checkpoint**: User Story 1 should be functional and testable independently *(evidenced 2026-11-05/06)*
 
 ---
 
@@ -52,21 +56,21 @@
 **Independent Test**: All existing tests pass
 
 ### Implementation for User Story 2
-- [ ] T009 [X] [US2] Ensure `SkillResult` structure unchanged and metadata preserved
-- [ ] T010 [X] [US2] Verify mocks in existing tests continue to work
-- [ ] T011 [X] [US2] Run existing creative skills tests to confirm backward compatibility
+- [x] T009 [US2] Ensure `SkillResult` structure unchanged and metadata preserved *(reconciled 2026-11-06; evidence T016–T018 FR-004/SC-004)*
+- [x] T010 [US2] Verify mocks in existing tests continue to work *(reconciled 2026-11-06; regression gates pass)*
+- [x] T011 [US2] Run existing creative skills tests to confirm backward compatibility *(reconciled 2026-11-06; full suite/regression evidence)*
 
-**Checkpoint**: Backward compatibility maintained
+**Checkpoint**: Backward compatibility maintained *(evidenced)*
 
 ---
 
 ## Phase 5: Polish & Cross-Cutting Concerns
 **Purpose**: Final verification
 
-- [ ] T012 [X] Run resilience tests: `python -m pytest tests/property/test_creative_skills_resilience_props.py tests/characterization/test_creative_skills_resilience_behavior.py -v`
-- [ ] T013 [X] Run full test suite: `python -m pytest -q` to ensure no regressions (target: 351+ tests passing)
-- [ ] T014 [X] Verify all 5 creative skills benefit from base class changes
-- [ ] T015 [X] Atomic commit with detailed summary of edits made
+- [x] T012 Run resilience tests: `python -m pytest tests/property/test_creative_skills_resilience_props.py tests/characterization/test_creative_skills_resilience_behavior.py -v` *(reconciled 2026-11-06; 6 passed recorded at closure; repo gates green 2026-11-06)*
+- [x] T013 Run full test suite: `python -m pytest -q` to ensure no regressions (target: 351+ tests passing) *(reconciled 2026-11-06; 373 passed at closure; 412 passed, 23 deselected re-verified 2026-11-06)*
+- [x] T014 Verify all 5 creative skills benefit from base class changes *(reconciled 2026-11-06; CreativeSkill base path evidenced, FR-005/SC-005)*
+- [x] T015 Atomic commit with detailed summary of edits made *(reconciled 2026-11-06; implementation committed in feature history; this doc reconciliation committed separately)*
 
 ---
 
@@ -98,9 +102,9 @@
 
 **Purpose**: Formal closure via converge process
 
-- [X] T016 Run `/speckit.converge` validation for feature 005
-- [X] T017 Verify all FR-001 through FR-005 and SC-001 through SC-005 are satisfied
-- [X] T018 Document convergence completion
+- [x] T016 Run `/speckit.converge` validation for feature 005
+- [x] T017 Verify all FR-001 through FR-005 and SC-001 through SC-005 are satisfied
+- [x] T018 Document convergence completion
 
 
 **Evidence (2026-11-05, T016-T018 / convergence closure)**:

@@ -114,3 +114,12 @@ python scripts/validate_all_skills.py
 - Pytest summary (default run) showing >= 373 passed and 006 tests green.
 - `scripts/validate_all_skills.py` summary showing `12/12` valid.
 - Notes confirming: mock-first determinism, no public schema breaks, PhotoCraft treated as reference/optional validation, default `auto` remains CLI-first.
+
+## 006 RED Gate Evidence (T018, 2026-11-05)
+Command:
+`cd /home/luis/development/artcraft-skills && PYTHONPATH=. python -m pytest -q tests/unit/test_mcp_stdio_transport.py tests/unit/test_creative_skill_mcp_stdio.py tests/unit/test_creative_skill_mcp_selection.py tests/contract/test_mcp_stdio_contract.py tests/property/test_mcp_stdio_props.py tests/integration/test_mcp_stdio_photocraft_optional.py`
+
+Result summary: **14 failed, 12 passed, 1 deselected** in 4.65s.
+- RED failures are for missing 006 MCP stdio behavior (e.g. `artcraft_app_client.mcp_tools_list/mcp_tools_call` missing; `CreativeSkill` MCP path returns `mcp_unavailable` instead of discovery+invocation/FR-006 scenario-specific reasons like `mcp_missing_capability`, `mcp_tool_error`, `mcp_invalid_response`).
+- Passing tests are back-compatible selection/property cases already satisfied by current behavior; integration test deselected by default marker (`-m "not integration"`).
+- Baseline before edits remained green in this session context: 373 passed, 12/12 skills valid (`bg_59` / `scripts/validate_all_skills.py`).

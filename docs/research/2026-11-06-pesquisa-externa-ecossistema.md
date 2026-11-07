@@ -2,7 +2,7 @@
 
 - **Data de acesso**: 2026-11-06
 - **Escopo**: pesquisa web para atualizar entendimento de agentskills.io, MCP (Python SDK/protocolo) e evidência pública sobre `storytold/photocraft`. Restrições: factual, fontes confiáveis, sem afirmar suporte não verificado no repositório.
-- **Limitação**: resultados de busca agregados (web_search). Não houve execução de `git`/`gh` com output completo nesta sessão (comandos bash retornaram como serviço sem stdout visível no turno); estado do repo baseado em evidência já apurada anteriormente nesta sessão.
+- **Limitação**: resultados de busca agregados (web_search) + verificação local do repo/gates nesta reexecução MDMV (2026-11-06). Evidência pública não substitui execução local autorizada.
 
 ---
 
@@ -21,7 +21,7 @@
 - **Resumo (conforme busca)**:
   - `modelcontextprotocol/python-sdk` **v2.3.0** (tag `v2.3.0`, 2026-10-02). SDK v2 fala a revisão **2026-07-28** e, segundo as docs do SDK, serve ambas as revisões (2025-11-25 e 2026-07-28) simultaneamente. Instalação típica: `pip install -U mcp` (instala 2.x conforme releases/docs).
   - MCP **2026-07-28** (conforme changelog/discovery): introduz `server/discover` (consulta de versões/capacidades/identidade antes de outras requests; servidor DEVE implementar); mudanças de versionamento/negociação; remoção de handshake/sessão server-side na nova revisão (sem `_Mcp-Session-Id` no caminho 2026, conforme entendimento já registrado no repo); `_meta` e semânticas de tools evoluídas. Server-initiated requests (roots/sampling/logging) e ping têm mudanças/depreciações conforme a revisão — **não afirmar suporte no adapter sem evidência**.
-- **Implicação para artcraft-skills**: o adapter atual (`skills/core/artcraft_app_client.py` v0.3.0) usa um **cliente mínimo síncrono** (006) para `tools/list`/`tools/call` com mock-first/back-compat — **consistente com a decisão 006 (SDK adiado para fatia mínima)**. Avaliação de migração para `mcp.Client`/SDK v2 permanece **pendente** (backlog em OBJETIVO/ROADMAP), especialmente para lifecycle avançado, auth remota, Streamable HTTP e compatibilidade ampliada. O mapeamento do repo já registra alinhamento com 2025-11-25 e consciência de 2026-07-28; qualquer claim de conformidade total com 2026-07-28 deve ser limitado ao escopo implementado.
+- **Implicação para artcraft-skills**: o adapter (`skills/core/artcraft_app_client.py` **v0.4.0**) mantém **cliente mínimo síncrono** (006) para `tools/list`/`tools/call` stateless + **helper aditivo 009** (`mcp_stateful_session`/`MCPStatefulSession`, subprocesso retido, mock-first/TDD) — preservando 006/FR-005/FR-006/schemas. Decisão de migração para `mcp.Client`/SDK v2 permanece **pendente** (lifecycle/auth remota/Streamable HTTP/compatibilidade ampliada), mantendo mock-first/back-compat. 009 usa client-retained process state; não assume sessão server-side MCP 2026-07-28.
 
 ## 3. Evidência pública sobre `storytold/ArtCraft` / `photocraft-cli`
 
@@ -35,8 +35,8 @@
 ## 4. MCP 2026-07-28 — mudanças relevantes (síntese para mapeamento)
 
 - **Fonte**: [Key Changes — 2026-07-28](https://modelcontextprotocol.io/specification/2026-07-28/changelog), [Discovery](https://modelcontextprotocol.io/specification/2026-07-28/server/discover). Data de acesso: 2026-11-06.
-- **Pontos de atenção (conforme busca, não exaustivos)**: `server/discover` para descoberta prévia de versões/capacidades/identidade; negociação/versionamento evoluídos; no caminho 2026, sem handshake/sessão server-side conforme registrado no repo; ferramentas com `_meta`/semânticas atualizadas. O 007 Option B (stateful) deve ser desenhado com consciência dessas mudanças (multi-round-trip client-side onde aplicável; não assumir sessão server-side).
-- **Implicação para artcraft-skills**: reforça a necessidade do próximo 80/20 (**mapeamento de capacidades PhotoCraft via MCP**, P7–P8) documentar raízes, progresso, cancelamento, erros e limites de versão/protocolo sem overclaim.
+- **Pontos de atenção (conforme busca, não exaustivos)**: `server/discover` para descoberta prévia de versões/capacidades/identidade; negociação/versionamento evoluídos; no caminho 2026, sem handshake/sessão server-side conforme registrado no repo; ferramentas com `_meta`/semânticas atualizadas. 009 (007 Option B) implementa **subprocesso stdio retido client-side** (mock-first) com consciência disso (sem assumir `_Mcp-Session-Id` server-side); **ciclo real PhotoCraft permanece opt-in autorizado**.
+- **Implicação para artcraft-skills**: 008 (capability mapping) e 009 (helper aditivo) avançam mapeamento/viabilização sem overclaim; real artifact cycle ainda capability-gated/opt-in.
 
 ---
 

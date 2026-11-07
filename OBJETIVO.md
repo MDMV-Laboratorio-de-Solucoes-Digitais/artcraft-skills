@@ -9,10 +9,10 @@ As skills não reimplementam motores de geração: expõem, de forma composável
 ## Estado Atual (Verificado — 2026-11-06)
 
 - **Branch:** `dev` (sincronizado com `origin/dev`, merge `d62e5e0` integrando stack 007 #131–#135). Remoto/local: apenas `dev` e `main`. Sem PRs abertos.
-- **Gates padrão (verificados):** **412 passed, 23 deselected** (`PYTHONPATH=. python -m pytest -q`); **12/12 skills validadas** (`python scripts/validate_all_skills.py`). Testes `@pytest.mark.integration` ficam excluídos por padrão (`pytest.ini: -m "not integration"`).
+- **Gates padrão (verificados):** **421 passed, 23 deselected** (`PYTHONPATH=. python -m pytest -q`); **12/12 skills validadas** (`python scripts/validate_all_skills.py`). Testes `@pytest.mark.integration` ficam excluídos por padrão (`pytest.ini: -m "not integration"`).
 - **Convergência Speckit (escopo definido):** 001, 003, 004, 005 (resiliência) e 006-MCP stdio funcional convergidos com evidência em `specs/*`. **007 PhotoCraft MCP Verified Local Smoke (Option A, stateless)** concluído/convergido (T001–T023): harness *test-only* opt-in, mock-first preservado, **SC-001 exercido sob autorização explícita** no ambiente local (escopo limitado, engine/editor; sem IA/provider/model), com evidência em `specs/007-photocraft-mcp-smoke/quickstart.md`.
 - **Conformidade agentskills.io:** 12/12 skills validadas com `SKILL.md` frontmatter YAML (name kebab-case 1–64 chars, description 1–1024 chars), progressive disclosure (~100 tokens metadata, <5000 tokens instruções), scripts/ e references/ opcionais. Fonte: https://agentskills.io/specification.
-- **MCP:** transporte stdio mínimo viável implementado em `skills/core/artcraft_app_client.py` (`__version__ 0.3.0`) com `tools/list` e `tools/call`, JSON-RPC newline-delimited, stdout apenas protocolo, bounded timeout, request-id correlation, safe subprocess cleanup, FR-005 (seleção de modo) e FR-006 (reason codes aditivos). Compatível com MCP 2025-11-25 e alinhado com a revisão 2026-07-28 (_meta obrigatório, server/discover, sem handshake/sessão na nova revisão). Fontes: https://modelcontextprotocol.io/specification/2026-07-28/server/tools.md, https://py.sdk.modelcontextprotocol.io/v2/whats-new/.
+- **MCP:** transporte stdio mínimo viável implementado em `skills/core/artcraft_app_client.py` (`__version__ 0.4.0`, aditivo 009: `mcp_stateful_session`/`MCPStatefulSession` com subprocesso retido, preservando APIs stateless 006) com `tools/list` e `tools/call`, JSON-RPC newline-delimited, stdout apenas protocolo, bounded timeout, request-id correlation, safe subprocess cleanup, FR-005 (seleção de modo) e FR-006 (reason codes aditivos). Compatível com MCP 2025-11-25 e alinhado com a revisão 2026-07-28 (_meta obrigatório, server/discover, sem handshake/sessão na nova revisão). Fontes: https://modelcontextprotocol.io/specification/2026-07-28/server/tools.md, https://py.sdk.modelcontextprotocol.io/v2/whats-new/.
 - **MCP Python SDK avaliado:** `modelcontextprotocol/python-sdk` v2 (v2.3.0 atual, v2.0.0 estável desde 2026-07-28) fala a revisão 2026-07-28 e serve ambas as revisões (2025-11-25 e 2026-07-28) simultaneamente; cliente mínimo atual do adapter preservado por back-compat/mock-first. Fonte: https://py.sdk.modelcontextprotocol.io/v2/whats-new/.
 ## O que funciona (verificado)
 
@@ -23,7 +23,7 @@ As skills não reimplementam motores de geração: expõem, de forma composável
 - **Adapter `artcraft_app_client` normaliza resultados MCP `content[].text` / `structured` para `SkillResult`, com `standardize_error` (FR-006) e `isError` propagation.**
 - **PhotoCraft `photocraft-cli 0.20.1` observado localmente retornando 26 MCP tools (`command_list`, `command_run`, `command_batch`, `doc_new/open/save/export/inspect/render_preview`, `jobs_*`, `session_list`, UI/bridge) via `tools/list` e `command_list` com engine command metadata (`file.new`, `edit.fill`, `paint.stroke`, `file.export.quickExport`, `layer.exportAs`, `doc.export`).**
 - **Operacionalização opcional controlada:** job/manual para smoke MCP real em ambiente autorizado (nunca default), com gestão segura de binário/evidência. Binário `photocraft-cli` resolvido via `ARTCRAFT_MCP_PHOTOCRAFT_BIN` (absoluto, preferido) ou PATH apenas em modo opt-in; identidade/versão registradas quando disponíveis.
-- **007 Option B (spec separada):** sessão MCP stateful para ciclo determinístico `doc_new → command → doc_export` em sessão retida; mock-first + validação opt-in real. MCP 2026-07-28 remove handshake/sessão e server-initiated requests (roots/sampling/logging deprecated, ping removido); sessão stateful deve usar multi-round-trip (InputRequiredResult) ou reter estado client-side, não server-side.
+- **009 / 007 Option B (aditivo, mock-first, 2026-11-06):** helper de sessão MCP stateful (`mcp_stateful_session`/`MCPStatefulSession`, subprocesso stdio retido, ids correlacionados, cleanup bounded, FR-006-aligned) implementado com testes determinísticos; preserva 006 stateless/FR-005/FR-006/schemas. **Ciclo real de artefato PhotoCraft permanece opt-in autorizado** (007/008, capability-gated). MCP 2026-07-28: client-retained process state; sem assumir sessão server-side. **Sem** geração IA, **sem** bridge/UI, **sem** CI/default real.
 - **Mapeamento MCP por capacidade real** (PhotoCraft/outros Crafting Apps): ferramentas PhotoCraft documentadas: `command_list` (filter, enabled_only), `command_run` (id, params, wait), `command_batch` (steps, stop_on_error), `doc_inspect`, `render_preview` (index, max_side ≤ 2048), `doc_export_layers`/`doc_export_data_sets` (recusam overwrite), roots de leitura/escrita com autoridade de filesystem, progresso via `_meta.progressToken` (0–1, ≤10/s), cancelamento via `notifications/cancelled`. Sem reivindicar geração IA indevida.
 - **Decisão de dependência MCP (quando necessário):** SDK v2.3.0 disponível (`pip install mcp` instala 2.x); avaliar migração do cliente mínimo para `mcp.Client` + `StdioServerParameters` vs manter cliente mínimo atual para lifecycle/auth remota/Streamable HTTP/compatibilidade ampliada; manter mock-first/back-compat.
 - **Documentar alinhamento com MCP 2026-07-28** (_meta obrigatório, server/discover, sem _Mcp-Session-Id_ no 2026 path, subscriptions/listen substitui resources/subscribe) nos specs e quickstart do 006/007.
@@ -47,12 +47,12 @@ As skills não reimplementam motores de geração: expõem, de forma composável
 
 ## Métricas (verificadas)
 
-- ✅ **412/412** testes default passando, **23** deselected (integração opcional)
+- ✅ **421/421** testes default passando, **23** deselected (integração opcional)
 - ✅ **12/12** skills validadas (agentskills.io)
 - ✅ 001/003/004/005/006-MCP convergidos (escopo definido)
 - ✅ 007 convergido (Option A stateless); SC-001 exercido localmente sob autorização (escopo limitado)
 - ✅ Adapter alinhado com MCP 2025-11-25 e revisão 2026-07-28 (_meta, server/discover, sem handshake na nova revisão)
-- ⏳ Option B (MCP stateful) — próxima decisão/spec quando priorizado
+- ✅ 009 stateful session helper aditivo (007 Option B, mock-first) — ✓; ciclo real de artefato opt-in pendente
 - ⏳ Avaliação MCP SDK v2 (modelcontextprotocol/python-sdk v2.3.0) — backlog, decisão pendente
 
 ## Pesquisa de ecossistema externa (2026-11-06)

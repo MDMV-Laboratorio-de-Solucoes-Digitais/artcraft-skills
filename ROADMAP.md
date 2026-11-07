@@ -63,18 +63,19 @@ Skills are consumed by agents that drive real ArtCraft creative apps (PhotoCraft
 - [x] Multi-asset pipelines, skill composition, DAG/generalizable workflows
 - [x] ArtCraft app integration foundation (CLI + MCP stdio minimum viable, fallback, resilience)
 - [x] Optional authorized real PhotoCraft MCP stateless smoke (007, test-only)
-- [ ] **007 Option B (separate spec):** stateful MCP session helper for `doc_new → command → doc_export` in one retained session (mock-first + opt-in real validation)
+- [x] **009 / 007 Option B (spec + additive runtime mock-first, 2026-11-06):** `mcp_stateful_session`/`MCPStatefulSession` em `skills.core.artcraft_app_client` (subprocesso stdio retido, ids correlacionados, cleanup bounded, FR-006); testes determinísticos `tests/unit/test_mcp_stateful_session_009.py`. Preserva 006 stateless/FR-005/FR-006/schemas. Validação real futura permanece opt-in/007. **Sem IA/bridge/UI/CI-default real.**
 - [ ] Per-capability MCP mapping for Crafting Apps (tools/roots/progress/cancel/format constraints)
 - [ ] Controlled optional CI/manual job for real MCP smoke (never default), secure evidence handling
 - [ ] Batch processing, project templates, deep app integrations
 - [ ] Alinhar adapter com revisão MCP 2026-07-28 (_meta, server/discover, sem handshake na nova revisão).
 
-1. **80/20 (MDMV 2026-11-06): spec `008-photocraft-capability-mapping`** — PhotoCraft MCP capability mapping (tools `command_*`/`doc_*`/preview/resources, roots, progress `_meta.progressToken`, cancellation `notifications/cancelled`, error semantics, protocol/version limits). Spec/docs only in this slice; **no runtime code, no AI-generation claim, no stateful session** (007 Option B deferred). Mock-first; optional real validation opt-in. Contingency: if maintainer prioritizes stateful MCP, replace with 007 Option B spec/decide.
-2. **Reconcile Speckit doc hygiene** (low risk): 005 checkbox/evidence alignment; clarify `006-*` numbering in docs; keep history intact.
-3. **Spec/decide 007 Option B** (stateful MCP session, narrow) if stateful artifact workflows become priority; preserve public contracts and mock-first defaults; consider MCP 2026-07-28 (no handshake/session server-side; multi-round-trip client-side).
-4. **Deepen real capability mapping implementation follow-ups** (PhotoCraft first, post-008): engine-oriented `command_*`/`doc_*`/preview/resource tools, roots/progress/cancellation/error semantics; no AI-generation overclaim.
-5. **MCP dependency decision (only if needed):** evaluate official Python SDK (`modelcontextprotocol/python-sdk` v2.3.0) vs current minimal client for advanced lifecycle/auth/Streamable HTTP; maintain deterministic tests/back-compat.
-6. **Product adoption:** compatibility matrix (Crafting Apps/MCP/protocol versions), examples/onboarding; expand Phases 3–5 after stable mappings.
+1. **009 (concluído, 2026-11-06):** runtime aditivo stateful MCP (`mcp_stateful_session`/`MCPStatefulSession`), TDD/mock-first, preservando contratos 006/FR-005/FR-006/schemas; gates default **421 passed, 23 deselected**, **12/12**. Validação real artefato continua opt-in (007/008).
+2. **80/20 anterior (MDMV 2026-11-06): spec `008-photocraft-capability-mapping`** — PhotoCraft MCP capability mapping (tools `command_*`/`doc_*`/preview/resources, roots, progress `_meta.progressToken`, cancellation `notifications/cancelled`, error semantics, protocol/version limits). Spec/docs only in this slice; **no runtime code, no AI-generation claim, no stateful session** (007 Option B deferred). Mock-first; optional real validation opt-in. Contingency: if maintainer prioritizes stateful MCP, replace with 007 Option B spec/decide.
+3. **Reconcile Speckit doc hygiene** (low risk): 005 checkbox/evidence alignment; clarify `006-*` numbering in docs; keep history intact.
+4. **(feito em 009 spec/runtime aditivo mock-first) Spec/decide 007 Option B** (stateful MCP session, narrow) if stateful artifact workflows become priority; preserve public contracts and mock-first defaults; consider MCP 2026-07-28 (no handshake/session server-side; multi-round-trip client-side).
+5. **Deepen real capability mapping implementation follow-ups** (PhotoCraft first, post-008): engine-oriented `command_*`/`doc_*`/preview/resource tools, roots/progress/cancellation/error semantics; no AI-generation overclaim.
+6. **MCP dependency decision (only if needed):** evaluate official Python SDK (`modelcontextprotocol/python-sdk` v2.3.0) vs current minimal client for advanced lifecycle/auth/Streamable HTTP; maintain deterministic tests/back-compat.
+7. **Product adoption:** compatibility matrix (Crafting Apps/MCP/protocol versions), examples/onboarding; expand Phases 3–5 after stable mappings.
 
 
 ## What this project does NOT do
@@ -90,7 +91,7 @@ Skills are consumed by agents that drive real ArtCraft creative apps (PhotoCraft
 - **Converged (defined scope):** 001, 003, 004, 005, 006-MCP, 007 ✓
 - **MCP minimum viable (stdio, mock-first):** ✓
 - **Authorized local real MCP smoke (PhotoCraft, stateless, scoped):** ✓
-- **Stateful MCP artifact cycle (Option B):** pending
+- **Stateful MCP session helper (009, additive, mock-first):** ✓ (runtime + deterministic tests); real artifact cycle opt-in pending
 - ✅ Conformidade agentskills.io: 12/12 skills validadas
 - ✅ MCP stdio mínimo viável alinhado com MCP 2025-11-25 e 2026-07-28
 - ⏳ Avaliação MCP SDK v2 — pendente

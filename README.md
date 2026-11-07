@@ -10,7 +10,7 @@ Ecossistema open-source e composável de *skills* para agentes de IA, seguindo o
 
 | Gate | Resultado (2026-11-06) | Comando |
 |---|---|---|
-| Testes padrão (integração opcional excluída por padrão) | **412 passed, 23 deselected** | `PYTHONPATH=. python -m pytest -q` |
+| Testes padrão (integração opcional excluída por padrão) | **421 passed, 23 deselected** | `PYTHONPATH=. python -m pytest -q` |
 | Validação de skills (agentskills.io) | **12/12, `all_valid=True`** | `python scripts/validate_all_skills.py` |
 
 Escopo convergido (evidência em `specs/*`): 001, 003, 004, 005 (resiliência, evidência registrada), 006-MCP stdio funcional (mínimo viável), 007 PhotoCraft MCP smoke **Option A stateless** (T001–T023; SC-001 exercido localmente sob **autorização explícita**, escopo limitado — ver limites).
@@ -68,7 +68,7 @@ Prova **opcional, explicitamente autorizada**, *test-only* (reusa adapter 006), 
 - Não reimplementa modelos/provedores de geração, nem backend próprio; não substitui apps ArtCraft.
 - Não executa smoke MCP real em **CI/default**; exige opt-in + autorização explícita + controles de segurança.
 - **Não prova/implementa geração IA** via caminho de smoke local PhotoCraft MCP (007 = automação **engine/editor stateless**), nem roteamento provider/modelo/prompt nesse caminho.
-- Não implementa sessão MCP stateful/ciclo determinístico de artefato cross-call (`doc_new → command → doc_export`) no adapter atual (**007 Option B adiada**, spec separada).
+- 009 adiciona **helper de sessão stateful aditivo, mock-first** (`mcp_stateful_session`/`MCPStatefulSession`, `skills.core.artcraft_app_client` v0.4.0), preservando APIs stateless 006/FR-005/FR-006/schemas; **não** executa em CI/default. O **ciclo real de artefato PhotoCraft** continua condicionado a capability/ambiente opt-in autorizado (007/008). **Sem** geração IA/provider/model/prompt nesse caminho.
 - Não garante funcionamento sem binários/apps/credenciais/ambientes externos; ausência de execução autorizada = **não exercido/não atestado**.
 - Não fabrica evidência; reivindicações devem corresponder ao escopo verificado.
 

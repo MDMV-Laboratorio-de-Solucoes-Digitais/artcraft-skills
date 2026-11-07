@@ -23,13 +23,15 @@ PYTHONPATH=. python -m pytest -q tests/unit/test_mcp_stateful_session_009.py
 
 ## 3) Authorized opt-in real smoke (executed, scoped — 2026-11-06)
 
-**Evidence**: `docs/research/2026-11-06-009-photocraft-stateful-opt-in-smoke.md`
+**Evidence**: `docs/research/2026-11-06-009-photocraft-stateful-opt-in-smoke.md`, `docs/research/2026-11-06-009-photocraft-command-run-opt-in-smoke.md`
 
-- Authorization: explicit user request (Option A), 2026-11-06. **Never CI/default.**
+- Authorization: explicit user requests (Option A), 2026-11-06. **Never CI/default.**
 - Binary: `/usr/bin/photocraft-cli 0.20.1` (absolute), temp absolute roots harness-managed/cleaned, timeout 30s bounded.
 - Scope: engine/editor, capability-gated (008). **No** AI generation/provider/model/prompt, **no** bridge/UI, **no** secrets/PII.
-- Observed (sanitized): `tools/list` ok (26 tools, version-tolerant), `command_list` ok, **cross-call** `doc_new` → `doc_inspect` → `doc_export` (png, temp write root, 593 bytes, file exists) → `doc_save` (pcraft exists) — all ok in **one retained 009 session**. Cleanup ok.
-- Parameter note (evidence-backed): `doc_export` rejected `overwrite` arg in this env; `format=png` succeeded. Keep parameter handling version-tolerant.
+- Run 1 (sanitized): `tools/list` + `command_list` + `doc_new` → `doc_inspect` (cross-call) → `doc_export` png (593B, temp write root) → `doc_save` — all ok in **one retained 009 session**.
+- Run 2 broaden `command_run` (sanitized): `doc_new` → `command_run layer.new.layer` ok → `command_run layer.new.group` ok → `command_run select.deselect` **structured `mcp_tool_error`** (precondition: no selection, honest) → `doc_inspect` ok → `doc_export` png ok (593B). Demonstrates deterministic engine command execution in retained session; selection-dependent command correctly failed with FR-006-aligned error.
+- Parameter notes (version-tolerant): `doc_export` rejected `overwrite` in this env; `format=png` ok. Do not assume exact command catalog/params/enabled state across versions.
+
 
 ## 4) Future real validation (additional cases)
 

@@ -40,3 +40,7 @@ Only with explicit authorization + opt-in + 007 controls (absolute binário/root
 ## 5) Limits
 
 - No AI generation claim. No bridge/UI. No server-side session assumption on MCP 2026-07-28 path (client-retained process state). No CI/default real smoke. Real evidence is **environment-specific** (`photocraft-cli 0.20.1`), not universal parity.
+
+## 6) 009/B param normalization (additive, opt-in)
+- `skills.core.artcraft_app_client.normalize_mcp_tool_arguments(tool_name, arguments)` — pure, returns copy, **no mutation**. Default `mcp_tools_call`/`call_tool` unchanged unless callers opt in.
+- Observed (PhotoCraft 0.20.1 opt-in): `doc_export` rejected `overwrite`; normalizer drops `overwrite` for `doc_export` compatibility while preserving other args. Keep usage **capability-gated** and version-tolerant (008).

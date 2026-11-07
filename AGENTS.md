@@ -145,3 +145,8 @@ pytest --update-golden    # Regenerate golden masters (if needed)
 - **Traceability**: Tests often map to specs/US1-5.
 - **Quality gates** (per constitution): Functionality, documentation, compatibility, composability, performance, security, transparency, error handling. Skills must be independently testable with clear contracts.
 - **Current state**: All default tests pass (`421 passed, 23 deselected`, 2026-11-06; includes 006 MCP stdio + 009 additive stateful session mock-first coverage). Validate with `python scripts/validate_all_skills.py` before committing (expect `12/12`, `all_valid=True`).
+
+## 009 MCP stateful (additive, 2026-11-06)
+- `skills.core.artcraft_app_client` v0.4.0+: `mcp_stateful_session`/`MCPStatefulSession` (retained stdio, correlated ids, bounded cleanup, FR-006) + opt-in `normalize_mcp_tool_arguments` (pure; default 006/009 call paths unchanged). Preserves 006 stateless APIs, FR-005/FR-006, schemas/CLI fallback.
+- Tests: `tests/unit/test_mcp_stateful_session_009.py`, `tests/unit/test_mcp_tool_arg_normalization_009.py`, extended fake stdio helper (006 scenarios intact).
+- Real MCP smokes **opt-in only, explicit authorization, 007 controls, never CI/default, engine/editor only, no AI/bridge/UI/secrets**. Evidence: `docs/research/2026-11-06-009-photocraft-*-opt-in-smoke.md`. SDK v2 decision: `docs/research/2026-11-06-mcp-sdk-v2-decision.md`.

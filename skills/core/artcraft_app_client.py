@@ -458,6 +458,23 @@ def generate_via_editing_commands(
 # Preserves 006 stateless APIs (mcp_tools_list/mcp_tools_call). Never raises across boundary.
 
 
+
+def normalize_mcp_tool_arguments(tool_name: str, arguments: Mapping[str, Any] | None = None) -> dict[str, Any]:
+    """009/B additive: version-tolerant MCP tool argument normalization (pure).
+
+    Returns a new dict; never mutates input. Default MCP call paths remain
+    unchanged unless callers explicitly opt in. Observed PhotoCraft
+    `doc_export` rejected `overwrite` (2026-11-06 opt-in smoke); drop it for
+    `doc_export` compatibility while preserving other args.
+    """
+    out: dict[str, Any] = {}
+    if isinstance(arguments, Mapping):
+        out = {k: v for k, v in arguments.items()}
+    if tool_name == "doc_export" and "overwrite" in out:
+        out.pop("overwrite", None)
+    return out
+
+
 class MCPStatefulSession:
     """Retain one MCP stdio subprocess for multiple correlated JSON-RPC calls.
 
@@ -743,6 +760,7 @@ __all__ = [
     "generate_via_editing_commands",
     "mcp_tools_list",
     "mcp_tools_call",
+    "normalize_mcp_tool_arguments",
     "mcp_stateful_session",
     "MCPStatefulSession",
     "REASON_CLI_NOT_FOUND",

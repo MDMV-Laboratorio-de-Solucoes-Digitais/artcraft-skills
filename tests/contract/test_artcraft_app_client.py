@@ -28,6 +28,7 @@ EXPECTED_FUNCTIONS = [
     # 006 MCP stdio additive API
     "mcp_tools_list",
     "mcp_tools_call",
+    "normalize_mcp_tool_arguments",
     "mcp_stateful_session",
     "MCPStatefulSession",
 ]

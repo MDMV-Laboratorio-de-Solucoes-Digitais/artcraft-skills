@@ -20,7 +20,7 @@ import time
 from collections.abc import Mapping, Sequence
 from typing import Any
 
-__version__ = "0.3.0"
+__version__ = "0.4.0"
 
 REASON_CLI_NOT_FOUND = "cli_not_found"
 REASON_MCP_UNAVAILABLE = "mcp_unavailable"
@@ -453,6 +453,283 @@ def generate_via_editing_commands(
     return run_cli(cli_path, args, timeout=timeout)
 
 
+
+# --- 009: additive MCP stateful session (007 Option B, mock-first/runtime additive) ---
+# Preserves 006 stateless APIs (mcp_tools_list/mcp_tools_call). Never raises across boundary.
+
+
+class MCPStatefulSession:
+    """Retain one MCP stdio subprocess for multiple correlated JSON-RPC calls.
+
+    Additive 009 helper. Use as context manager; ``close()`` is idempotent and
+    bounded. All public methods return structured dict/list payloads or FR-006-
+    aligned failure dicts (never raise across boundary for protocol/transport).
+    """
+
+    def __init__(self, config: Mapping[str, Any], *, timeout: int | None = None):
+        self._config_in = config
+        self._cfg = normalize_mcp_config(config)
+        self._call_timeout = int(timeout or self._cfg.get("timeout") or self._cfg.get("call_timeout") or 30)
+        self._proc: subprocess.Popen[Any] | None = None
+        self._q: "queue.Queue[dict[str, Any] | Exception | None] | None" = None
+        self._stderr_lines: list[str] = []
+        self._threads: list[threading.Thread] = []
+        self._next_id = 2  # 1 reserved for initialize
+        self._state = "new"
+        self._init_error: dict[str, Any] | None = None
+
+    # lifecycle
+    def open(self) -> "MCPStatefulSession":
+        if self._state in ("ready", "starting"):
+            return self
+        if self._state in ("closing", "closed", "failed"):
+            return self
+        self._state = "starting"
+        self._init_error = self._start_and_initialize()
+        if self._init_error:
+            self._state = "failed"
+            self.close()
+        else:
+            self._state = "ready"
+        return self
+
+    def __enter__(self) -> "MCPStatefulSession":
+        return self.open()
+
+    def __exit__(self, exc_type: Any, exc: Any, tb: Any) -> bool:
+        self.close()
+        return False
+
+    def close(self) -> None:
+        if self._state == "closed":
+            return
+        self._state = "closing"
+        _terminate_process(self._proc)
+        for t in self._threads:
+            try:
+                t.join(timeout=0.2)
+            except Exception:
+                pass
+        self._proc = None
+        self._q = None
+        self._threads = []
+        self._state = "closed"
+
+    @property
+    def state(self) -> str:
+        return self._state
+
+    # internals
+    def _start_and_initialize(self) -> dict[str, Any] | None:
+        cmd = self._cfg.get("command")
+        args = self._cfg.get("args") or []
+        if not cmd or not isinstance(cmd, str):
+            return _mcp_failure(REASON_MCP_MISCONFIGURED, "MCP stdio misconfigured: 'command' is required for stdio transport", error_stage="launch")
+        if not isinstance(args, (list, tuple)):
+            args = []
+        env = os.environ.copy()
+        extra_env = self._cfg.get("env")
+        if isinstance(extra_env, Mapping):
+            for k, v in extra_env.items():
+                if isinstance(k, str) and v is not None:
+                    env[k] = str(v)
+        cwd = self._cfg.get("cwd") if isinstance(self._cfg.get("cwd"), str) else None
+        try:
+            self._proc = subprocess.Popen(
+                [cmd] + [str(a) for a in args],
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                env=env,
+                cwd=cwd,
+                bufsize=1,
+            )
+        except FileNotFoundError:
+            return _mcp_failure(REASON_MCP_MISCONFIGURED, f"MCP server command not found: {cmd}", error_stage="launch")
+        except Exception as e:
+            return _mcp_failure(REASON_MCP_UNAVAILABLE, f"Failed to launch MCP stdio server: {e}", error_stage="launch")
+
+        self._stderr_lines = []
+        proc = self._proc
+
+        def _drain_stderr() -> None:
+            try:
+                if proc and proc.stderr:
+                    for line in proc.stderr:
+                        if line:
+                            self._stderr_lines.append(line.rstrip("\n"))
+            except Exception:
+                pass
+
+        t_err = threading.Thread(target=_drain_stderr, daemon=True)
+        t_err.start()
+        self._q = queue.Queue()
+
+        def _reader() -> None:
+            try:
+                if proc and proc.stdout:
+                    while True:
+                        line = proc.stdout.readline()
+                        if line == "":
+                            self._q.put(None)  # type: ignore[union-attr]
+                            return
+                        line = line.strip()
+                        if not line:
+                            continue
+                        try:
+                            msg = json.loads(line)
+                            if isinstance(msg, dict):
+                                self._q.put(msg)  # type: ignore[union-attr]
+                        except Exception as e:
+                            self._q.put(e)  # type: ignore[union-attr]
+                            return
+            except Exception as e:
+                if self._q is not None:
+                    self._q.put(e)
+
+        t_rd = threading.Thread(target=_reader, daemon=True)
+        t_rd.start()
+        self._threads = [t_err, t_rd]
+
+        init_budget = min(5, max(1, self._call_timeout))
+        err = self._send({"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {"protocolVersion": "2025-11-25", "capabilities": {}, "clientInfo": {"name": "artcraft-skills", "version": __version__}}})
+        if err:
+            return err
+        init_res = self._read_for_id(1, init_budget, "initialize")
+        if isinstance(init_res, dict) and init_res.get("is_error"):
+            if init_res.get("reason") == REASON_MCP_CALL_TIMEOUT:
+                init_res["reason"] = REASON_MCP_STARTUP_TIMEOUT
+                init_res.setdefault("metadata", {})["reason"] = REASON_MCP_STARTUP_TIMEOUT
+                init_res["metadata"]["error_stage"] = "initialize"
+            return init_res
+        try:
+            if proc and proc.stdin:
+                proc.stdin.write(json.dumps({"jsonrpc": "2.0", "method": "notifications/initialized", "params": {}}) + "\n")
+                proc.stdin.flush()
+        except Exception:
+            pass
+        return None
+
+    def _send(self, msg: dict[str, Any]) -> dict[str, Any] | None:
+        proc = self._proc
+        try:
+            if not proc or not proc.stdin:
+                return _mcp_failure(REASON_MCP_INVALID_RESPONSE, "MCP stdio session has no stdin", error_stage="invocation")
+            proc.stdin.write(json.dumps(msg) + "\n")
+            proc.stdin.flush()
+        except Exception as e:
+            self.close()
+            return _mcp_failure(REASON_MCP_INVALID_RESPONSE, f"Failed to write MCP request: {e}", error_stage="invocation")
+        return None
+
+    def _read_for_id(self, target_id: Any, stage_timeout: int, error_stage: str) -> dict[str, Any]:
+        proc = self._proc
+        q = self._q
+        if q is None:
+            return _mcp_failure(REASON_MCP_INVALID_RESPONSE, "MCP stdio session has no reader", error_stage=error_stage)
+        deadline = time.monotonic() + max(1, int(stage_timeout))
+        while True:
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                self.close()
+                reason = REASON_MCP_STARTUP_TIMEOUT if error_stage == "initialize" else REASON_MCP_CALL_TIMEOUT
+                return _mcp_failure(reason, f"MCP stdio timeout after {stage_timeout}s", error_stage=error_stage)
+            try:
+                item = q.get(timeout=min(0.2, remaining))
+            except queue.Empty:
+                if proc is not None and proc.poll() is not None:
+                    self.close()
+                    return _mcp_failure(REASON_MCP_INVALID_RESPONSE, "MCP stdio process exited before response", error_stage=error_stage)
+                continue
+            if item is None:
+                self.close()
+                return _mcp_failure(REASON_MCP_INVALID_RESPONSE, "MCP stdio stream closed before response", error_stage=error_stage)
+            if isinstance(item, Exception):
+                self.close()
+                return _mcp_failure(REASON_MCP_INVALID_RESPONSE, f"MCP stdio invalid JSON/protocol: {item}", error_stage=error_stage)
+            if item.get("id") == target_id:
+                if self._stderr_lines and isinstance(item, dict):
+                    if not isinstance(item.get("metadata"), dict):
+                        item["metadata"] = {"stderr_diagnostic": True}
+                    else:
+                        item["metadata"]["stderr_diagnostic"] = True
+                return item
+            # ignore notifications/unsolicited messages
+
+    def _rpc(self, method: str, params: Mapping[str, Any] | None, *, stage: str, tool_name: str | None = None) -> dict[str, Any]:
+        if self._init_error and method != "initialize":
+            return self._init_error
+        if self._state == "new":
+            self.open()
+            if self._init_error:
+                return self._init_error
+        if self._state != "ready":
+            return _mcp_failure(REASON_MCP_UNAVAILABLE, f"MCP stateful session not ready (state={self._state})", error_stage=stage, tool=tool_name)
+        req_id = self._next_id
+        self._next_id += 1
+        err = self._send({"jsonrpc": "2.0", "id": req_id, "method": method, "params": params or {}})
+        if err:
+            err.setdefault("metadata", {})["error_stage"] = stage
+            if tool_name:
+                err["metadata"].setdefault("tool", tool_name)
+            return err
+        return self._read_for_id(req_id, self._call_timeout, stage)
+
+    # public ops (006-normalized shapes / FR-006)
+    def list_tools(self) -> dict[str, Any] | list[Any]:
+        res = self._rpc("tools/list", {}, stage="discovery")
+        if not isinstance(res, dict):
+            return _mcp_failure(REASON_MCP_INVALID_RESPONSE, "MCP stdio returned invalid response", error_stage="discovery")
+        if res.get("is_error"):
+            return res
+        if "error" in res and res.get("error"):
+            md = {"mode": "mcp", "reason": REASON_MCP_INVALID_RESPONSE, "interface": "mcp", "error_stage": "discovery"}
+            return {"success": False, "is_error": True, "error": str((res.get("error") or {}).get("message") or res.get("error")), "metadata": md, "reason": REASON_MCP_INVALID_RESPONSE}
+        result = res.get("result")
+        if isinstance(result, dict) and "tools" in result:
+            return result
+        if isinstance(result, list):
+            return {"tools": result}
+        if isinstance(res.get("tools"), list):
+            return {"tools": res.get("tools")}
+        return _mcp_failure(REASON_MCP_INVALID_RESPONSE, "MCP tools/list response missing tools", error_stage="discovery")
+
+    def call_tool(self, tool_name: str, arguments: Mapping[str, Any] | None = None) -> dict[str, Any]:
+        res = self._rpc("tools/call", {"name": tool_name, "arguments": dict(arguments or {})}, stage="invocation", tool_name=tool_name)
+        if not isinstance(res, dict):
+            return _mcp_failure(REASON_MCP_INVALID_RESPONSE, "MCP stdio returned invalid response", error_stage="invocation", tool=tool_name)
+        if res.get("is_error"):
+            res.setdefault("metadata", {})
+            if isinstance(res["metadata"], dict):
+                res["metadata"].setdefault("tool", tool_name)
+                res["metadata"].setdefault("interface", "mcp")
+            return res
+        if "error" in res and res.get("error"):
+            msg = (res.get("error") or {}).get("message") if isinstance(res.get("error"), dict) else str(res.get("error"))
+            return _mcp_failure(REASON_MCP_TOOL_ERROR, f"MCP tool error: {msg}", error_stage="invocation", tool=tool_name)
+        result = res.get("result")
+        if isinstance(result, dict):
+            if result.get("isError") is True:
+                err = result.get("error")
+                msg = (err.get("message") if isinstance(err, dict) else None) or (result.get("content") or [{}])[0].get("text") if isinstance(result.get("content"), list) and result.get("content") else "MCP tool reported an error"
+                return _mcp_failure(REASON_MCP_TOOL_ERROR, f"MCP tool error: {msg}", error_stage="invocation", tool=tool_name)
+            return result
+        if res.get("isError") is True:
+            return _mcp_failure(REASON_MCP_TOOL_ERROR, str(res.get("error") or "MCP tool error"), error_stage="invocation", tool=tool_name)
+        return _mcp_failure(REASON_MCP_INVALID_RESPONSE, "MCP tools/call response missing result", error_stage="invocation", tool=tool_name)
+
+
+def mcp_stateful_session(config: Mapping[str, Any], *, timeout: int | None = None, **kwargs: Any) -> MCPStatefulSession:
+    """009 additive: create a stateful MCP stdio session (context manager).
+
+    ``kwargs`` accepted for forward/backward-compat (e.g. roots/opt_in_real hints
+    reserved by contract; enforcement is harness/caller responsibility in 009
+    runtime slice). Does not replace 006 stateless ``mcp_tools_list/call``.
+    """
+    return MCPStatefulSession(config, timeout=timeout)
+
+
 __all__ = [
     "discover_cli",
     "discover_generation_command",
@@ -466,6 +743,8 @@ __all__ = [
     "generate_via_editing_commands",
     "mcp_tools_list",
     "mcp_tools_call",
+    "mcp_stateful_session",
+    "MCPStatefulSession",
     "REASON_CLI_NOT_FOUND",
     "REASON_MCP_UNAVAILABLE",
     "REASON_MCP_MISCONFIGURED",

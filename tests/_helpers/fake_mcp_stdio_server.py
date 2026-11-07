@@ -94,6 +94,9 @@ def main(argv: Optional[List[str]] = None) -> int:
     scenario = args.scenario
     tool_name = args.tool_name
 
+    # 009: stable marker proves a retained stateful session reused the same process.
+    session_marker = f"pid-{os.getpid()}"
+
     if scenario == "launch_failure":
         _diag("fake_mcp_stdio_server: simulated launch/misconfiguration failure")
         return 2
@@ -141,12 +144,21 @@ def main(argv: Optional[List[str]] = None) -> int:
                 continue
             if scenario == "missing_capability":
                 _write({"jsonrpc": "2.0", "id": req_id, "result": {"tools": [{"name": "other.tool", "description": "unrelated capability", "inputSchema": {"type": "object"}}]}})
+            elif scenario == "timeout_hang_list":
+                time.sleep(60)
+                return 0
             else:
-                _write({"jsonrpc": "2.0", "id": req_id, "result": {"tools": _tool_list(tool_name)}})
+                tools = _tool_list(tool_name)
+                if scenario == "stateful_session_marker":
+                    tools[0] = {**tools[0], "description": f"image tool marker={session_marker}"}
+                _write({"jsonrpc": "2.0", "id": req_id, "result": {"tools": tools}})
             continue
         if method == "tools/call":
-            if scenario == "timeout_hang":
+            if scenario in ("timeout_hang", "timeout_hang_call"):
                 time.sleep(60)
+                return 0
+            if scenario == "mid_session_exit":
+                _diag("fake_mcp_stdio_server: exiting mid session")
                 return 0
             if scenario == "invalid_json" and not invalid_sent:
                 sys.stdout.write("{not-json\n")
@@ -162,7 +174,11 @@ def main(argv: Optional[List[str]] = None) -> int:
                 continue
             # success/default
             called = (req.get("params") or {}).get("name") or tool_name
-            _write(_success_call_result(req_id, str(called)))
+            result = _success_call_result(req_id, str(called))
+            if scenario == "stateful_session_marker":
+                result["result"]["data"]["session_marker"] = session_marker
+                result["result"]["data"]["call_id"] = req_id
+            _write(result)
             continue
         # unknown method: return JSON-RPC method-not-found-ish result to stay protocol-safe
         if req_id is not None:

@@ -1,6 +1,6 @@
 {
   "module": "skills.core.artcraft_app_client",
-  "__version__": "0.3.0",
+  "__version__": "0.4.0",
   "__all__": [
     "discover_cli",
     "discover_generation_command",
@@ -14,6 +14,8 @@
     "generate_via_editing_commands",
     "mcp_tools_list",
     "mcp_tools_call",
+    "mcp_stateful_session",
+    "MCPStatefulSession",
     "REASON_CLI_NOT_FOUND",
     "REASON_MCP_UNAVAILABLE",
     "REASON_MCP_MISCONFIGURED",
@@ -294,6 +296,46 @@
         }
       ],
       "return": "subprocess.CompletedProcess"
+    },
+    "mcp_stateful_session": {
+      "params": [
+        {
+          "name": "config",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "annotation": "Mapping[str, Any]",
+          "default": null
+        },
+        {
+          "name": "timeout",
+          "kind": "KEYWORD_ONLY",
+          "annotation": "int | None",
+          "default": null
+        },
+        {
+          "name": "kwargs",
+          "kind": "VAR_KEYWORD",
+          "annotation": "Any",
+          "default": null
+        }
+      ],
+      "return": "MCPStatefulSession"
+    },
+    "MCPStatefulSession": {
+      "params": [
+        {
+          "name": "config",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "annotation": "Mapping[str, Any]",
+          "default": null
+        },
+        {
+          "name": "timeout",
+          "kind": "KEYWORD_ONLY",
+          "annotation": "int | None",
+          "default": null
+        }
+      ],
+      "return": "<class 'inspect._empty'>"
     }
   }
 }

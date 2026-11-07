@@ -27,7 +27,7 @@
 
 - [x] CHK011 Evidence statuses used (`observed`/`documented`/`unverified`) with source/date/scope. [FR-007, data-model]
 - [x] CHK012 MCP 2025-11-25/2026-07-28 alignment/limits recorded; SDK v2 migration noted as backlog (not implemented). [FR-008]
-- [x] CHK013 Assessment GO (`.specify/assessments/008-photocraft-capability-mapping/decision.md`) consistent with spec/plan.
+- [x] CHK014 Default gates verificados (docs-only, 2026-11-06): `PYTHONPATH=. python -m pytest -q` → **412 passed, 23 deselected**; `python scripts/validate_all_skills.py` → **12/12, `all_valid=True`**. [SC-003]
 
 ## Gates
 

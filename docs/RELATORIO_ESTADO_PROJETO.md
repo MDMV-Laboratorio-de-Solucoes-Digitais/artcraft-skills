@@ -40,7 +40,7 @@ Lista funcional concreta (símbolos exatos, verificados no código):
 - **Ferramentas MDMV/auxiliares**: `codegraph` em `/home/luis/.local/bin/codegraph`, `gh` em `/usr/bin/gh`; `/init`/`/archify` sem equivalente direto neste repo — estado mapeado por leitura direta/gates.
 ## 4. O que exatamente FUNCIONA (verificado)
 
-- **Testes default**: **421 passed, 23 deselected** (`PYTHONPATH=. python -m pytest -q`, 2026-11-06, integração opt-in excluída por padrão).
+- **Testes default**: **424 passed, 23 deselected** (`PYTHONPATH=. python -m pytest -q`, 2026-11-06, integração opt-in excluída por padrão).
 - **Validação de skills (agentskills.io)**: **12/12, `all_valid=True`** (`python scripts/validate_all_skills.py`, 2026-11-06).
 - **Adapter 006 (MCP stdio mínimo viável, stateless)**: `tools/list`/`tools/call`, normalização `SkillResult`, FR-006 aditiva, FR-005 preservada. `photocraft-cli 0.20.1` observado localmente retornando **26 MCP tools**; `command_list` com engine command metadata (evidência 007, escopo limitado).
 - **007 Option A (stateless, opt-in, test-only)**: evidência local autorizada de `tools/list` + `tools/call name=command_list` — capability presente, normalizável; **stateless, sem reuso de sessão, sem ciclo de artefato cross-call, sem claim de geração IA**. Smoke MCP real **nunca em CI/default**.

@@ -10,7 +10,7 @@ Ecossistema open-source e composável de *skills* para agentes de IA, seguindo o
 
 | Gate | Resultado (2026-11-06) | Comando |
 |---|---|---|
-| Testes padrão (integração opcional excluída por padrão) | **421 passed, 23 deselected** | `PYTHONPATH=. python -m pytest -q` |
+| Testes padrão (integração opcional excluída por padrão) | **424 passed, 23 deselected** | `PYTHONPATH=. python -m pytest -q` |
 | Validação de skills (agentskills.io) | **12/12, `all_valid=True`** | `python scripts/validate_all_skills.py` |
 
 Escopo convergido (evidência em `specs/*`): 001, 003, 004, 005 (resiliência, evidência registrada), 006-MCP stdio funcional (mínimo viável), 007 PhotoCraft MCP smoke **Option A stateless** (T001–T023; SC-001 exercido localmente sob **autorização explícita**, escopo limitado — ver limites).

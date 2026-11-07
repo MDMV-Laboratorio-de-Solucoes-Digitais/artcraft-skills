@@ -2,7 +2,7 @@
 
 - **Data**: 2026-11-06
 - **Fonte**: leitura direta de `.specify/assessments/`, `specs/`, `.specify/`; 008 (docs-only) + 009 (007 Option B) especificado e runtime aditivo implementado em slice autorizado TDD/mock-first (2026-11-06).
-- **Gates (verificados 2026-11-06, pós-009 runtime aditivo mock-first)**: `PYTHONPATH=. python -m pytest -q` → **421 passed, 23 deselected**; `python scripts/validate_all_skills.py` → **12/12, `all_valid=True`**.
+- **Gates (verificados 2026-11-06, pós-009 runtime aditivo mock-first)**: `PYTHONPATH=. python -m pytest -q` → **424 passed, 23 deselected**; `python scripts/validate_all_skills.py` → **12/12, `all_valid=True`**.
 
 ## Assessments (`.specify/assessments/`, 9 diretórios)
 

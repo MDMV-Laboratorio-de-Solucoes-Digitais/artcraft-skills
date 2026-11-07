@@ -8,8 +8,8 @@ Skills are consumed by agents that drive real ArtCraft creative apps (PhotoCraft
 
 ## Current State (Verificado — 2026-11-06)
 
-- **Branch:** `dev` @ `44b9667` (synced with `origin/dev`), PR stack 007 #131–#135 integrated; only `dev`/`main` local+remote; **no open PRs**. Working tree reviewed for docs consolidation (MDMV flow 2026-11-06).
-- **Quality gates (default):** **412 passed, 23 deselected** (`PYTHONPATH=. python -m pytest -q`); **12/12 skills validated** (`python scripts/validate_all_skills.py`). Integration tests are opt-in (`-m "not integration"` excluded by default).
+- **Branch:** `dev` (local clean; 2026-11-06: 10 commits ahead of `origin/dev` published in this execution upon explicit authorization). PR stack 007 #131–#135 previously integrated; only `dev`/`main` local+remote. Working tree reviewed for docs consolidation (MDMV flow 2026-11-06).
+- **Quality gates (default):** **424 passed, 23 deselected** (`PYTHONPATH=. python -m pytest -q`); **12/12 skills validated** (`python scripts/validate_all_skills.py`). Integration tests are opt-in (`-m "not integration"` excluded by default).
 - **Converged specs (defined scope):** `001`, `003`, `004`, `005-resiliencia-creativeskill` (evidence recorded), `006-mcp-stdio-functional-integration`, `007-photocraft-mcp-smoke` (Option A stateless, T001–T023 complete; SC-001 exercised locally under explicit authorization — engine/editor only, no AI/provider/model claim).
 - **Core:** schema/validation/loader/registry, `BaseSkill/SkillResult`, `CreativeSkill`, shared `artcraft_app_client` (CLI + MCP stdio minimum viable, FR-005/FR-006 preserved), resilience (retry 3 + exponential backoff + jitter + `BoundedSemaphore(3)`), `SkillComposer`, `DAGOrchestrator`.
 - **Creative skills (Python, current scope):** `image-generate`, `image-edit`, `background-remove`, `image-upscale`, `mesh-generate`; `scene-composition` executable; generalizable workflows present.
@@ -38,7 +38,7 @@ Skills are consumed by agents that drive real ArtCraft creative apps (PhotoCraft
 ### Phase 0: Foundation — **100% Complete**
 - [x] agentskills.io schema/validation/discovery/loading/registry
 - [x] Core abstractions, shared adapter, resilience, composition/DAG
-- [x] Docs and deterministic test infrastructure (**412 passed / 23 deselected**, **12/12 valid**)
+- [x] Docs and deterministic test infrastructure (**424 passed / 23 deselected**, **12/12 valid**)
 
 ### Phase 1: Image & 2D Creative Skills — **100% (current scope)**
 - [x] `image-generate`, `image-edit`, `background-remove`, `image-upscale`
@@ -69,7 +69,7 @@ Skills are consumed by agents that drive real ArtCraft creative apps (PhotoCraft
 - [ ] Batch processing, project templates, deep app integrations
 - [ ] Alinhar adapter com revisão MCP 2026-07-28 (_meta, server/discover, sem handshake na nova revisão).
 
-1. **009 (concluído, 2026-11-06):** runtime aditivo stateful MCP (`mcp_stateful_session`/`MCPStatefulSession`), TDD/mock-first, preservando contratos 006/FR-005/FR-006/schemas; gates default **421 passed, 23 deselected**, **12/12**. Validação real artefato continua opt-in (007/008).
+1. **009 (concluído, 2026-11-06):** runtime aditivo stateful MCP (`mcp_stateful_session`/`MCPStatefulSession`), TDD/mock-first, preservando contratos 006/FR-005/FR-006/schemas; gates default verificados **424 passed, 23 deselected**, **12/12**. Validação real artefato continua opt-in (007/008).
 2. **80/20 anterior (MDMV 2026-11-06): spec `008-photocraft-capability-mapping`** — PhotoCraft MCP capability mapping (tools `command_*`/`doc_*`/preview/resources, roots, progress `_meta.progressToken`, cancellation `notifications/cancelled`, error semantics, protocol/version limits). Spec/docs only in this slice; **no runtime code, no AI-generation claim, no stateful session** (007 Option B deferred). Mock-first; optional real validation opt-in. Contingency: if maintainer prioritizes stateful MCP, replace with 007 Option B spec/decide.
 3. **Reconcile Speckit doc hygiene** (low risk): 005 checkbox/evidence alignment; clarify `006-*` numbering in docs; keep history intact.
 4. **(feito em 009 spec/runtime aditivo mock-first) Spec/decide 007 Option B** (stateful MCP session, narrow) if stateful artifact workflows become priority; preserve public contracts and mock-first defaults; consider MCP 2026-07-28 (no handshake/session server-side; multi-round-trip client-side).
@@ -87,7 +87,7 @@ Skills are consumed by agents that drive real ArtCraft creative apps (PhotoCraft
 
 ## Success Metrics (verified 2026-11-06)
 - **Skills validated:** 12/12 (100%)
-- **Default tests:** 412 passed, 23 deselected (integration opt-in)
+- **Default tests:** 424 passed, 23 deselected (integration opt-in)
 - **Converged (defined scope):** 001, 003, 004, 005, 006-MCP, 007 ✓
 - **MCP minimum viable (stdio, mock-first):** ✓
 - **Authorized local real MCP smoke (PhotoCraft, stateless, scoped):** ✓
